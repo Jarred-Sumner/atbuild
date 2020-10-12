@@ -1,6 +1,6 @@
 # AtBuild – JavaScript Preprocessor
 
-AtBuild is a JavaScript preprocessor language. It lets you use JavaScript to write JavaScript, to help you move slow code from runtime to buildtime.
+AtBuild is a JavaScript preprocessor language. It lets you use JavaScript to write JavaScript, to make it easy to move slow code from runtime to buildtime.
 
 # How it works
 
@@ -19,7 +19,7 @@ The code evaluated at buildtime is also JavaScript.
 ## Contrived example:
 
 ```js
-// @hello-world.@js
+// hello-world.@js
 @var hi = 0;
 
 @for (let i = 0; i < 5; i++) {
@@ -43,6 +43,16 @@ console.log("Hello World 4");
 
 module.exports = 5;
 ```
+
+## Why?
+
+![Y U Do Dis meme](./explain/y.png)
+
+Extremely fast native languages like Rust & C often use [inline expansion](https://en.wikipedia.org/wiki/Inline_expansion), [loop unrolling](https://en.wikipedia.org/wiki/Loop_unrolling) to move work from runtime to buildtime. For code that doesn't change much, this can be a massive performance improvement.
+
+Unfortunately, since JavaScript is a dynamic language, that's not natively supported. So, high performance JavaScript libraries like [NDArray](https://github.com/scijs/ndarray) and [Kiwi](https://github.com/evanw/kiwi) resort to [writing code inside code](https://github.com/scijs/ndarray/blob/master/ndarray.js#L123) by [adding strings together](https://github.com/evanw/kiwi/blob/1a82ea6592ff25f26e35ca69e58c98852072eae9/js/js.ts#L11) and its...hard for humans to understand whats going on.
+
+Nowadays, much of the JavaScript we write is already behind [seven](https://webpack.js.org/) [different](https://babeljs.io/) [compilers](https://v8.dev/docs/turbofan), so why not add another?
 
 # Installation
 
