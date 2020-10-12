@@ -127,4 +127,4 @@ TODO: write this.
 
 ## Alternatives
 
-- [`babel-plugin-codegen`](https://github.com/kentcdodds/babel-plugin-codegen)`[`babel-plugin-preval`](https://github.com/kentcdodds/babel-plugin-preval)` make it easy to run build scripts, but it gets tough if you want to do some things at build-time and some other things at run-time.
+- [`babel-plugin-codegen`](https://github.com/kentcdodds/babel-plugin-codegen)` & [`babel-plugin-preval`](https://github.com/kentcdodds/babel-plugin-preval)` make it easy to run build scripts, but it gets tough if you want to do some things at build-time and some other things at run-time.
