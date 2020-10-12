@@ -30,7 +30,7 @@ The code evaluated at buildtime is also JavaScript.
 module.exports = @{hi};
 ```
 
-After we run it through `atbuild ./@hello-world.@js`, it becomes:
+After we run it through `atbuild ./hello-world.@js`, it becomes:
 
 ```js
 // hello-world.js
