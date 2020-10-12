@@ -11,7 +11,7 @@ const HEADER_STRING =
   "\n" +
   "// @ts-ignore\n" +
   "// @noflow\n" +
-  '"use strict";\n';
+  '"use strict";\n\n';
 
 let context, contextOpts;
 
