@@ -4,12 +4,15 @@ import { webpack } from "../../test/helpers";
 
 describe("AtBuild Webpack Loader", function () {
   it("works", async function () {
-    expect.assertions(2);
+    expect.assertions(1);
 
-    const { result } = await webpack("./samples/hello-world.@js");
+    const [_result, fs] = await webpack("./samples/hello-worldtest");
 
-    const code = AtBuild.evalFile("./samples/hello-world.@js", true);
-    expect(result[0]).toBe(code);
-    expect(eval(code)).toBe(5);
+    const result = fs.readFileSync(
+      _result.compilation.compiler.outputPath + "/bundle.js",
+      "utf8"
+    );
+
+    expect(result.includes("hello-world.@js")).toBe(true);
   });
 });

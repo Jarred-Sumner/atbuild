@@ -1,6 +1,11 @@
 # AtBuild – JavaScript Preprocessor
 
-AtBuild is a JavaScript preprocessor language. It lets you use JavaScript to write JavaScript, to make it easy to move slow code from runtime to buildtime.
+AtBuild is a JavaScript preprocessor language. It lets you write JavaScript that writes JavaScript. Use it for:
+
+- Easy code generation
+- Write high-performance JavaScript libraries by removing the runtime. Using AtBuild, you could write a SQL ORM that that compiles down to functions that format SQL strings specific to your application, instead of a SQL query builder evaluated at runtime (like what Sequelize does) – while still being just as easy to use as any other library.
+- Determinstic dead code elimination by never including unused code in the first place (instead of removing it after use)
+- Move slow code from runtime to buildtime
 
 # How it works
 

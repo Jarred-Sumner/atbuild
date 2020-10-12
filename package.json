@@ -16,6 +16,7 @@
     "@babel/core": "^7.11.6",
     "@babel/preset-env": "^7.11.5",
     "babel-jest": "^26.5.2",
+    "babel-loader": "^8.1.0",
     "jest": "^26.5.3",
     "jest-cli": "^26.5.3",
     "loader-runner": "^4.1.0",
