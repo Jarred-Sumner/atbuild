@@ -37,7 +37,7 @@ try {
   input = path.resolve(__dirname, cli.flags.input[0]);
 } catch (exception) {
   if (cli.flags.input) {
-    return cli.showHelp(1);
+    cli.showHelp(1);
   } else {
     console.error(exception);
     process.exit(1);
