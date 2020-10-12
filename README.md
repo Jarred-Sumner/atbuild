@@ -46,7 +46,7 @@ module.exports = 5;
 
 ## Why?
 
-![Y U Do Dis meme](./explain/y.png)
+<img alt="Y U Do Dis meme" src="./explain/y.png" height=80 />
 
 Extremely fast native languages like Rust & C often use [inline expansion](https://en.wikipedia.org/wiki/Inline_expansion), [loop unrolling](https://en.wikipedia.org/wiki/Loop_unrolling) to move work from runtime to buildtime. For code that doesn't change much, this can be a massive performance improvement.
 
