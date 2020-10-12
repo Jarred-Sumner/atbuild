@@ -1,0 +1,87 @@
+import classNames from "classnames";
+import * as React from "react";
+@import lodash from 'lodash';
+
+@for (let ComponentType of ["a", "button", "div"]) {
+  export const @{lodash.titleize(ComponentType)}Button = ({
+    children,
+    onClick,
+    href,
+    tabIndex,
+    large,
+    name,
+    disabled,
+    type,
+    muted,
+    round,
+  }) => {
+
+    return (
+      <@ComponentType
+        tabIndex={tabIndex}
+        @if (ComponentType === "a") {
+          href={href}
+        }
+        type={type}
+        name={name}
+        className={classNames("SubmitButton", {
+          "SubmitButton--animate": !disableAnimation && !muted,
+          "SubmitButton--clickable": !disabled && !pending,
+          "SubmitButton--pending": pending,
+          "SubmitButton--muted": muted,
+          "SubmitButton--round": round,
+          "SubmitButton--large": large,
+        })}
+        onClick={onClick}
+        disabled={disabled}
+      >
+        {children}
+
+        <style jsx>{`
+          .@{ComponentType}SubmitButton {
+            box-sizing: border-box;
+            border-radius: 4px;
+            width: 100%;
+            text-transform: uppercase;
+            color: white;
+            padding: 14px 24px;
+            white-space: nowrap;
+            box-shadow: none;
+            font-style: normal;
+            font-weight: 600;
+            font-size: 18px;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.1s linear;
+            transition-property: background-color, filter;
+
+            @if (ComponentType === "a") {
+              text-decoration: underline;
+            } @else {
+              background: #6850ff;
+              border: 1px solid #ffffff;
+              text-decoration: none;
+            }
+          }
+
+          .SubmitButton--muted {
+            background: #a7a7a7;
+          }
+
+          .SubmitButton--round {
+            border-radius: 100px;
+          }
+
+          .SubmitButton--large {
+            padding: 18px 32px;
+            font-size: 20px;
+          }
+
+
+
+        `}</style>
+      </@ComponentType>
+    );
+  };
+}
