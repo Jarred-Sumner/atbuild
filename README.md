@@ -6,9 +6,9 @@ AtBuild is a JavaScript preprocessor language. It lets you use JavaScript to wri
 
 AtBuild has two rules:
 
-+g: Any line that starts with `@` will be evaluated at buildtime instead of runtime.
+1. Any line that starts with `@` will be evaluated at buildtime instead of runtime.
 
-+: Any line containing @{codeInHere} will be evaluated at buildtime instead of runtime.
+2. Any line containing @{codeInHere} will be evaluated at buildtime instead of runtime.
 
 You write your JavaScript in `.@js` files, and by default, all the code in the file will be evaluated at runtime.
 
