@@ -6,7 +6,7 @@ Use it for:
 
 - Easy, editable code generation
 - Write high-performance JavaScript libraries by removing the runtime
-- Determinstic dead code elimination by never including unused code in the first place (instead of removing it after use)
+- Determinstic dead code elimination
 - Move slow code from runtime to buildtime
 
 # How it works
@@ -74,7 +74,7 @@ But, here are some other ways you could use this:
 
 How is this different than [Prepack](https://prepack.io/)?
 
-Like AtBuild, Prepack inlines & prevaluates code. However, unlike AtBuild, it just tries to run whatever it can. With AtBuild, you write the code that you decide to run at build-time instead of runtime.
+Like AtBuild, Prepack inlines & prevaluates code. But, AtBuild lets you choose what code runs at runtime and what code runs at build-time, and use that to generate code. Loops that conditionally add or remove runtime code are not possible with Prepack or with [`babel-plugin-codegen`](https://github.com/kentcdodds/babel-plugin-codegen).
 
 # Installation
 
