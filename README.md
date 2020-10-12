@@ -50,7 +50,7 @@ module.exports = 5;
 
 Extremely fast native languages like Rust & C often use [inline expansion](https://en.wikipedia.org/wiki/Inline_expansion) and [loop unrolling](https://en.wikipedia.org/wiki/Loop_unrolling) to move work from runtime to buildtime. For code that doesn't change much, this can be a massive performance improvement.
 
-Unfortunately, since JavaScript is a dynamic language, that's not natively supported. So, high performance JavaScript libraries like [NDArray](https://github.com/scijs/ndarray) and [Kiwi](https://github.com/evanw/kiwi) resort to [writing code inside code](https://github.com/scijs/ndarray/blob/master/ndarray.js#L123) by [adding strings together](https://github.com/evanw/kiwi/blob/1a82ea6592ff25f26e35ca69e58c98852072eae9/js/js.ts#L11) and its...hard for humans to understand whats going on.
+Unfortunately, since JavaScript is a dynamic language, that's not natively supported. High performance JavaScript libraries like [NDArray](https://github.com/scijs/ndarray) and [Kiwi](https://github.com/evanw/kiwi) resort to [writing code inside code](https://github.com/scijs/ndarray/blob/master/ndarray.js#L123) by [adding strings together](https://github.com/evanw/kiwi/blob/1a82ea6592ff25f26e35ca69e58c98852072eae9/js/js.ts#L11), which is hard for humans to read whats going on.
 
 Nowadays, much of the JavaScript we write is already behind [seven](https://webpack.js.org/) [different](https://babeljs.io/) [compilers](https://v8.dev/docs/turbofan), so why not add another?
 
@@ -76,11 +76,17 @@ npm install atbuild
 atbuild ./input.@js
 ```
 
-TODO: write more.
+```bash
+atbuild ./input.@js ./output.js
+```
+
+```bash
+atbuild ./input.@js ./output.js --pretty --no-header
+```
 
 ## Webpack Loader
 
-TODO: write more.
+**The recommended way to use AtBuild is through the Webpack loader**. This configures Webpack to run any file that ends in `.@js` through AtBuild automatically.
 
 ```
 // Webpack config
@@ -115,6 +121,10 @@ module.exports = {
 }
 ```
 
-### Next.js
+### Next.js integration
 
 TODO: write this.
+
+## Alternatives
+
+- `[babel-plugin-codegen](https://github.com/kentcdodds/babel-plugin-codegen)`/`[babel-plugin-preval](https://github.com/kentcdodds/babel-plugin-preval)` make it easy to run build scripts, but it gets tough if you want to do some things at build-time and some other things at run-time.
