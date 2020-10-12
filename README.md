@@ -8,7 +8,7 @@ AtBuild has two rules:
 
 1. Any line that starts with `@` will be evaluated at buildtime instead of runtime.
 
-2. Any line containing @{codeInHere} will be evaluated at buildtime instead of runtime.
+2. Any line containing `@{codeInHere}` will be evaluated at buildtime instead of runtime.
 
 You write your JavaScript in `.@js` files, and by default, all the code in the file will be evaluated at runtime.
 
