@@ -126,9 +126,8 @@ module.exports = {
         exclude: /node_modules/,
         type: "javascript/auto",
         use: [
-          // It needs to run before babel-loader
           {
-            loader: "atbuild/webpack-loader
+            loader: "atbuild/dist/webpack-loader
           },
           // Run Babel afterwards
           {
@@ -145,7 +144,47 @@ module.exports = {
 
 ### Next.js integration
 
-TODO: write this.
+This will be cleaned up & moved into a plugin eventually (such as `next-with-atbuild`), however this is how I currently use AtBuild with Next.js:
+
+```js
+// Figure out where next-babel-loader is hiding
+const nextBabelLoaderContainer = config.module.rules.find((rule) => {
+  return (
+    (rule.use && rule.use.loader && rule.use.loader === "next-babel-loader") ||
+    (rule.use &&
+      rule.use.find((loader) => loader.loader === "next-babel-loader"))
+  );
+});
+
+if (nextBabelLoaderContainer) {
+  let loader;
+
+  if (nextBabelLoaderContainer.use.loader === "next-babel-loader") {
+    loader = nextBabelLoaderContainer.use;
+  } else {
+    loader = nextBabelLoaderContainer.use.find(
+      (loader) => loader.loader === "next-babel-loader"
+    );
+  }
+
+  config.module.rules.unshift({
+    test: /\.@js$/,
+    use: [
+      // Pass the loader in before atbuild, so that atbuild runs first.g
+      loader,
+      {
+        // This is where the webpack loader is added.
+        loader: "atbuild/dist/webpack-loader",
+      },
+    ],
+  });
+} else {
+  // Feel free to open an issue if you see this warning.
+  console.warn("Unable to activate AtBuild");
+}
+```
+
+The important thing to note that is that you still want to run Babel on the output from AtBuild. That way, you can still write your code like any other part of your app.
 
 ## Alternatives
 
