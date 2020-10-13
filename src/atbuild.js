@@ -142,7 +142,13 @@ export class AtBuild {
     return this.eval(fs.readFileSync(path), path, header);
   }
 
-  static eval(code, filepath = null, addHeader = false) {
+  static eval(
+    code,
+    filepath = null,
+    addHeader = false,
+    requireFunc = module.require,
+    consoleObj = console
+  ) {
     const ast = AtBuild.buildAST(code);
     const processed = AtBuild.transformAST(ast);
     if (!context) {
@@ -172,6 +178,9 @@ export class AtBuild {
       context.__filename = parts.base;
       contextOpts.filename = filepath;
     }
+
+    context.require = requireFunc;
+    context.console = consoleObj;
 
     vm.runInContext(
       processed,

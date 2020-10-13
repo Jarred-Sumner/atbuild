@@ -12,8 +12,8 @@ export function webpack(fixture, options = {}) {
     },
 
     mode: "development",
-    devtool: false,
-    target: "node",
+    devtool: "source-map",
+    target: "web",
     resolve: {
       extensions: [".@js", ".js"],
     },
@@ -23,24 +23,24 @@ export function webpack(fixture, options = {}) {
           test: /\.@js$/,
           use: [
             {
+              loader: "babel-loader",
+              options: {
+                presets: [
+                  [
+                    "@babel/preset-env",
+                    {
+                      targets: {
+                        node: "current",
+                      },
+                    },
+                  ],
+                ],
+              },
+            },
+            {
               loader: path.resolve(__dirname, "../src/webpack-loader"),
               options,
             },
-            // {
-            //   loader: "babel-loader",
-            //   options: {
-            //     presets: [
-            //       [
-            //         "@babel/preset-env",
-            //         {
-            //           targets: {
-            //             node: "current",
-            //           },
-            //         },
-            //       ],
-            //     ],
-            //   },
-            // },
           ],
         },
         {
