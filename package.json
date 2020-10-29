@@ -15,6 +15,7 @@
     "@babel/cli": "^7.11.6",
     "@babel/core": "^7.11.6",
     "@babel/preset-env": "^7.11.5",
+    "@babel/preset-typescript": "^7.12.1",
     "babel-jest": "^26.5.2",
     "babel-loader": "^8.1.0",
     "jest": "^26.5.3",
@@ -33,11 +34,17 @@
     "webpack": "^5.0.0"
   },
   "optionalDependencies": {
-    "prettier": "^2.1.2"
+    "prettier": "^2.1.2",
+    "vscode-languageserver": "^6.1.1"
   },
   "scripts": {
     "test": "jest",
-    "build": "babel src --ignore=./**/*.test.js -d dist --delete-dir-on-start"
+    "build": "babel src --ignore=./**/*.test.js -d dist --delete-dir-on-start",
+    "compile-vscode-client": "babel --config-file=./babel.config.js --extensions \".ts\" ./atbuild-vscode/client/src --ignore=atbuild-vscode/**/*.test.js -d ./atbuild-vscode/client/out --delete-dir-on-start",
+    "compile-vscode-server": "babel --config-file=./babel.config.js --extensions \".ts\" ./atbuild-vscode/server/src --ignore=atbuild-vscode/**/*.test.js -d ./atbuild-vscode/server/out --delete-dir-on-start",
+    "compile-vscode": "yarn --silent compile-vscode-client && yarn --silent compile-vscode-server",
+    "precompile-vscode": "yarn build",
+    "postcompile-vscode": "cp dist/atbuild.js ./atbuild-vscode/client/out/atbuild.js; cp dist/atbuild.js ./atbuild-vscode/server/out/atbuild.js"
   },
   "dependencies": {
     "meow": "^7.1.1"

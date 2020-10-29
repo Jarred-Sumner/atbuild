@@ -51,6 +51,10 @@ console.log("Hello World 4");
 module.exports = 5;
 ```
 
+## Changelog
+
+October 28th, 2020: Added support for require (no import/export yet, needs to use this.\_compilation.createChildCompiler to support)
+
 ## Why?
 
 <img alt="Y U Do Dis meme" src="./explain/y.png" height=120 />
