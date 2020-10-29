@@ -23,6 +23,7 @@ const cli = meow(
     --header [true]:     Include a header to let Flow, TypeScript, and ESLint know to ignore the file.
     --no-header [false]: Skip the header
     --pretty [false]:    Run Prettier on the output. Requires "prettier" to be installed globally.
+    --eval [false]:      After transforming, eval the output.
 	Examples
     $ atbuild ./file.@js ./file.js
     $ atbuild ./file.@js
@@ -55,21 +56,28 @@ try {
   }
 }
 
-let output = AtBuild.evalFile(input, cli.flags.header);
+async function run() {
+  const output = await AtBuild.evalFileAsync(input, cli.flags.header);
 
-if (cli.flags.pretty) {
-  try {
-    const prettier = require("prettier");
-    output = prettier.format(output, { parser: "babel-flow", filepath: input });
-  } catch (exception) {
-    console.error("--pretty failed: Prettier isn't installed?");
-    process.exit(1);
+  if (cli.flags.pretty) {
+    try {
+      const prettier = require("prettier");
+      output = prettier.format(output, {
+        parser: "babel-flow",
+        filepath: input,
+      });
+    } catch (exception) {
+      console.error("--pretty failed: Prettier isn't installed?");
+      process.exit(1);
+    }
+  }
+
+  if (cli.input[1]) {
+    fs.writeFileSync(cli.input[1], output);
+    process.exit(0);
+  } else {
+    console.log(output);
   }
 }
 
-if (cli.input[1]) {
-  fs.writeFileSync(cli.input[1], output);
-  process.exit(0);
-} else {
-  console.log(output);
-}
+run();

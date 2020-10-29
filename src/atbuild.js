@@ -2,6 +2,7 @@ const path = require("path");
 const Module = require("module");
 const fs = require("fs");
 const BUILD_TIME_MATCHER = /^\s*@(.*)/;
+const MULTILINE_BUILD_TIME_MATCHER = /^\s*@@(.*)/;
 const RUNTIME_MATCHER = /\@\{([^@}]*)\}/gm;
 
 const HEADER_STRING =
@@ -14,7 +15,7 @@ const HEADER_STRING =
   '"use strict";\n\n';
 
 let context, contextOpts;
-
+const globalRequire = require.main.require;
 const getMaxLine = function (currentLine, node) {
   return Math.max(currentLine, node.lineNumber);
 };
@@ -33,26 +34,30 @@ function requireFromString(code, _filename, _require) {
     );
   }
   var parent = module.parent;
-  console.log(filename);
-
-  if (typeof code !== "string") {
-    throw new Error("code must be a string, not " + typeof code);
-  }
 
   var paths = Module._nodeModulePaths(path.dirname(filename));
-
+  filename = path.join(
+    path.dirname(filename),
+    path.basename(filename, path.extname(filename)) + ".js"
+  );
   var m = new Module(filename, parent);
 
   m.filename = filename;
-  m.paths = paths.slice();
+  m.path = path.dirname(filename);
+  m.paths = paths.slice().concat(parent.paths);
+
   m._compile(code, filename);
 
   if (typeof m.exports === "function") {
-    let _requireAtbuild = async function (id) {
-      const code = await _require(id);
-
-      return await requireFromString(code, id);
-    };
+    let _requireAtbuild;
+    if (typeof _require === "function") {
+      _requireAtbuild = async function (id) {
+        const code = await _require(id);
+        return await requireFromString(code, id);
+      };
+    } else {
+      _requireAtbuild = module.require.bind(module);
+    }
 
     const resp = m.exports(_requireAtbuild);
 
@@ -99,12 +104,44 @@ export class AtBuild {
     const nodes = [];
     let lineMatch = null;
     let lines = String(code).split("\n");
+    let isMultiline = false;
     for (let i = 0; i < lines.length; i++) {
       if (lines[i].trim().length === 0) {
         continue;
       }
 
-      if ((lineMatch = lines[i].match(BUILD_TIME_MATCHER))) {
+      if ((lineMatch = lines[i].match(MULTILINE_BUILD_TIME_MATCHER))) {
+        if (isMultiline) {
+          isMultiline = false;
+        } else {
+          isMultiline = true;
+        }
+        let scopeValue = 0;
+
+        if (lineMatch[1].trimEnd().endsWith("{")) {
+          scopeValue++;
+        } else if (lineMatch[1].trimEnd().endsWith("{")) {
+          scopeValue--;
+        }
+        let string = lineMatch[1];
+        for (let i = 0; i < lineMatch[0].indexOf(lineMatch[1]) + 1; i++) {
+          string = " " + string;
+        }
+
+        nodes.push({
+          lineNumber: i,
+          type: "MultilineBuildtimeCode",
+          value: string,
+          scope: scopeValue,
+        });
+      } else if (isMultiline) {
+        nodes.push({
+          lineNumber: i,
+          type: "MultilineBuildtimeCode",
+          value: lines[i],
+          // scope: scopeValue,
+        });
+      } else if ((lineMatch = lines[i].match(BUILD_TIME_MATCHER))) {
         let scopeValue = 0;
 
         if (lineMatch[1].trimEnd().endsWith("{")) {
@@ -226,7 +263,7 @@ export class AtBuild {
     let code;
     if (asFunction) {
       code =
-        "module.exports = async function __atBuild(load) { module.require = load;  var __CODE__ = [];\n\n";
+        "module.exports = async function __atBuild(require) {  var __CODE__ = [];\n\n";
     } else {
       code = "var __CODE__ = [];\n\n";
     }
@@ -238,6 +275,7 @@ export class AtBuild {
 
     for (let node of nodes) {
       switch (node.type) {
+        case "MultilineBuildtimeCode":
         case "BuildtimeCode": {
           lines[node.lineNumber] += node.value + "\n";
           break;
@@ -248,7 +286,7 @@ export class AtBuild {
           break;
         }
         case "RuntimeCode": {
-          lines[node.lineNumber] += node.value;
+          lines[node.lineNumber] += node.value.replace("`", "\\`");
           break;
         }
 
@@ -266,7 +304,9 @@ export class AtBuild {
     lines.unshift(code);
 
     if (asFunction) {
-      lines[lines.length - 1] = `return __CODE__.join("\\n");\n}`;
+      lines[
+        lines.length - 1
+      ] = `return __CODE__.join("\\n");\n}; module.exports.__specialInitFunction = true;`;
     } else {
       lines[lines.length - 1] = `module.exports =  __CODE__.join("\\n");`;
     }
@@ -402,7 +442,16 @@ export class AtBuild {
   }
 
   static evalFile(path, header) {
-    return this.eval(fs.readFileSync(path), path, header);
+    return this.eval(fs.readFileSync(path), path, header, module.parent);
+  }
+
+  static async evalFileAsync(path, header) {
+    return await this.evalAsync(
+      fs.readFileSync(path),
+      path,
+      header,
+      module.parent
+    );
   }
 
   static _eval(
@@ -414,6 +463,9 @@ export class AtBuild {
     let source = requireFromString(code, filepath, requireFunc);
     if (addHeader) {
       source = HEADER_STRING + source;
+      source += `
+        module.exports = __atBuild
+      `;
     }
 
     return source;

@@ -53,6 +53,27 @@ module.exports = 5;
 
 ## Changelog
 
+**October 28th, 2020**: `await` is now supported for buildtime code.
+
+**October 28th, 2020**: New syntax: `@@` allows multiline buildtime code generation.
+
+For example:
+
+```
+// The code inside @@ is run at build-time.
+@@
+const fetch = require("node-fetch")
+
+const util = require("util");
+const resp = await fetch("https://github.com/Jarred-Sumner/atbuild/commit/0427adcc415e83c2c8c97c6bbdc4fa709b152029.patch")
+const text = await resp.text()
+@@
+
+
+// This code is run at runtime, and `@{text}` is replaced with the output from https://github.com/Jarred-Sumner/atbuild/commit/0427adcc415e83c2c8c97c6bbdc4fa709b152029.patch.
+module.exports = `@{text}`
+```
+
 **October 28th, 2020**: Extremely WIP VSCode extension.
 
 **October 28th, 2020**: Added support for `require` in buildtime code. Runtime code works like normal and is run through Babel or any other loaders you use. Buildtime code isn't run through babel, but this might be implemented later via webpack's `this._compilation_.createChildCompiler`, which would run buildtime and runtime code both through webpack.
