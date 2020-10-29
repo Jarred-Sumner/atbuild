@@ -19,7 +19,7 @@ AtBuild has two rules:
 
 You write some of your JavaScript in `.@js` files, and by default, all the code in the file will be evaluated at runtime.
 
-But, if the line starts with an `@` or if it contains `@{}`, those parts of the file will be switched out, and run at build-time instead.
+But, if the line starts with an `@` or if it contains `@{}`, those parts of the file will be switched out, and run at buildtime instead.
 
 The code evaluated at buildtime is also JavaScript.
 
@@ -55,7 +55,7 @@ module.exports = 5;
 
 **October 28th, 2020**: Extremely WIP VSCode extension.
 
-**October 28th, 2020**: Added support for `require` in build-time code. Runtime code works like normal. Note: build-time code isn't run through babel, but this might be implemented later via webpack's `this._compilation_.createChildCompiler`.
+**October 28th, 2020**: Added support for `require` in buildtime code. Runtime code works like normal and is run through Babel or any other loaders you use. buildtime code isn't run through babel, but this might be implemented later via webpack's `this._compilation_.createChildCompiler`, which would run buildtime and runtime code both through webpack.
 
 ## Why?
 
@@ -80,7 +80,7 @@ But, here are some other ways you could use this:
 
 How is this different than [Prepack](https://prepack.io/)?
 
-Like AtBuild, Prepack inlines & prevaluates code. But, AtBuild lets you choose what code runs at runtime and what code runs at build-time, and use that to generate code. Loops that conditionally add or remove runtime code are not possible with Prepack or with [`babel-plugin-codegen`](https://github.com/kentcdodds/babel-plugin-codegen).
+Like AtBuild, Prepack inlines & prevaluates code. But, AtBuild lets you choose what code runs at runtime and what code runs at buildtime, and use that to generate code. Loops that conditionally add or remove runtime code are not possible with Prepack or with [`babel-plugin-codegen`](https://github.com/kentcdodds/babel-plugin-codegen).
 
 # Installation
 
@@ -194,4 +194,4 @@ The important thing to note that is that you still want to run Babel on the outp
 
 ## Alternatives
 
-- [`babel-plugin-codegen`](https://github.com/kentcdodds/babel-plugin-codegen) makes it easy to run build scripts, but it gets tough if you want to do some things at build-time and some other things at run-time for the same code.
+- [`babel-plugin-codegen`](https://github.com/kentcdodds/babel-plugin-codegen) makes it easy to run build scripts, but it gets tough if you want to do some things at buildtime and some other things at run-time for the same code.
