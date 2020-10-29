@@ -68,7 +68,7 @@ const text = await resp.text()
 @@
 
 
-// At buildtime, `@{text}` is replaced with the output from https://github.com/Jarred-Sumner/atbuild/commit/0427adcc415e83c2c8c97c6bbdc4fa709b152029.patch.
+// At buildtime, `@{text}` is replaced with the output from https://github.com/Jarred-Sumner/atbuild/commit/master.patch.
 module.exports = `@{text}`
 ```
 
