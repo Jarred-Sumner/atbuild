@@ -53,6 +53,7 @@ module.exports = 5;
 
 ## Changelog
 
+October 28th, 2020: Extremely WIP VSCode extension.
 October 28th, 2020: Added support for require (no import/export yet, needs to use this.\_compilation.createChildCompiler to support)
 
 ## Why?
