@@ -59,19 +59,20 @@ module.exports = 5;
 
 For example:
 
-```
+```js
 // The code inside @@ is run at build-time.
-@@
-const fetch = require("node-fetch")
+@@;
+const fetch = require("node-fetch");
 
 const util = require("util");
-const resp = await fetch("https://github.com/Jarred-Sumner/atbuild/commit/0427adcc415e83c2c8c97c6bbdc4fa709b152029.patch")
-const text = await resp.text()
-@@
+const resp = await fetch(
+  "https://github.com/Jarred-Sumner/atbuild/commit/0427adcc415e83c2c8c97c6bbdc4fa709b152029.patch"
+);
+const text = await resp.text();
+@@;
 
-
-// This code is run at runtime, and `@{text}` is replaced with the output from https://github.com/Jarred-Sumner/atbuild/commit/0427adcc415e83c2c8c97c6bbdc4fa709b152029.patch.
-module.exports = `@{text}`
+// At buildtime, `@{text}` is replaced with the output from https://github.com/Jarred-Sumner/atbuild/commit/0427adcc415e83c2c8c97c6bbdc4fa709b152029.patch.
+module.exports = `@{text}`;
 ```
 
 **October 28th, 2020**: Extremely WIP VSCode extension.
