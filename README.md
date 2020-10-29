@@ -55,7 +55,7 @@ module.exports = 5;
 
 **October 28th, 2020**: Extremely WIP VSCode extension.
 
-**October 28th, 2020**: Added support for require (no import/export yet, needs to use this.\_compilation.createChildCompiler to support)
+**October 28th, 2020**: Added support for `require` in build-time code. Runtime code works like normal. Note: build-time code isn't run through babel, but this might be implemented later via webpack's `this._compilation_.createChildCompiler`.
 
 ## Why?
 
