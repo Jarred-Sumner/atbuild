@@ -63,9 +63,7 @@ For example:
 // The code inside @@ is run at build-time.
 @@
 const fetch = require("node-fetch")
-
-const util = require("util");
-const resp = await fetch("https://github.com/Jarred-Sumner/atbuild/commit/0427adcc415e83c2c8c97c6bbdc4fa709b152029.patch")
+const resp = await fetch("https://github.com/Jarred-Sumner/atbuild/commit/master.patch")
 const text = await resp.text()
 @@
 
