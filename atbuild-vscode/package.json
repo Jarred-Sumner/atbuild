@@ -1,0 +1,82 @@
+{
+  "name": "atbuild",
+  "displayName": "AtBuild",
+  "description": "@.js language support for Visual Studio Code",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.50.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:buildjs"
+  ],
+  "scripts": {
+    "vscode:prepublish": "yarn compile",
+    "watch": "tsc -b -w",
+    "test": "sh ./scripts/e2e.sh"
+  },
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "AtBuild",
+      "properties": {
+        "languageServerExample.maxNumberOfProblems": {
+          "scope": "resource",
+          "type": "number",
+          "default": 100,
+          "description": "Controls the maximum number of problems produced by the server."
+        },
+        "languageServerExample.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server."
+        }
+      }
+    },
+    "languages": [
+      {
+        "id": "buildjs",
+        "aliases": [
+          "@js",
+          "@javascript"
+        ],
+        "extensions": [
+          ".@js",
+          ".build.js"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "buildjs",
+        "scopeName": "source.buildjs",
+        "path": "./syntaxes/buildjs.tmLanguage"
+      }
+    ]
+  },
+  "main": "./client/out/extension",
+  "dependencies": {
+    "atbuild": "^1.0.7",
+    "vscode": "^1.1.37",
+    "vscode-languageclient": "^6.1.3",
+    "vscode-languageserver": "^6.1.1",
+    "vscode-languageserver-textdocument": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/mocha": "^8.0.3",
+    "@types/node": "^12.12.0",
+    "@typescript-eslint/parser": "^2.3.0",
+    "eslint": "^6.4.0",
+    "mocha": "^8.1.1",
+    "typescript": "^4.0.2"
+  }
+}
