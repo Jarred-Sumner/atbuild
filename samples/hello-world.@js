@@ -5,6 +5,4 @@
   @hi++;
 @}
 
-
-
 module.exports = @{hi};

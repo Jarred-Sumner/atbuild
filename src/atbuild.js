@@ -20,7 +20,7 @@ const getMaxLine = function (currentLine, node) {
   return Math.max(currentLine, node.lineNumber);
 };
 
-function requireFromString(code, _filename, _require) {
+export function requireFromString(code, _filename, _require) {
   let filename = _filename;
   if (
     !_filename ||

@@ -1,6 +1,6 @@
+import { createFsFromVolume, Volume } from "memfs";
 import path from "path";
 import _webpack from "webpack";
-import { createFsFromVolume, Volume } from "memfs";
 
 export function webpack(fixture, options = {}) {
   const compiler = _webpack({
@@ -21,22 +21,23 @@ export function webpack(fixture, options = {}) {
       rules: [
         {
           test: /\.@js$/,
+          type: "javascript/auto",
           use: [
-            {
-              loader: "babel-loader",
-              options: {
-                presets: [
-                  [
-                    "@babel/preset-env",
-                    {
-                      targets: {
-                        node: "current",
-                      },
-                    },
-                  ],
-                ],
-              },
-            },
+            // {
+            //   loader: "babel-loader",
+            //   options: {
+            //     presets: [
+            //       [
+            //         "@babel/preset-env",
+            //         {
+            //           targets: {
+            //             node: "current",
+            //           },
+            //         },
+            //       ],
+            //     ],
+            //   },
+            // },
             {
               loader: path.resolve(__dirname, "../src/webpack-loader"),
               options,
@@ -64,6 +65,7 @@ export function webpack(fixture, options = {}) {
         },
       ],
     },
+    // plugins: [new AtBuildWebpackPlugin()],
   });
 
   compiler.outputFileSystem = createFsFromVolume(new Volume());

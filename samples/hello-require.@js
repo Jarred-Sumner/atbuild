@@ -1,0 +1,13 @@
+@@
+
+// Pulling in a 500 KB library just for one function.
+// Classic javascript.
+const lodash = require("lodash");
+
+const lowercase = "this was required.";
+
+const capitalized = lodash.capitalize(lowercase);
+
+@@
+
+module.exports = "@{capitalized}"
