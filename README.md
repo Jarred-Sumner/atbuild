@@ -53,7 +53,11 @@ module.exports = 5;
 
 ## Changelog
 
-**October 28th, 2020**: `await` is now supported for buildtime code.
+**October 29th, 2020**: Added support for bundling buildtime code in the webpack loader, meaning you can use the same syntax for buildtime code and runtime code. This also makes it easy to import runtime modules at buildtime. The webpack-loader uses [esbuild](https://esbuild.github.io/) for bundling the backend code.
+
+**October 28th, 2020**: Extremely WIP VSCode extension.
+
+**October 28th, 2020**: `await` is now supported for buildtime code (not in webpack)
 
 **October 28th, 2020**: New syntax: `@@` allows multiline buildtime code generation.
 
@@ -71,10 +75,6 @@ const text = await resp.text()
 // At buildtime, `@{text}` is replaced with the output from https://github.com/Jarred-Sumner/atbuild/commit/master.patch.
 module.exports = `@{text}`
 ```
-
-**October 29th, 2020**: Added support for bundling buildtime code in the webpack loader, meaning you can use the same syntax for buildtime code and runtime code. The webpack-loader uses [esbuild](https://esbuild.github.io/) for bundling the backend code.
-
-**October 28th, 2020**: Extremely WIP VSCode extension.
 
 **October 28th, 2020**: Added support for `require` in buildtime code. Runtime code works like normal and is run through Babel or any other loaders you use. ~Buildtime code isn't run through babel, but this might be implemented later via webpack's `this._compilation_.createChildCompiler`, which would run buildtime and runtime code both through webpack.~ Fixed
 
@@ -160,7 +160,7 @@ module.exports = {
           {
             loader: "atbuild/webpack-loader
           },
-          // Run Babel on the runtime code afterwards (optional)
+          // Run Babel on runtime code afterwards (optional)
           {
             loader: "babel-loader",
             options: {/* your babel options in here if relevant */},
