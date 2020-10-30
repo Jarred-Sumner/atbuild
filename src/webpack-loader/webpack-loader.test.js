@@ -12,7 +12,6 @@ describe("AtBuild Webpack Loader", function () {
       _result.compilation.compiler.outputPath + "/bundle.js",
       "utf8"
     );
-    debugger;
     expect(result.includes("hello-require.@js")).toBe(true);
   });
 

@@ -2,7 +2,20 @@ import { AtBuild, requireFromString } from "../atbuild";
 import { buildSync } from "esbuild";
 import path from "path";
 
-const MAJOR_NODE_VERSION = process.versions.node.split(".")[0];
+let esbuildInput = {
+  stdin: {
+    contents: "",
+    resolveDir: "",
+    sourcefile: "",
+    loader: "ts",
+  },
+  format: "cjs",
+  target: [`node${process.versions.node.split(".")[0]}`],
+  sourcemap: "inline",
+  bundle: true,
+  write: false,
+};
+let textDecoder = new TextDecoder("utf-8");
 
 export default function loader(_code) {
   // this.cacheable(false);
@@ -15,24 +28,13 @@ export default function loader(_code) {
     false
   );
 
-  const compilation = this._compilation;
-  const context = compilation.compiler.context;
+  esbuildInput.stdin.contents = code;
+  esbuildInput.stdin.resolveDir = this._compilation.compiler.context;
+  esbuildInput.stdin.sourcefile = path.basename(this.resourcePath) + ".js";
+  const result = buildSync(esbuildInput);
 
-  let result = buildSync({
-    stdin: {
-      contents: code,
-      resolveDir: context,
-      sourcefile: path.basename(this.resourcePath) + ".js",
-      loader: "ts",
-    },
-    format: "cjs",
-    target: [`node${MAJOR_NODE_VERSION}`],
-    sourcemap: "inline",
-    bundle: true,
-    write: false,
-  });
   return requireFromString(
-    new TextDecoder("utf-8").decode(result.outputFiles[0].contents),
+    textDecoder.decode(result.outputFiles[0].contents),
     this.resourcePath
   );
 
