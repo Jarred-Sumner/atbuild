@@ -1,6 +1,6 @@
 {
   "name": "atbuild",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "main": "dist/atbuild.js",
   "license": "MIT",
   "files": [
@@ -42,7 +42,7 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "babel src --ignore=./**/*.test.js -d dist --delete-dir-on-start",
+    "build": "babel src --extensions \".ts\" --extensions \".js\" --ignore=./**/*.test.js -d dist --delete-dir-on-start",
     "compile-vscode-client": "babel --config-file=./babel.config.js --extensions \".ts\" ./atbuild-vscode/client/src --ignore=atbuild-vscode/**/*.test.js -d ./atbuild-vscode/client/out --delete-dir-on-start",
     "compile-vscode-server": "babel --config-file=./babel.config.js --extensions \".ts\" ./atbuild-vscode/server/src --ignore=atbuild-vscode/**/*.test.js -d ./atbuild-vscode/server/out --delete-dir-on-start",
     "compile-vscode": "yarn --silent compile-vscode-client && yarn --silent compile-vscode-server",
