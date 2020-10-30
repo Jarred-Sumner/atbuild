@@ -6,7 +6,9 @@
   "files": [
     "./README.md",
     "./package.json",
-    "dist"
+    "dist",
+    "./webpack-loader.js",
+    "./index.js"
   ],
   "bin": {
     "atbuild": "./dist/cli.js"

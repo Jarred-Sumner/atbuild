@@ -72,9 +72,11 @@ const text = await resp.text()
 module.exports = `@{text}`
 ```
 
+**October 29th, 2020**: Added support for bundling buildtime code in the webpack loader, meaning you can use the same syntax for buildtime code and runtime code. The webpack-loader uses [esbuild](https://esbuild.github.io/) for bundling the backend code.
+
 **October 28th, 2020**: Extremely WIP VSCode extension.
 
-**October 28th, 2020**: Added support for `require` in buildtime code. Runtime code works like normal and is run through Babel or any other loaders you use. Buildtime code isn't run through babel, but this might be implemented later via webpack's `this._compilation_.createChildCompiler`, which would run buildtime and runtime code both through webpack.
+**October 28th, 2020**: Added support for `require` in buildtime code. Runtime code works like normal and is run through Babel or any other loaders you use. ~Buildtime code isn't run through babel, but this might be implemented later via webpack's `this._compilation_.createChildCompiler`, which would run buildtime and runtime code both through webpack.~ Fixed
 
 ## Why?
 
@@ -135,6 +137,10 @@ atbuild ./input.@js ./output.js --pretty --no-header
 
 **The recommended way to use AtBuild is through the Webpack loader**. This configures Webpack to run any file that ends in `.@js` through AtBuild automatically.
 
+Buildtime code is run through a [high performance bundler](https://esbuild.github.io/) for you automatically, so you can write your buildtime code using the same modern JavaScript as the rest of your code. This also means you can import other modules, and those modules don't have to be `.@js` files - they can be any other file in your codebase (so long as it runs in Node after bundling).
+
+Runtime code is passed through webpack as regular JavaScript – so you can still use babel-loader as normal.
+
 ```
 // Webpack config
 module.exports = {
@@ -152,9 +158,9 @@ module.exports = {
         type: "javascript/auto",
         use: [
           {
-            loader: "atbuild/dist/webpack-loader
+            loader: "atbuild/webpack-loader
           },
-          // Run Babel afterwards
+          // Run Babel on the runtime code afterwards (optional)
           {
             loader: "babel-loader",
             options: {/* your babel options in here if relevant */},
@@ -199,7 +205,7 @@ if (nextBabelLoaderContainer) {
       loader,
       {
         // This is where the webpack loader is added.
-        loader: "atbuild/dist/webpack-loader",
+        loader: "atbuild/webpack-loader",
       },
     ],
   });
@@ -208,8 +214,6 @@ if (nextBabelLoaderContainer) {
   console.warn("Unable to activate AtBuild");
 }
 ```
-
-The important thing to note that is that you still want to run Babel on the output from AtBuild. That way, you can still write your code like any other part of your app.
 
 ## Alternatives
 
