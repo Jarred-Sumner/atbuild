@@ -1,6 +1,6 @@
 {
   "name": "atbuild",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "main": "dist/atbuild.js",
   "license": "MIT",
   "files": [
@@ -32,8 +32,8 @@
     "webpack": "^5.0.0"
   },
   "peerDependencies": {
-    "webpack": "^5.0.0",
-    "typescript": "^4.0.5"
+    "typescript": "^4.0.5",
+    "webpack": "^5.0.0"
   },
   "optionalDependencies": {
     "prettier": "^2.1.2",
