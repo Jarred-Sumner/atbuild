@@ -7,7 +7,19 @@ import {
   baseTypings,
   generateTypings,
 } from "../typings-plugin/generateTypings";
-import schema from "./schema.json";
+const schema = {
+  type: "object",
+  properties: {
+    typescript: {
+      type: "boolean",
+    },
+    tsconfig: {
+      type: "object",
+      additionalProperties: true,
+    },
+  },
+  additionalProperties: true,
+};
 
 let _esbuildInput = {
   format: "cjs",
