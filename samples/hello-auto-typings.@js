@@ -1,0 +1,27 @@
+@@
+
+import {kebabCase} from 'lodash';
+
+const BASE_URL = `http://example.com`;
+@@
+
+
+@for (let objectName of ["Post", "User", "Like", "PasswordResetToken"]) {
+  export class @{objectName} {
+    static async fromAPI(response) {
+      const result = await (await response.body()).json();
+
+       return new @{objectName}(result);
+    }
+
+    object = "@{kebabCase(objectName)}";
+  }
+
+  export function fetch${objectName}ById(id) {
+    @var base = BASE_URL + `/${kebabCase(objectName)}s/`;
+
+    return @{objectName}.fromAPI(fetch("@{base}" + id)
+  }
+@}
+
+

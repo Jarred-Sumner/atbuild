@@ -2,7 +2,7 @@ import { createFsFromVolume, Volume } from "memfs";
 import path from "path";
 import _webpack from "webpack";
 
-export function webpack(fixture, options = {}) {
+export function webpack(fixture, options = { typescript: true }) {
   const compiler = _webpack({
     context: path.join(__dirname, "../"),
     entry: `./${fixture}`,
@@ -23,21 +23,22 @@ export function webpack(fixture, options = {}) {
           test: /\.@js$/,
           type: "javascript/auto",
           use: [
-            // {
-            //   loader: "babel-loader",
-            //   options: {
-            //     presets: [
-            //       [
-            //         "@babel/preset-env",
-            //         {
-            //           targets: {
-            //             node: "current",
-            //           },
-            //         },
-            //       ],
-            //     ],
-            //   },
-            // },
+            {
+              loader: "babel-loader",
+              options: {
+                presets: [
+                  ["@babel/preset-typescript", { allExtensions: true }],
+                  [
+                    "@babel/preset-env",
+                    {
+                      targets: {
+                        node: "current",
+                      },
+                    },
+                  ],
+                ],
+              },
+            },
             {
               loader: path.resolve(__dirname, "../src/webpack-loader"),
               options,
@@ -51,6 +52,7 @@ export function webpack(fixture, options = {}) {
             loader: "babel-loader",
             options: {
               presets: [
+                "@babel/preset-typescript",
                 [
                   "@babel/preset-env",
                   {

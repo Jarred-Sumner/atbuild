@@ -53,9 +53,9 @@ module.exports = 5;
 
 ## Changelog
 
-**October 30th, 2020**: Added support for nested buildtime modules to export things that aren't code and make them available at build time. So if you wanted to write buildtime-only libraries, you could do that.
+**October 30th, 2020**: Added support for nested buildtime modules to export functions that are only available at buildtime. This allows you to write zero-runtime libraries.
 
-**October 30th, 2020**: Added support for nested buildtime modules in the webpack-loader, so you can import @js files from inside @js files and it will work as expected.
+**October 30th, 2020**: Added support for nested buildtime modules in the webpack-loader, so you can import @js files from inside @js files and it will work as expected (buildtime code is executed, runtime code is generated)
 
 **October 29th, 2020**: Added support for bundling buildtime code in the webpack loader, meaning you can use the same syntax for buildtime code and runtime code. This also makes it easy to import runtime modules at buildtime. The webpack-loader uses [esbuild](https://esbuild.github.io/) for bundling the backend code.
 

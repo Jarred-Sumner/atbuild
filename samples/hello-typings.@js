@@ -1,0 +1,42 @@
+@@
+
+import { kebabCase, startCase, toLower} from 'lodash';
+
+const titleize = str => startCase(toLower(str));
+
+const BASE_URL = `http://example.com`;
+
+@@
+
+type BaseType = {
+  id: number;
+}
+
+
+@for (let objectName of ["Post", "User", "Like", "PasswordResetToken"]) {
+  export type @{objectName} = BaseType & {
+    object: "@{kebabCase(objectName)}";
+
+    @switch(objectName) {
+      @case "PasswordResetToken": {
+        used: boolean;
+        expiry: Date;
+      @}
+    @}
+  }
+
+  export function build@{objectName}FromJSON(json: Object): @{objectName} {
+    return json;
+  }
+
+  export async function fetch${objectName}ById(id: number): Promise<@{objectName}> {
+    @var base = BASE_URL + `/${kebabCase(objectName)}s/`;
+
+    const body = (await fetch("@{base}" + id)).body()
+    const json = await body.json()
+    return build@{objectName}FromJSON(json);
+  }
+
+@}
+
+
