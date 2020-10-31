@@ -20,7 +20,7 @@ const BASE_URL = `http://example.com`;
   export function fetch${objectName}ById(id) {
     @var base = BASE_URL + `/${kebabCase(objectName)}s/`;
 
-    return @{objectName}.fromAPI(fetch("@{base}" + id)
+    return @{objectName}.fromAPI(fetch("@{base}" + id))
   }
 @}
 

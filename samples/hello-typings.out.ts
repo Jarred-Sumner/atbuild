@@ -1,49 +1,42 @@
-type BaseType = {
-  id: number;
+function buildPostFromJSON(json) {
+  return json;
 }
-  export type Post = BaseType & {
-    object: "post";
-  }
-  export function buildPostFromJSON(json: Object): Post {
-    return json;
-  }
-  export async function fetchPostById(id: number): Promise<Post> {
-    const body = (await fetch("http://example.com/posts/" + id)).body()
-    const json = await body.json()
-    return buildPostFromJSON(json);
-  }
-  export type User = BaseType & {
-    object: "user";
-  }
-  export function buildUserFromJSON(json: Object): User {
-    return json;
-  }
-  export async function fetchUserById(id: number): Promise<User> {
-    const body = (await fetch("http://example.com/users/" + id)).body()
-    const json = await body.json()
-    return buildUserFromJSON(json);
-  }
-  export type Like = BaseType & {
-    object: "like";
-  }
-  export function buildLikeFromJSON(json: Object): Like {
-    return json;
-  }
-  export async function fetchLikeById(id: number): Promise<Like> {
-    const body = (await fetch("http://example.com/likes/" + id)).body()
-    const json = await body.json()
-    return buildLikeFromJSON(json);
-  }
-  export type PasswordResetToken = BaseType & {
-    object: "password-reset-token";
-        used: boolean;
-        expiry: Date;
-  }
-  export function buildPasswordResetTokenFromJSON(json: Object): PasswordResetToken {
-    return json;
-  }
-  export async function fetchPasswordResetTokenById(id: number): Promise<PasswordResetToken> {
-    const body = (await fetch("http://example.com/password-reset-tokens/" + id)).body()
-    const json = await body.json()
-    return buildPasswordResetTokenFromJSON(json);
-  }
+async function fetchPostById(id) {
+  const body = (await fetch("http://example.com/posts/" + id)).body();
+  const json = await body.json();
+  return buildPostFromJSON(json);
+}
+function buildUserFromJSON(json) {
+  return json;
+}
+async function fetchUserById(id) {
+  const body = (await fetch("http://example.com/users/" + id)).body();
+  const json = await body.json();
+  return buildUserFromJSON(json);
+}
+function buildLikeFromJSON(json) {
+  return json;
+}
+async function fetchLikeById(id) {
+  const body = (await fetch("http://example.com/likes/" + id)).body();
+  const json = await body.json();
+  return buildLikeFromJSON(json);
+}
+function buildPasswordResetTokenFromJSON(json) {
+  return json;
+}
+async function fetchPasswordResetTokenById(id) {
+  const body = (await fetch("http://example.com/password-reset-tokens/" + id)).body();
+  const json = await body.json();
+  return buildPasswordResetTokenFromJSON(json);
+}
+export {
+  buildLikeFromJSON,
+  buildPasswordResetTokenFromJSON,
+  buildPostFromJSON,
+  buildUserFromJSON,
+  fetchLikeById,
+  fetchPasswordResetTokenById,
+  fetchPostById,
+  fetchUserById
+};

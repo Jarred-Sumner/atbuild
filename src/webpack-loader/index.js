@@ -1,5 +1,5 @@
 import { AtBuild, requireFromString } from "../atbuild";
-import { build } from "esbuild";
+import { build, transform, transformSync } from "esbuild";
 import path from "path";
 import esbuildPlugin from "../esbuildPlugin";
 import fs from "fs";
@@ -34,6 +34,9 @@ let _esbuildInput = {
   write: false,
   plugins: [esbuildPlugin],
 };
+
+const stringifiedTsconfigs = {};
+
 let textDecoder = new TextDecoder("utf-8");
 
 let temporaryCodeMap = new Map();
@@ -85,14 +88,15 @@ async function emitTypeDeclarationFile(resourcePath, code, typings) {
   );
 }
 
-function handleESBuildResult(
+async function handleESBuildResult(
   { outputFiles, warnings },
   input,
   callback,
   resourcePath,
   addDependency,
   ignoreDependency,
-  typings
+  typings,
+  tsconfig
 ) {
   let source, meta;
   for (let outputFile of outputFiles) {
@@ -119,46 +123,85 @@ function handleESBuildResult(
 
   if (typings) {
     emitTypeDeclarationFile(resourcePath, code, typings);
-  }
 
-  if (process.env.WRITE_ATBUILD_TO_DISK) {
-    fs.promises.writeFile(
-      resourcePath.replace(
-        path.extname(resourcePath),
-        typings ? ".out.ts" : "out.js"
-      ),
-      code
-    );
-  }
+    const result = await transform(code, {
+      loader: "tsx",
+      format: "esm",
+      sourcefile: resourcePath + ".tsx",
+      sourcemap: false,
+    });
 
-  callback(null, code, {
-    version: "3",
-    sources: [resourcePath],
-    file: resourcePath,
-    sourcesContent: [],
-    mappings: "",
-  });
+    code = result.code;
+
+    if (process.env.WRITE_ATBUILD_TO_DISK) {
+      fs.promises.writeFile(
+        resourcePath.replace(
+          path.extname(resourcePath),
+          typings ? ".out.ts" : "out.js"
+        ),
+        code
+      );
+    }
+
+    callback(null, code, {
+      version: "3",
+      sources: [resourcePath],
+      file: resourcePath,
+      sourcesContent: [],
+      mappings: "",
+    });
+  } else {
+    if (process.env.WRITE_ATBUILD_TO_DISK) {
+      fs.promises.writeFile(
+        resourcePath.replace(
+          path.extname(resourcePath),
+          typings ? ".out.ts" : "out.js"
+        ),
+        code
+      );
+    }
+
+    callback(null, code, {
+      version: "3",
+      sources: [resourcePath],
+      file: resourcePath,
+      sourcesContent: [],
+      mappings: "",
+    });
+  }
 }
 
 let typings = null,
+  tsconfig = null,
   enableTypings = false;
 export default function loader(_code) {
   const callback = this.async();
 
   if (this.getOptions) {
     const opts = this.getOptions(schema);
-
     if (typeof opts.tsconfig === "object") {
       typings = { ...opts.tsconfig.compilerOptions, ...baseTypings };
-      enableTypings = true;
 
-      // Next.js bug where it auto fixes tsconfig.json to the wrong value.
-      if (typings.moduleResolution === "node") {
-        typings.moduleResolution = "Node";
+      enableTypings = true;
+      delete typings.moduleResolution;
+      if (!stringifiedTsconfigs[opts.tsconfig]) {
+        stringifiedTsconfigs[opts.tsconfig] = tsconfig = JSON.stringify({
+          ...opts.tsconfig,
+          compilerOptions: typings,
+        });
+      } else {
+        tsconfig = stringifiedTsconfigs[opts.tsconfig];
       }
     } else if (opts.typescript || opts.tsconfig) {
       enableTypings = true;
       typings = baseTypings;
+      if (!stringifiedTsconfigs[baseTypings]) {
+        stringifiedTsconfigs[baseTypings] = tsconfig = JSON.stringify({
+          compilerOptions: typings,
+        });
+      } else {
+        tsconfig = stringifiedTsconfigs[baseTypings];
+      }
     } else {
       enableTypings = false;
     }
@@ -178,7 +221,8 @@ export default function loader(_code) {
         this.resourcePath,
         this.addDependency,
         esbuildInput.entryPoints[0],
-        enableTypings ? typings : null
+        enableTypings ? typings : null,
+        tsconfig
       ),
     (err) => {
       console.error(err);

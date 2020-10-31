@@ -1,40 +1,58 @@
-  export class Post {
-    static async fromAPI(response) {
-      const result = await (await response.body()).json();
-       return new Post(result)
-    }
-    object = "post";
+class Post {
+  constructor() {
+    this.object = "post";
   }
-  export async function fetchPostById(id) {
-    return Post.fromAPI(fetch("http://example.com/post/s" + id).then(Post));
+  static async fromAPI(response) {
+    const result = await (await response.body()).json();
+    return new Post(result);
   }
-  export class User {
-    static async fromAPI(response) {
-      const result = await (await response.body()).json();
-       return new User(result)
-    }
-    object = "user";
+}
+function fetchPostById(id) {
+  return Post.fromAPI(fetch("http://example.com/posts/" + id));
+}
+class User {
+  constructor() {
+    this.object = "user";
   }
-  export async function fetchUserById(id) {
-    return User.fromAPI(fetch("http://example.com/user/s" + id).then(User));
+  static async fromAPI(response) {
+    const result = await (await response.body()).json();
+    return new User(result);
   }
-  export class Like {
-    static async fromAPI(response) {
-      const result = await (await response.body()).json();
-       return new Like(result)
-    }
-    object = "like";
+}
+function fetchUserById(id) {
+  return User.fromAPI(fetch("http://example.com/users/" + id));
+}
+class Like {
+  constructor() {
+    this.object = "like";
   }
-  export async function fetchLikeById(id) {
-    return Like.fromAPI(fetch("http://example.com/like/s" + id).then(Like));
+  static async fromAPI(response) {
+    const result = await (await response.body()).json();
+    return new Like(result);
   }
-  export class PasswordResetToken {
-    static async fromAPI(response) {
-      const result = await (await response.body()).json();
-       return new PasswordResetToken(result)
-    }
-    object = "password-reset-token";
+}
+function fetchLikeById(id) {
+  return Like.fromAPI(fetch("http://example.com/likes/" + id));
+}
+class PasswordResetToken {
+  constructor() {
+    this.object = "password-reset-token";
   }
-  export async function fetchPasswordResetTokenById(id) {
-    return PasswordResetToken.fromAPI(fetch("http://example.com/password-reset-token/s" + id).then(PasswordResetToken));
+  static async fromAPI(response) {
+    const result = await (await response.body()).json();
+    return new PasswordResetToken(result);
   }
+}
+function fetchPasswordResetTokenById(id) {
+  return PasswordResetToken.fromAPI(fetch("http://example.com/password-reset-tokens/" + id));
+}
+export {
+  Like,
+  PasswordResetToken,
+  Post,
+  User,
+  fetchLikeById,
+  fetchPasswordResetTokenById,
+  fetchPostById,
+  fetchUserById
+};
