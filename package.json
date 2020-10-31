@@ -23,19 +23,14 @@
     "babel-loader": "^8.1.0",
     "jest": "^26.5.3",
     "jest-cli": "^26.5.3",
-    "loader-runner": "^4.1.0",
-    "loader-utils": "^2.0.0",
     "lodash": "^4.17.20",
     "memfs": "^3.2.0",
     "node-fetch": "^2.6.1",
     "prettier": "^2.1.2",
     "rimraf": "^3.0.2",
-    "schema-utils": "^3.0.0",
     "webpack": "^5.0.0"
   },
   "peerDependencies": {
-    "babel-loader": "^8.1.0",
-    "schema-utils": "^3.0.0",
     "webpack": "^5.0.0"
   },
   "optionalDependencies": {
@@ -44,6 +39,7 @@
   },
   "scripts": {
     "test": "jest",
+    "update-readme": "node dist/cli.js ./README.md.jsb ./README.md",
     "build": "babel src --extensions \".ts\" --extensions \".js\" --ignore=./**/*.test.js -d dist --delete-dir-on-start",
     "compile-vscode-client": "babel --config-file=./babel.config.js --extensions \".ts\" ./atbuild-vscode/client/src --ignore=atbuild-vscode/**/*.test.js -d ./atbuild-vscode/client/out --delete-dir-on-start",
     "compile-vscode-server": "babel --config-file=./babel.config.js --extensions \".ts\" ./atbuild-vscode/server/src --ignore=atbuild-vscode/**/*.test.js -d ./atbuild-vscode/server/out --delete-dir-on-start",
@@ -52,8 +48,7 @@
     "postcompile-vscode": "cp dist/atbuild.js ./atbuild-vscode/client/out/atbuild.js; cp dist/atbuild.js ./atbuild-vscode/server/out/atbuild.js"
   },
   "dependencies": {
-    "esbuild": "^0.8.0",
-    "meow": "^7.1.1",
-    "webpack-sources": "^2.2.0"
+    "esbuild": "https://github.com/Jarred-Sumner/esbuild/releases/download/pluginbuild/esbuild-0.8.1.tgz",
+    "meow": "^7.1.1"
   }
 }

@@ -1,0 +1,8 @@
+@@
+
+const hello = require("./hello-require.@js").capitalize
+
+@@
+
+// Should be "Hi"
+module.exports = "@{hello("hi")}"

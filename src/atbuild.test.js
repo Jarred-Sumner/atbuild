@@ -52,6 +52,28 @@ describe("AtBuild", function () {
     expect(mod.exports).toBe(10);
   });
 
+  it("escapes build-time code correctly", function () {
+    const first = `
+    ## Contrived example:
+
+    \`\`\`js
+    // hello-world.@js
+    @@var hi = 0;
+
+    @@for (let i = 0; i < 5; i++) {
+      console.log("Hello World @{i}");
+      @@hi++;
+    @@}
+
+    module.exports = @@{hi};
+    \`\`\`
+    `;
+    const mod = new Module("test.js", module);
+    const result = AtBuild.eval(first, "_test.js");
+    mod._compile(result, "__test.js");
+    expect(mod.exports).tBe(first);
+  });
+
   it("parses multiline build-time code", function () {
     const first = `
     @var count = 0;
