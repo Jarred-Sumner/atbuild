@@ -1,6 +1,6 @@
 {
   "name": "atbuild",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "main": "dist/atbuild.js",
   "license": "MIT",
   "files": [
