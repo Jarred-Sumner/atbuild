@@ -263,7 +263,7 @@ export class AtBuild {
     let code;
     if (asFunction) {
       code =
-        "module.exports = async function __atBuild(require) {  var __CODE__ = [];\n\n";
+        "module.exports.default = async function __atBuild(require) {  var __CODE__ = [];\n\n";
     } else {
       code = "var __CODE__ = [];\n\n";
     }
@@ -286,7 +286,8 @@ export class AtBuild {
           break;
         }
         case "RuntimeCode": {
-          lines[node.lineNumber] += node.value.replace("`", "\\`");
+          // prettier-ignore
+          lines[node.lineNumber] += node.value.replace(/`/igm, "\\`")
           break;
         }
 
@@ -308,7 +309,9 @@ export class AtBuild {
         lines.length - 1
       ] = `return __CODE__.join("\\n");\n}; module.exports.__specialInitFunction = true;`;
     } else {
-      lines[lines.length - 1] = `module.exports =  __CODE__.join("\\n");`;
+      lines[
+        lines.length - 1
+      ] = `module.exports.default =  __CODE__.join("\\n");`;
     }
 
     return lines.join("");
@@ -479,7 +482,12 @@ export class AtBuild {
   ) {
     const ast = AtBuild.buildAST(code);
     const processed = AtBuild.transformAST(ast, false);
-    return this._eval(processed, filepath, addHeader, requireFunc);
+    const res = this._eval(processed, filepath, addHeader, requireFunc);
+    if (res && res.default) {
+      return res.default;
+    } else {
+      return res;
+    }
   }
 
   static async evalAsync(
