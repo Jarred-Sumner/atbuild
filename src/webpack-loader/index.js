@@ -62,19 +62,17 @@ function formatContent(content) {
 }
 
 async function writeFile(name, content) {
+  const outExt = path.extname(name.replace(".d.ts", ""));
+  const outName = name.replace(outExt, "");
+
   temporaryCodeMap.delete(name);
-  if (content) {
-    return fs.promises.writeFile(
-      name.replace(path.extname(name.replace(".d.ts", "")), ""),
-      formatContent(content),
-      "utf-8"
-    );
+
+  if (outExt.length === 0) {
+    return;
+  } else if (content) {
+    fs.promises.writeFile(outName, formatContent(content), "utf-8");
   } else if (fs.existsSync(name)) {
-    fs.promises.writeFile(
-      name.replace(path.extname(name.replace(".d.ts", "")), ""),
-      "",
-      "utf-8"
-    );
+    fs.promises.writeFile(outName, "", "utf-8");
   }
 }
 async function emitTypeDeclarationFile(resourcePath, code, typings) {
@@ -153,6 +151,11 @@ export default function loader(_code) {
     if (typeof opts.tsconfig === "object") {
       typings = { ...opts.tsconfig.compilerOptions, ...baseTypings };
       enableTypings = true;
+
+      // Next.js bug where it auto fixes tsconfig.json to the wrong value.
+      if (typings.moduleResolution === "node") {
+        typings.moduleResolution = "Node";
+      }
     } else if (opts.typescript || opts.tsconfig) {
       enableTypings = true;
       typings = baseTypings;
