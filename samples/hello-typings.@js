@@ -12,7 +12,6 @@ type BaseType = {
   id: number;
 }
 
-
 @for (let objectName of ["Post", "User", "Like", "PasswordResetToken"]) {
   export type @{objectName} = BaseType & {
     object: "@{kebabCase(objectName)}";

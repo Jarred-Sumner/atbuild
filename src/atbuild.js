@@ -1,6 +1,4 @@
-const path = require("path");
-const Module = require("module");
-const fs = require("fs");
+let fs;
 const BUILD_TIME_MATCHER = /^\s*@(.*)/;
 const MULTILINE_BUILD_TIME_MATCHER = /^\s*@@(.*)/;
 const RUNTIME_MATCHER = /\@\{([^@}]*)\}/gm;
@@ -14,89 +12,27 @@ const HEADER_STRING =
   "// @noflow\n" +
   '"use strict";\n\n';
 
-let context, contextOpts;
-const globalRequire = require.main.require;
 const getMaxLine = function (currentLine, node) {
   return Math.max(currentLine, node.lineNumber);
 };
 
-export function requireFromString(code, _filename, _require) {
-  let filename = _filename;
-  if (
-    !_filename ||
-    path.dirname(_filename) === "" ||
-    path.dirname(_filename) === "." ||
-    _filename.startsWith(".")
-  ) {
-    filename = path.join(
-      path.dirname(module.parent.id),
-      _filename || "atbuild.tmp.js"
+export let requireFromString;
+
+if (process.env.WEB) {
+  requireFromString = (code) =>
+    eval(
+      `
+  () => {
+    var exports = {default: null};
+` +
+        code.replace("module.exports", "exports") +
+        `
+  }()
+`
     );
-  }
-  var parent = module.parent;
-
-  var paths = Module._nodeModulePaths(path.dirname(filename));
-  filename = path.join(
-    path.dirname(filename),
-    path.basename(filename, path.extname(filename)) + ".js"
-  );
-  var m = new Module(filename, parent);
-
-  m.filename = filename;
-  m.path = path.dirname(filename);
-  m.paths = paths.slice().concat(parent.paths);
-
-  m._compile(code, filename);
-
-  if (typeof m.exports === "function") {
-    let _requireAtbuild;
-    if (typeof _require === "function") {
-      _requireAtbuild = async function (id) {
-        const code = await _require(id);
-        return await requireFromString(code, id);
-      };
-    } else {
-      _requireAtbuild = module.require.bind(module);
-    }
-
-    const resp = m.exports(_requireAtbuild);
-
-    if (resp.then) {
-      return resp.then(
-        (res) => {
-          parent &&
-            parent.children &&
-            parent.children.splice(parent.children.indexOf(m), 1);
-
-          _requireAtbuild = null;
-          _require = null;
-          m = null;
-          return res;
-        },
-        (err) => {
-          _requireAtbuild = null;
-          _require = null;
-          parent &&
-            parent.children &&
-            parent.children.splice(parent.children.indexOf(m), 1);
-          m = null;
-          throw err;
-        }
-      );
-    } else {
-      parent &&
-        parent.children &&
-        parent.children.splice(parent.children.indexOf(m), 1);
-      return resp;
-    }
-  } else {
-    const modExports = m.exports;
-    parent &&
-      parent.children &&
-      parent.children.splice(parent.children.indexOf(m), 1);
-    m = null;
-    return modExports;
-  }
+} else {
+  requireFromString = require("./requireFromString").requireFromString;
+  fs = require("fs");
 }
 
 export class AtBuild {
@@ -259,7 +195,7 @@ export class AtBuild {
     return lines.join("");
   }
 
-  static transformAST(nodes, asFunction) {
+  static transformAST(nodes, asFunction, exposeFunctions = false) {
     let code;
     if (asFunction) {
       code =
@@ -268,7 +204,7 @@ export class AtBuild {
       code = "var __CODE__ = [];\n\n";
     }
     const maxLineNumber = nodes.reduce(getMaxLine, 0);
-    let lines = new Array(maxLineNumber + 3);
+    let lines = new Array(maxLineNumber + 3 + (exposeFunctions | 0));
     for (let i = 0; i < lines.length; i++) {
       lines[i] = "";
     }
@@ -303,6 +239,12 @@ export class AtBuild {
       }
     }
     lines.unshift(code);
+
+    if (exposeFunctions) {
+      lines[
+        lines.length - 2
+      ] = `for (let key of Object.keys(module.exports)) { module.exports["$" + key] = module.exports[key]; }\n`;
+    }
 
     if (asFunction) {
       lines[
@@ -509,3 +451,5 @@ export class AtBuild {
 }
 
 export default AtBuild;
+
+export function $() {}

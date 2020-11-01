@@ -15,10 +15,21 @@ export function webpack(fixture, options = { typescript: true }) {
     devtool: "source-map",
     target: "web",
     resolve: {
-      extensions: [".@js", ".js"],
+      extensions: [".@js", ".js", ".ts"],
     },
     module: {
       rules: [
+        {
+          test: /.(@js|js|ts|tsx|jsb)$/,
+          enforce: "pre",
+          use: [
+            {
+              loader: path.resolve(__dirname, "../src/webpack-loader"),
+              options,
+            },
+          ],
+        },
+
         {
           test: /\.@js$/,
           type: "javascript/auto",
@@ -38,10 +49,6 @@ export function webpack(fixture, options = { typescript: true }) {
                   ],
                 ],
               },
-            },
-            {
-              loader: path.resolve(__dirname, "../src/webpack-loader"),
-              options,
             },
           ],
         },

@@ -71,4 +71,30 @@ describe("AtBuild Webpack Loader", function () {
 
     expect(result.includes("hello-async.@js")).toBe(true);
   });
+
+  it("works light", async function () {
+    expect.assertions(1);
+
+    const [_result, fs] = await webpack("./samples/hello-light");
+
+    const result = fs.readFileSync(
+      _result.compilation.compiler.outputPath + "/bundle.js",
+      "utf8"
+    );
+
+    expect(result.includes("hello-light.ts")).toBe(true);
+  });
+
+  it("works light-require", async function () {
+    expect.assertions(1);
+
+    const [_result, fs] = await webpack("./samples/hello-light-require");
+
+    const result = fs.readFileSync(
+      _result.compilation.compiler.outputPath + "/bundle.js",
+      "utf8"
+    );
+
+    expect(result.includes("hello-light-require.ts")).toBe(true);
+  });
 });

@@ -3,19 +3,19 @@
     "module": "commonjs",
     "target": "es2019",
     "lib": ["ES2019"],
-    "outDir": "out",
+    "outDir": "types",
     "rootDir": "src",
     "sourceMap": true,
     "noImplicitAny": false,
     "noEmitOnError": false,
     "esModuleInterop": true,
     "emitDeclarationOnly": true,
+    "declaration": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strict": false,
     "downlevelIteration": true
   },
   "include": ["src"],
-  "exclude": ["node_modules", ".vscode-test"],
-  "references": [{ "path": "./client" }, { "path": "./server" }]
+  "exclude": ["node_modules", ".vscode-test", "**.test.ts"]
 }

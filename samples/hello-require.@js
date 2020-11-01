@@ -9,6 +9,7 @@ const lowercase = "this was required.";
 const capitalized = lodash.capitalize(lowercase);
 
 module.exports.capitalize = lodash.capitalize;
+module.exports.$capitalize = lodash.capitalize;
 
 @@
 

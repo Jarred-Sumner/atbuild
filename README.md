@@ -1,17 +1,28 @@
 # AtBuild – JavaScript Preprocessor
 
-AtBuild is a JavaScript preprocessor. It lets you write JavaScript that writes JavaScript.
+AtBuild is an experimental JavaScript preprocessor. It lets you write JavaScript that writes JavaScript.
 
 Use it for:
 
-- Easy, editable code generation
+- Easy, editable code generation with TypeScript support
 - Write high-performance JavaScript libraries by removing the runtime
 - Determinstic dead code elimination
 - Move slow code from runtime to buildtime
 
 # How it works
 
-AtBuild has two rules:
+There are two flavors of AtBuild.
+
+1. AtBuild Light – compatible with current JavaScript syntax
+2. AtBuild Full - more features but incompatible syntax, so you write some code in a `.jsb` file instead
+
+### Atbuild Light
+
+Atbuild
+
+### Atbuild Full
+
+Atbuild Full has two rules:
 
 1. Any line that starts with `@` will be evaluated at buildtime instead of runtime.
 
@@ -26,29 +37,99 @@ The code evaluated at buildtime is also JavaScript.
 ## Contrived example:
 
 ```js
-// hello-world.@js
-@var hi = 0;
+// contrived-api-endpoint-codegenerator.@js
+@@
 
-@for (let i = 0; i < 5; i++) {
-  console.log("Hello World @{i}");
-  @hi++;
+import {kebabCase} from 'lodash';
+const BASE_URL = `http://example.com`;
+
+@@
+
+
+@for (let objectName of ["Post", "User", "Like", "PasswordResetToken"]) {
+  export class @{objectName} {
+    static async fromAPI(response) {
+      const result = await (await response.body()).json();
+
+      return new @{objectName}(result);
+    }
+
+    object = "@{kebabCase(objectName)}";
+  }
+
+  export function fetch${objectName}ById(id) {
+    @var base = BASE_URL + `/${kebabCase(objectName)}s/`;
+
+    return @{objectName}.fromAPI(fetch("@{base}" + id))
+  }
 @}
-
-module.exports = @{hi};
 ```
 
-After we run it through `atbuild ./hello-world.@js`, it becomes:
+After we run it through `atbuild ./contrived-api-endpoint-codegenerator.@js`, it becomes:
 
 ```js
-// hello-world.js
+// contrived-api-endpoint-codegenerator.js.
 
-console.log("Hello World 0");
-console.log("Hello World 1");
-console.log("Hello World 2");
-console.log("Hello World 3");
-console.log("Hello World 4");
-
-module.exports = 5;
+class Post {
+  constructor() {
+    this.object = "post";
+  }
+  static async fromAPI(response) {
+    const result = await (await response.body()).json();
+    return new Post(result);
+  }
+}
+function fetchPostById(id) {
+  return Post.fromAPI(fetch("http://example.com/posts/" + id));
+}
+class User {
+  constructor() {
+    this.object = "user";
+  }
+  static async fromAPI(response) {
+    const result = await (await response.body()).json();
+    return new User(result);
+  }
+}
+function fetchUserById(id) {
+  return User.fromAPI(fetch("http://example.com/users/" + id));
+}
+class Like {
+  constructor() {
+    this.object = "like";
+  }
+  static async fromAPI(response) {
+    const result = await (await response.body()).json();
+    return new Like(result);
+  }
+}
+function fetchLikeById(id) {
+  return Like.fromAPI(fetch("http://example.com/likes/" + id));
+}
+class PasswordResetToken {
+  constructor() {
+    this.object = "password-reset-token";
+  }
+  static async fromAPI(response) {
+    const result = await (await response.body()).json();
+    return new PasswordResetToken(result);
+  }
+}
+function fetchPasswordResetTokenById(id) {
+  return PasswordResetToken.fromAPI(
+    fetch("http://example.com/password-reset-tokens/" + id)
+  );
+}
+export {
+  Like,
+  PasswordResetToken,
+  Post,
+  User,
+  fetchLikeById,
+  fetchPasswordResetTokenById,
+  fetchPostById,
+  fetchUserById,
+};
 ```
 
 ## Changelog
