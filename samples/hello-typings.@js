@@ -6,7 +6,7 @@ const titleize = str => startCase(toLower(str));
 
 const BASE_URL = `http://example.com`;
 
-@@
+@@-
 
 type BaseType = {
   id: number;

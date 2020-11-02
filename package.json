@@ -4,11 +4,13 @@
   "main": "dist/atbuild.js",
   "browser": "web/atbuild.js",
   "license": "MIT",
+  "types": "types.ts.d",
   "files": [
     "./README.md",
     "./package.json",
     "dist",
     "web",
+    "./types.ts.d",
     "./webpack-loader.js",
     "./index.js"
   ],
@@ -29,7 +31,6 @@
     "lodash": "^4.17.20",
     "memfs": "^3.2.0",
     "node-fetch": "^2.6.1",
-    "prettier": "^2.1.2",
     "rimraf": "^3.0.2",
     "typescript": "^4.0.5",
     "webpack": "^5.0.0"
@@ -39,16 +40,20 @@
     "webpack": "^5.0.0"
   },
   "optionalDependencies": {
-    "prettier": "^2.1.2",
     "vscode-languageserver": "^6.1.1"
   },
   "scripts": {
     "test": "jest",
+    "cli": "yarn --silent build-node && FORCE_DEV=true node dist/cli.js $1",
     "clear-test": "rm samples/*.d.ts",
     "update-readme": "node dist/cli.js ./README.md.jsb ./README.md",
-    "build-node": "babel src --extensions \".ts\" --extensions \".js\" --ignore=./**/*.test.js -d dist --delete-dir-on-start",
-    "build": "yarn build-node && yarn build-web",
-    "build-web": "esbuild --define:\"process.env.WEB=true\" --bundle ./src/atbuild.js ./src/light.ts --format=esm  --outdir=./web ",
+    "prebuild-node": "rimraf dist",
+    "prebuild-web": "rimraf web",
+    "build-node": "esbuild --target=node10 --define:\"process.env.WEB=false\" src/*{.ts,.js} src/**/*{.ts,.js} --format=cjs  --outdir=./dist --platform=node",
+    "postbuild": "rimraf dist/**/*{.test.ts, .test.js, .ts.d.js}",
+    "build": "yarn build-node && yarn build-web && yarn build-types",
+    "build-web": "esbuild --sourcemap --define:\"process.env.WEB=true\" --bundle ./src/atbuild.ts ./src/light.ts --format=esm  --outdir=./web ",
+    "build-types": "yarn tsc --p tsconfig.json --outfile types",
     "prepublishOnly": "yarn build",
     "compile-vscode-client": "babel --config-file=./babel.config.js --extensions \".ts\" ./atbuild-vscode/client/src --ignore=atbuild-vscode/**/*.test.js -d ./atbuild-vscode/client/out --delete-dir-on-start",
     "compile-vscode-server": "babel --config-file=./babel.config.js --extensions \".ts\" ./atbuild-vscode/server/src --ignore=atbuild-vscode/**/*.test.js -d ./atbuild-vscode/server/out --delete-dir-on-start",
@@ -58,7 +63,6 @@
   },
   "dependencies": {
     "esbuild": "https://github.com/Jarred-Sumner/esbuild/releases/download/pluginbuild/esbuild-0.8.1.tgz",
-    "loader-runner": "^4.1.0",
     "loader-utils": "^2.0.0",
     "meow": "^7.1.1"
   }

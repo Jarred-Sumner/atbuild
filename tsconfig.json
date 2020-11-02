@@ -16,6 +16,7 @@
     "strict": false,
     "downlevelIteration": true
   },
-  "include": ["src"],
+  "include": ["src", "src/**.jsb"],
+
   "exclude": ["node_modules", ".vscode-test", "**.test.ts"]
 }

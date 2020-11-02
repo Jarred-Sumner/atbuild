@@ -28,7 +28,7 @@ Atbuild Full has two rules:
 
 2. Any line containing `@{codeInHere}` will be evaluated at buildtime instead of runtime.
 
-You write some of your JavaScript in `.@js` files, and by default, all the code in the file will be evaluated at runtime.
+You write some of your JavaScript in `.jsb` files, and by default, all the code in the file will be evaluated at runtime.
 
 But, if the line starts with an `@` or if it contains `@{}`, those parts of the file will be switched out, and run at buildtime instead.
 
@@ -37,7 +37,7 @@ The code evaluated at buildtime is also JavaScript.
 ## Contrived example:
 
 ```js
-// contrived-api-endpoint-codegenerator.@js
+// contrived-api-endpoint-codegenerator.jsb
 @@
 
 import {kebabCase} from 'lodash';
@@ -65,7 +65,7 @@ const BASE_URL = `http://example.com`;
 @}
 ```
 
-After we run it through `atbuild ./contrived-api-endpoint-codegenerator.@js`, it becomes:
+After we run it through `atbuild ./contrived-api-endpoint-codegenerator.jsb`, it becomes:
 
 ```js
 // contrived-api-endpoint-codegenerator.js.
@@ -136,7 +136,7 @@ export {
 
 **October 30th, 2020**: Added support for nested buildtime modules to export functions that are only available at buildtime. This allows you to write zero-runtime libraries.
 
-**October 30th, 2020**: Added support for nested buildtime modules in the webpack-loader, so you can import @js files from inside @js files and it will work as expected (buildtime code is executed, runtime code is generated)
+**October 30th, 2020**: Added support for nested buildtime modules in the webpack-loader, so you can import jsb files from inside jsb files and it will work as expected (buildtime code is executed, runtime code is generated)
 
 **October 29th, 2020**: Added support for bundling buildtime code in the webpack loader, meaning you can use the same syntax for buildtime code and runtime code. This also makes it easy to import runtime modules at buildtime. The webpack-loader uses [esbuild](https://esbuild.github.io/) for bundling the backend code.
 
@@ -224,22 +224,22 @@ npm install atbuild
 `atbuild` has a small CLI you can use.
 
 ```bash
-atbuild ./input.@js
+atbuild ./input.jsb
 ```
 
 ```bash
-atbuild ./input.@js ./output.js
+atbuild ./input.jsb ./output.js
 ```
 
 ```bash
-atbuild ./input.@js ./output.js --pretty --no-header
+atbuild ./input.jsb ./output.js --pretty --no-header
 ```
 
 ## Webpack Loader
 
-**The recommended way to use AtBuild is through the Webpack loader**. This configures Webpack to run any file that ends in `.@js` through AtBuild automatically.
+**The recommended way to use AtBuild is through the Webpack loader**. This configures Webpack to run any file that ends in `.jsb` through AtBuild automatically.
 
-Buildtime code is run through a [high performance bundler](https://esbuild.github.io/) for you automatically, so you can write your buildtime code using the same modern JavaScript as the rest of your code. This also means you can import other modules, and those modules don't have to be `.@js` files - they can be any other file in your codebase (so long as it runs in Node after bundling).
+Buildtime code is run through a [high performance bundler](https://esbuild.github.io/) for you automatically, so you can write your buildtime code using the same modern JavaScript as the rest of your code. This also means you can import other modules, and those modules don't have to be `.jsb` files - they can be any other file in your codebase (so long as it runs in Node after bundling).
 
 Runtime code is passed through webpack as regular JavaScript – so you can still use babel-loader as normal.
 
@@ -254,8 +254,8 @@ module.exports = {
 
        // AtBuild.js Webpack Loader
       {
-        // File extension is .@js
-        test: /\.@js$/,
+        // File extension is .jsb
+        test: /\.jsb$/,
         exclude: /node_modules/,
         type: "javascript/auto",
         use: [
@@ -301,7 +301,7 @@ if (nextBabelLoaderContainer) {
   }
 
   config.module.rules.unshift({
-    test: /\.@js$/,
+    test: /\.jsb$/,
     use: [
       // Pass the loader in before atbuild, so that atbuild runs first.g
       loader,

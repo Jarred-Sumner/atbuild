@@ -1,5 +1,10 @@
 import { AtBuild, requireFromString } from "../atbuild";
-import { build, transform, transformSync } from "esbuild";
+import {
+  build as _build,
+  transform as _transform,
+  transformSync,
+  startService,
+} from "esbuild";
 import path from "path";
 import esbuildPlugin from "../esbuildPlugin/fullPlugin";
 import lightEsbuildPlugin from "../esbuildPlugin/lightPlugin";
@@ -11,6 +16,13 @@ import {
 import { getOptions } from "loader-utils";
 import { quickTest } from "../light";
 import { transformAST, buildAST } from "../light";
+
+let service;
+let runCount = 0;
+
+let build = _build;
+let transform = _transform;
+
 const schema = {
   type: "object",
   properties: {
@@ -69,6 +81,61 @@ function readTemporaryAsset(name) {
   } else if (readCompilationFs) {
     return readCompilationFs(name, "utf8");
   }
+}
+
+async function runBuild(
+  esbuildInput,
+  callback,
+  resourcePath,
+  addDependency,
+  resourcePath,
+  typings,
+  tsconfig,
+  outputFormat,
+  writeFile
+) {
+  if (runCount > 0 && !service) {
+    service = await startService({
+      worker: true,
+    });
+
+    build = service.build;
+    transform = service.transform;
+
+    process.on("beforeExit", () => {
+      if (service) {
+        service.stop();
+      }
+    });
+
+    process.on("SIGABRT", () => {
+      if (service) {
+        service.stop();
+      }
+    });
+  }
+
+  return build(esbuildInput).then(
+    (res) =>
+      handleESBuildResult(
+        res,
+        esbuildInput.outfile,
+        callback,
+        resourcePath,
+        addDependency,
+        resourcePath,
+        typings,
+        tsconfig,
+        outputFormat,
+        writeFile
+      ),
+    (err) => {
+      console.error(err);
+      debugger;
+
+      callback(err);
+    }
+  );
 }
 
 function formatContent(content) {
@@ -235,6 +302,7 @@ export function runWithOptions(
   let jsExtensions = opts.jsExtensions || DEFAULT_JS_EXTENSIONS;
   let atBuildExtensions = opts.atBuildExtensions || DEFAULT_ATBUILD_EXTENSIONS;
   fileExtension = path.extname(resourcePath);
+
   switch (mode) {
     case "light": {
       if (quickTest(_code)) {
@@ -311,7 +379,7 @@ export function runWithOptions(
     }
     case modes.light: {
       esbuildInput.stdin = {
-        contents: transformAST(buildAST(_code)),
+        contents: transformAST(buildAST(_code, "")),
 
         // These are all optional:
         resolveDir: path.dirname(resourcePath),
@@ -336,27 +404,16 @@ export function runWithOptions(
   readCompilationFs = readFile;
 
   const callback = getCallback();
-
-  build(esbuildInput).then(
-    (res) =>
-      handleESBuildResult(
-        res,
-        esbuildInput.outfile,
-        callback,
-        resourcePath,
-        addDependency,
-        resourcePath,
-        enableTypings ? typings : null,
-        tsconfig,
-        outputFormat,
-        writeFile
-      ),
-    (err) => {
-      console.error(err);
-      debugger;
-
-      callback(err);
-    }
+  runBuild(
+    esbuildInput,
+    callback,
+    resourcePath,
+    addDependency,
+    resourcePath,
+    enableTypings ? typings : null,
+    tsconfig,
+    outputFormat,
+    writeFile
   );
 }
 

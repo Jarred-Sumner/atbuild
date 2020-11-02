@@ -13,7 +13,7 @@ var __export = (target, all) => {
     __defProp(target, name, {get: all[name], enumerable: true});
 };
 
-// src/atbuild.js
+// src/atbuild.ts
 var require_atbuild = __commonJS((exports, module) => {
   __export(exports, {
     $: () => $,
@@ -234,10 +234,6 @@ var require_atbuild = __commonJS((exports, module) => {
         }
       }
     }
-    static ASTResponseType = {
-      BuildtimeCode: 0,
-      RuntimeCode: 1
-    };
     static transformASTForLineColumn(nodes, lineNumber, column, response) {
       let lineNode = this.findNodesAtLine(nodes, lineNumber).next().value;
       if (!lineNode) {
@@ -357,8 +353,13 @@ var require_atbuild = __commonJS((exports, module) => {
       return source;
     }
   }
+  AtBuild.ASTResponseType = {
+    BuildtimeCode: 0,
+    RuntimeCode: 1
+  };
   var atbuild_default = AtBuild;
-  function $() {
+  function $(_args) {
   }
 });
 export default require_atbuild();
+//# sourceMappingURL=atbuild.js.map

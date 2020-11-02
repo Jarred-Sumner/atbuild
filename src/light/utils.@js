@@ -1,0 +1,41 @@
+
+@@
+
+
+const charTypes = new Array(256);
+charTypes.fill(0);
+
+const CHARACTER_TYPES = {
+  expressionStart: 1,
+  alphanumeric: 2,
+  isOpeningParenthese: 3,
+  isClosingParenthese: 4,
+  other: 0
+}
+
+for (let code = 0; code < 256; code++) {
+  if ((code > 64 && code < 91) || (code > 96 && code < 123)) {
+    charTypes[code] = CHARACTER_TYPES.alphanumeric;
+  } else if (code === 40) {
+    charTypes[code] = CHARACTER_TYPES.isOpeningParenthese;
+  } else if (code === 41) {
+    charTypes[code] = CHARACTER_TYPES.isClosingParenthese;
+  } else if (code === 36) {
+    charTypes[code] = CHARACTER_TYPES.expressionStart;
+  }
+}
+
+@@
+
+export enum CharacterType  {
+  expressionStart = 1,
+  alphanumeric = 2,
+  isOpeningParenthese = 3,
+  isClosingParenthese = 4,
+  other =0,
+}
+
+
+export const CHARACTER_TYPES: Array<CharacterType> = new Uint8Array([@{charTypes}])
+
+

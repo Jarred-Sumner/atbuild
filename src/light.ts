@@ -1,4 +1,6 @@
-const RUNTIME_MATCHER = /(^|\W|"|'|;)(\$\w*)*\(((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\))/g;
+import { CharacterType, CHARACTER_TYPES } from "./light/utils";
+
+const RUNTIME_MATCHER = /(^|\W|"|'|;)(\$\w*)?\(((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\))/g;
 const BUILD_TIME_LINE_MATCHER = /\/\/\s*\$\s*(ATBUILD)?/;
 const MULTILINE_BUILD_TIME_MATCHER = /^\s*\/\/\s*((\$\$)|(ATBUILD))\s*?/;
 
@@ -7,6 +9,12 @@ const BUILD_TIME_LINE_MATCHER_TEST_ONLY = new RegExp(BUILD_TIME_LINE_MATCHER);
 const MULTILINE_BUILD_TIME_MATCHER_TEST_ONLY = new RegExp(
   MULTILINE_BUILD_TIME_MATCHER
 );
+
+enum RuntimeCursorState {
+  findStart = 0,
+  findClosingParenthese = 1,
+  findOpeningParenthese = 2,
+}
 
 export enum ASTNodeType {
   runtimeLineStart = 0,
@@ -36,24 +44,17 @@ export class ASTNodeList extends Array<ASTNode> {
   maxLine = 0;
 }
 
-let lineNodes: ASTNode[] = [];
-
 export function quickTest(source: string) {
-  return (
-    source.includes("$") &&
-    (RUNTIME_MATCHER_TEST_ONLY.test(source) ||
-      BUILD_TIME_LINE_MATCHER_TEST_ONLY.test(source) ||
-      MULTILINE_BUILD_TIME_MATCHER_TEST_ONLY.test(source))
-  );
+  return source.includes("$");
 }
 
-export function buildAST(source: string) {
+export function buildAST(source: string, emptyFunctionNameReplacer = "") {
   const nodes = new ASTNodeList();
 
   let lines = String(source).split("\n");
   let isMultiline = false,
     result = null,
-    lineToMatch = null,
+    lineToMatch: string = "",
     offset = 0,
     funcArgs = "",
     interpolatedCodeNode: ASTNode,
@@ -64,7 +65,8 @@ export function buildAST(source: string) {
     remainderRunTimeCodeNode: ASTNode = null,
     runtimeLine: ASTNode = null,
     hasBuildTimeNode = false,
-    node: ASTNode = astNodeBase;
+    node: ASTNode = astNodeBase,
+    linePosition = 0;
   let i = 0;
   for (i = 0; i < lines.length; i++) {
     if (lines[i].trim().length === 0) {
@@ -72,11 +74,7 @@ export function buildAST(source: string) {
     }
 
     if (MULTILINE_BUILD_TIME_MATCHER_TEST_ONLY.test(lines[i])) {
-      if (isMultiline) {
-        isMultiline = false;
-      } else {
-        isMultiline = true;
-      }
+      isMultiline = !isMultiline;
 
       node = Object.create(astNodeBase);
 
@@ -105,78 +103,158 @@ export function buildAST(source: string) {
       nodes.push(node);
     } else {
       hasBuildTimeNode = false;
-      runtimeLineStartNode = Object.create(astNodeBase);
       runtimeCodeNode = Object.create(astNodeBase);
-      runtimeCodeLineEndNode = Object.create(astNodeBase);
 
-      runtimeLineStartNode.line = runtimeCodeNode.line = runtimeCodeLineEndNode.line = i;
-      runtimeLineStartNode.type = ASTNodeType.runtimeLineStart;
-      runtimeCodeLineEndNode.type = ASTNodeType.runtimeLineEnd;
-      runtimeCodeNode.type = ASTNodeType.runtimeCode;
-
+      runtimeCodeNode.type = ASTNodeType.runtimeLine;
       runtimeCodeNode.value = lines[i];
+      runtimeCodeNode.line = i;
 
-      lineNodes = [runtimeCodeNode];
-
-      lineToMatch = lines[i];
       offset = 0;
       nodes.runtimeLineCount++;
+      lineToMatch = lines[i];
 
-      let runtimeRegexer = new RegExp(RUNTIME_MATCHER);
+      // This is a handrolled, non ECMAScript compliant JavaScript Function Call Detector™
+      // It should detect function calls like so
+      // - $("anything-in-here should run in the build script!")
+      // - $FooFunction()
+      // - $FooFunction("")
+      // - $FooFunction("", "")
+      // - $BarFunction("", "") $FooFunction("", "")
+      // - "runtimeCode" $BarFunction("", "") "runtimeCode" $FooFunction("", "") "runtimeCode"
 
-      for (let result of lineToMatch.matchAll(
-        // If we move this Regex to the top...it stops working sometimes.
-        runtimeRegexer
-      )) {
-        const [
-          input,
-          linePrefix,
-          functionCall,
-          functionArguments,
-          suffix,
-        ] = result;
-        index = result.index;
+      // It should not detect things like:
+      // - if (bacon) {}
+      // - if(bacon) {}
+      // - while(!bacon) {}
+      // function bacon() {}
 
-        lineNodes[lineNodes.length - 1].value =
-          lineNodes[lineNodes.length - 1].value.substring(0, index - offset) +
-          linePrefix;
+      // It does not need to care about nested function calls so long as it knows where the last closing parentheses is.
 
-        lineNodes.length += 2;
-        hasBuildTimeNode = true;
+      // The algorithm is as follows:
+      // 1. Find a $
+      // 2. Go forward until we reach either:
+      //    - An opening parenthese
+      //      - Indices from start of $ to position is the function name
+      //    - A space, subtraction, addition, var, //, or semicolon
+      //     - Reset depth
+      //      - Goto 1.
+      // 3. Go forward until we reach a closing parenthese matching depth
+      //    - If we reach an opening parenthese, increment depth.
+      //    - If we reach a closing parenthese prior to correct depth, decrement depth and continue.
+      //    - Once reached, goto 1
 
-        remainderRunTimeCodeNode = Object.create(astNodeBase);
-        interpolatedCodeNode = Object.create(astNodeBase);
-        remainderRunTimeCodeNode.line = interpolatedCodeNode.line = i;
-        interpolatedCodeNode.type = ASTNodeType.buildTimeCode;
+      let depth = 0,
+        characterType = 0,
+        state: RuntimeCursorState = RuntimeCursorState.findStart,
+        expressionStartPosition = 0,
+        lineNodePosition = Math.max(nodes.length - 1, 0),
+        lineNodeOffset = 0,
+        isFirstInsert = true,
+        needsEmptyFunctionReplacer = 0;
+      for (
+        linePosition = 0;
+        linePosition < lineToMatch.length;
+        linePosition++
+      ) {
+        characterType =
+          CHARACTER_TYPES[lineToMatch.charCodeAt(linePosition)] | 0;
 
-        // prettier-ignore
-        funcArgs = (functionArguments || "")
+        //
+        if (
+          characterType === CharacterType.expressionStart &&
+          state === RuntimeCursorState.findStart
+        ) {
+          depth = 0;
+          expressionStartPosition = linePosition;
+          state = RuntimeCursorState.findOpeningParenthese;
 
-        interpolatedCodeNode.value =
-          `${
-            functionCall === "$"
-              ? "module.namespaceCollisionHack"
-              : functionCall
-          }(` + funcArgs;
+          // Full match found
+          // The happy state.
+        } else if (
+          characterType === CharacterType.isClosingParenthese &&
+          state === RuntimeCursorState.findClosingParenthese &&
+          depth === 0
+        ) {
+          if (isFirstInsert) {
+            let _runtimeCodeNode = runtimeCodeNode;
+            _runtimeCodeNode.type = ASTNodeType.runtimeLineStart;
+            _runtimeCodeNode.value = "";
 
-        lineNodes[lineNodes.length - 2] = interpolatedCodeNode;
-        nodes.buildNodeCount++;
+            runtimeCodeNode = Object.create(astNodeBase);
+            runtimeCodeNode.type = ASTNodeType.runtimeCode;
+            runtimeCodeNode.value = lines[i];
+            _runtimeCodeNode.line = runtimeCodeNode.line = i;
 
-        lineToMatch = result.input.substring((offset = index + input.length));
+            nodes.push(_runtimeCodeNode, runtimeCodeNode);
+            lineNodePosition = nodes.length - 1;
+            isFirstInsert = false;
+          }
 
-        remainderRunTimeCodeNode.value = lineToMatch;
-        remainderRunTimeCodeNode.type = ASTNodeType.runtimeCode;
-        lineNodes[lineNodes.length - 1] = remainderRunTimeCodeNode;
+          nodes[lineNodePosition].value = nodes[
+            lineNodePosition
+          ].value.substring(0, expressionStartPosition - lineNodeOffset);
+
+          node = Object.create(astNodeBase);
+          node.type = ASTNodeType.buildTimeCode;
+          node.value =
+            emptyFunctionNameReplacer +
+            lineToMatch.substring(
+              expressionStartPosition + needsEmptyFunctionReplacer,
+              (lineNodeOffset = linePosition + 1)
+            );
+
+          runtimeCodeNode = Object.create(astNodeBase);
+          runtimeCodeNode.type = ASTNodeType.runtimeCode;
+          runtimeCodeNode.value = lineToMatch.substring(
+            lineNodeOffset,
+            lineToMatch.length
+          );
+
+          runtimeCodeNode.line = node.line = i;
+
+          nodes.push(node, runtimeCodeNode);
+          lineNodePosition += 2;
+          state = expressionStartPosition = depth = 0;
+
+          nodes.buildNodeCount++;
+        } else if (
+          characterType === CharacterType.isClosingParenthese &&
+          state === RuntimeCursorState.findClosingParenthese &&
+          depth !== 0
+        ) {
+          depth--;
+        } else if (
+          characterType === CharacterType.isOpeningParenthese &&
+          state === RuntimeCursorState.findClosingParenthese
+        ) {
+          depth++;
+
+          // it matches $Foo( or $(
+        } else if (
+          characterType === CharacterType.isOpeningParenthese &&
+          state === RuntimeCursorState.findOpeningParenthese &&
+          depth === 0
+        ) {
+          state = RuntimeCursorState.findClosingParenthese;
+          needsEmptyFunctionReplacer =
+            expressionStartPosition + 1 === linePosition ? 1 : 0;
+          // Reset back to findStart. This is a space or delimiter of some kind.
+        } else if (
+          state === RuntimeCursorState.findOpeningParenthese &&
+          characterType === CharacterType.other
+        ) {
+          state = RuntimeCursorState.findStart;
+          depth = expressionStartPosition = 0;
+        }
       }
 
-      if (!hasBuildTimeNode) {
-        runtimeLine = Object.create(astNodeBase);
-        runtimeLine.line = i;
-        runtimeLine.value = lines[i];
-        runtimeLine.type = ASTNodeType.runtimeLine;
-        nodes.push(runtimeLine);
-      } else {
-        nodes.push(runtimeLineStartNode, ...lineNodes, runtimeCodeLineEndNode);
+      if (!isFirstInsert) {
+        runtimeCodeLineEndNode = Object.create(astNodeBase);
+
+        runtimeCodeLineEndNode.line = i;
+        runtimeCodeLineEndNode.type = ASTNodeType.runtimeLineEnd;
+
+        nodes.push(runtimeCodeLineEndNode);
       }
     }
   }
@@ -194,6 +272,8 @@ export function transformAST(nodes: ASTNodeList) {
     switch (node.type) {
       case ASTNodeType.buildTimeLine:
         lines[node.line] += node.value + "\n";
+        break;
+
       case ASTNodeType.multilineBuildTimeLine: {
         lines[node.line] += node.value + "\n\n";
         break;

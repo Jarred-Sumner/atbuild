@@ -18,6 +18,8 @@ const getMaxLine = function (currentLine, node) {
 
 export let requireFromString;
 
+let bundle;
+
 if (process.env.WEB) {
   requireFromString = (code) =>
     eval(
@@ -401,7 +403,7 @@ export class AtBuild {
 
   static _eval(
     code,
-    filepath = null,
+    filepath: string = null,
     addHeader = false,
     requireFunc = module.require
   ) {
@@ -417,8 +419,8 @@ export class AtBuild {
   }
 
   static eval(
-    code,
-    filepath = null,
+    code: string,
+    filepath: string = null,
     addHeader = false,
     requireFunc = module.require
   ) {
@@ -433,8 +435,8 @@ export class AtBuild {
   }
 
   static async evalAsync(
-    code,
-    filepath = null,
+    code: string,
+    filepath: string = null,
     addHeader = false,
     requireFunc = module.require
   ) {
@@ -452,4 +454,4 @@ export class AtBuild {
 
 export default AtBuild;
 
-export function $() {}
+export function $(_args: any): any {}

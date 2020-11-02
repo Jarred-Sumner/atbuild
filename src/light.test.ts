@@ -1,4 +1,4 @@
-import { quickTest, transform } from "./light";
+import { buildAST, quickTest, transform, transformAST } from "./light";
 
 describe("ATBuild Light", () => {
   it("returns null for regular source code", function () {
@@ -58,12 +58,65 @@ describe("ATBuild Light", () => {
     expect(quickTest(code)).toBe(true);
   });
 
+  it("works with multiple", function () {
+    const code = `// $$
+
+const buildTimeOnly = true;
+
+const fs = require("fs");
+const path = require("path");
+
+function $GetPackageJson() {
+  return fs.readFileSync(path.join(__dirname, "../", "package.json"), "utf8");
+}
+
+// $$
+
+const PACKAGE_JSON_CONTENTS = $GetPackageJson();
+
+const didRemoveBuildTimeCode = $(typeof buildTimeOnly !== "undefined");
+    `;
+
+    let result = transform(code);
+    expect(result).toContain(`$(typeof buildTimeOnly !== "undefined")`);
+    expect(quickTest(code)).toBe(true);
+  });
+
   it("works with interpolated function calls that have no arguments", () => {
     let code = `
     const format = $dateFormatter()
   `;
     let result = transform(code);
     expect(result).toContain("const format = ${$dateFormatter()}");
+    expect(quickTest(code)).toBe(true);
+  });
+
+  it("works with expressions that aren't functions", () => {
+    let code = `
+    const format = $(typeof bacon);
+  `;
+    let result = transform(code);
+    expect(result).toContain("const format = ${typeof bacon}");
+    expect(quickTest(code)).toBe(true);
+  });
+
+  it("supports replacing empty function calls with a custom name", () => {
+    let code = `
+    const format = $(typeof bacon);
+  `;
+    let result = transformAST(buildAST(code, "HELLO_I_AM_FUNCTION"));
+    expect(result).toContain(
+      "const format = ${HELLO_I_AM_FUNCTION(typeof bacon)}"
+    );
+    expect(quickTest(code)).toBe(true);
+  });
+
+  it("supports replacing empty function calls with empty space", () => {
+    let code = `
+    const format = $(typeof bacon);
+  `;
+    let result = transformAST(buildAST(code, ""));
+    expect(result).toContain("const format = ${(typeof bacon)}");
     expect(quickTest(code)).toBe(true);
   });
 
@@ -103,6 +156,32 @@ describe("ATBuild Light", () => {
 
     // This should be normal string
     export const hourFormatter = $dateFormatter("HH:MM:SS")
+
+  `;
+    const result = transform(code);
+    expect(quickTest(code)).toBe(true);
+
+    const lines = result.split("\n");
+    const buildLine = lines.find((l) => l.includes("import {$dateFormatter}"));
+
+    expect(buildLine).toBeTruthy();
+    expect(buildLine).not.toContain(".push");
+
+    const runtimeLine = lines.find((l) =>
+      l.includes("export const hourFormatter =")
+    );
+
+    expect(runtimeLine).toBeTruthy();
+    expect(runtimeLine).toContain(".push");
+  });
+
+  it("works interpolated function calls of varying depth", () => {
+    const code = `
+    // This should be a buildtime-only line
+    import {$dateFormatter} from 'atbuild-date'; // $
+
+    // This should be normal string
+    export const hourFormatter = this.partyTimer($dateFormatter(partyPartyParty(), "HH:MM:SS", yep(), noop(), inner(doubleInner($superDuperInner()))))
 
   `;
     const result = transform(code);

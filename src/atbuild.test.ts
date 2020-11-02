@@ -71,7 +71,7 @@ describe("AtBuild", function () {
     const mod = new Module("test.js", module);
     const result = AtBuild.eval(first, "_test.js");
     mod._compile(result, "__test.js");
-    expect(mod.exports).tBe(first);
+    expect(mod.exports).toBe(first);
   });
 
   it("parses multiline build-time code", function () {
