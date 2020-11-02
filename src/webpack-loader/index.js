@@ -404,7 +404,7 @@ export function runWithOptions(
   readCompilationFs = readFile;
 
   const callback = getCallback();
-  runBuild(
+  const result = runBuild(
     esbuildInput,
     callback,
     resourcePath,
@@ -415,6 +415,8 @@ export function runWithOptions(
     outputFormat,
     writeFile
   );
+
+  return result;
 }
 
 export default function loader(_code) {
@@ -424,7 +426,7 @@ export default function loader(_code) {
 
   opts = optionsGetter(schema);
 
-  return runWithOptions(
+  const result = runWithOptions(
     _code,
     opts,
     this.resourcePath,
@@ -434,4 +436,10 @@ export default function loader(_code) {
     opts.format || "esm",
     opts.writeFile || writeFile
   );
+
+  if (typeof result === "object" && result.then) {
+    return;
+  }
+
+  return result;
 }

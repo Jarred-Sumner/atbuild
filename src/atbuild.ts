@@ -452,6 +452,6 @@ export class AtBuild {
   }
 }
 
-export default AtBuild;
-
-export function $(_args: any): any {}
+export default function $(arg: any) {
+  return arg;
+}

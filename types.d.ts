@@ -18,8 +18,9 @@ declare module "atbuild" {
         static eval(code: string, filepath?: string, addHeader?: boolean, requireFunc?: NodeJS.Require): any;
         static evalAsync(code: string, filepath?: string, addHeader?: boolean, requireFunc?: NodeJS.Require): Promise<any>;
     }
-    export default AtBuild;
-    export function $(_args: any): any;
+    const _AtBuild: typeof AtBuild;
+    export { $ };
+    export default _AtBuild;
 }
 declare module "atbuild.test" { }
 declare module "bundle" {

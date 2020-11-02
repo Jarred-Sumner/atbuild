@@ -4,7 +4,7 @@ AtBuild is an experimental JavaScript preprocessor. It lets you write JavaScript
 
 Use it for:
 
-- Easy, editable code generation with TypeScript support
+- Easy, editable code generation with full TypeScript support
 - Write high-performance JavaScript libraries by removing the runtime
 - Determinstic dead code elimination
 - Move slow code from runtime to buildtime
@@ -13,12 +13,84 @@ Use it for:
 
 There are two flavors of AtBuild.
 
-1. AtBuild Light – compatible with current JavaScript syntax
-2. AtBuild Full - more features but incompatible syntax, so you write some code in a `.jsb` file instead
+1. AtBuild Light: compatible with current JavaScript syntax
+2. AtBuild Full: a powerful JavaScript-based templating language for generating code. It's close to but not quite JavaScript, so you should write it in `.jsb` files instead.
 
 ### Atbuild Light
 
-Atbuild
+Atbuild Light preprocesses your JavaScript & TypeScript files by setting three conventions:
+
+1. Code inside of `$(buildTimeCodeInHere)` will be run & replaced at buildtime (❤️ jQuery)
+2. Code fenced within `// $$` will be moved to buildtime
+3. Lines ending with `// $` with be moved to buildtime
+
+#### Small exmaple
+
+`input.js`:
+
+```js
+import { $ } from "atbuild";
+
+// $$
+
+const didRemoveBuildTimeCode = false;
+
+// $$-
+
+export const isRemoved = $(!didRemoveBuildTimeCode);
+```
+
+```bash
+atbuild ./input.js ./output.js
+```
+
+`output.js`:
+
+```js
+const isRemoved = true;
+export { isRemoved };
+```
+
+Note: the `import {$}` is there for convience so your editor doesn't get mad. Any function call starting with `$` is assumed to be a build-time function.
+
+Unlike other buildtime code generation tools, you can `import` from `node_modules`, and even import other modules in your codebase (so long as it runs without a `window` object). The input is transformed using `esbuild`.
+
+`input.js`:
+
+```ts
+import { $createDateFormatter } from "atbuild-date"; // $
+
+// This library doesn't actually exist! But someone could make it.
+export const formatHourSeconds = $createDateFormatter("HH:MM:SS");
+```
+
+```bash
+atbuild ./input.js ./output.js
+```
+
+`output.js`:
+
+```js
+// Credit: https://stackoverflow.com/questions/6312993/javascript-seconds-to-time-string-with-format-hhmmss
+export const formatHourSeconds = function (unixTimestamp) {
+  let hours = Math.floor(unixTimestamp / 3600).toString(10);
+  let minutes = Math.floor((seconds - hours * 3600) / 60).toString(10);
+  let seconds = (unixTimestamp - hours * 3600 - minutes * 60).toString(10);
+
+  if (hours < 10) {
+    hours = "0" + hours;
+  }
+  if (minutes < 10) {
+    minutes = "0" + minutes;
+  }
+  if (seconds < 10) {
+    seconds = "0" + seconds;
+  }
+  return `${hours}:${minutes}:${seconds}`;
+};
+```
+
+For compatibility reasons, exporting build time code from JavaScript/TypeScript outside of the file is not supported. But, that's why there's Atbuild Full, so you could write libraries that proceedurally generate code like the one above.
 
 ### Atbuild Full
 
@@ -37,99 +109,131 @@ The code evaluated at buildtime is also JavaScript.
 ## Contrived example:
 
 ```js
-// contrived-api-endpoint-codegenerator.jsb
+// contrived-api-endpoint-codegenerator.jsb.
 @@
 
-import {kebabCase} from 'lodash';
+import { kebabCase, startCase, toLower} from 'lodash';
+
+const titleize = str => startCase(toLower(str));
+
 const BASE_URL = `http://example.com`;
 
-@@
+@@-
 
+type BaseType = {
+  id: number;
+}
 
 @for (let objectName of ["Post", "User", "Like", "PasswordResetToken"]) {
-  export class @{objectName} {
-    static async fromAPI(response) {
-      const result = await (await response.body()).json();
+  export type @{objectName} = BaseType & {
+    object: "@{kebabCase(objectName)}";
 
-      return new @{objectName}(result);
-    }
-
-    object = "@{kebabCase(objectName)}";
+    @switch(objectName) {
+      @case "PasswordResetToken": {
+        used: boolean;
+        expiry: Date;
+      @}
+    @}
   }
 
-  export function fetch${objectName}ById(id) {
+  export function build@{objectName}FromJSON(json: Object): @{objectName} {
+    return json;
+  }
+
+  export async function fetch${objectName}ById(id: number): Promise<@{objectName}> {
     @var base = BASE_URL + `/${kebabCase(objectName)}s/`;
 
-    return @{objectName}.fromAPI(fetch("@{base}" + id))
+    const body = (await fetch("@{base}" + id)).body()
+    const json = await body.json()
+    return build@{objectName}FromJSON(json);
   }
+
 @}
 ```
 
 After we run it through `atbuild ./contrived-api-endpoint-codegenerator.jsb`, it becomes:
 
 ```js
-// contrived-api-endpoint-codegenerator.js.
-
-class Post {
-  constructor() {
-    this.object = "post";
-  }
-  static async fromAPI(response) {
-    const result = await (await response.body()).json();
-    return new Post(result);
-  }
+// contrived-api-endpoint-codegenerator.js
+function buildPostFromJSON(json) {
+  return json;
 }
-function fetchPostById(id) {
-  return Post.fromAPI(fetch("http://example.com/posts/" + id));
+async function fetchPostById(id) {
+  const body = (await fetch("http://example.com/posts/" + id)).body();
+  const json = await body.json();
+  return buildPostFromJSON(json);
 }
-class User {
-  constructor() {
-    this.object = "user";
-  }
-  static async fromAPI(response) {
-    const result = await (await response.body()).json();
-    return new User(result);
-  }
+function buildUserFromJSON(json) {
+  return json;
 }
-function fetchUserById(id) {
-  return User.fromAPI(fetch("http://example.com/users/" + id));
+async function fetchUserById(id) {
+  const body = (await fetch("http://example.com/users/" + id)).body();
+  const json = await body.json();
+  return buildUserFromJSON(json);
 }
-class Like {
-  constructor() {
-    this.object = "like";
-  }
-  static async fromAPI(response) {
-    const result = await (await response.body()).json();
-    return new Like(result);
-  }
+function buildLikeFromJSON(json) {
+  return json;
 }
-function fetchLikeById(id) {
-  return Like.fromAPI(fetch("http://example.com/likes/" + id));
+async function fetchLikeById(id) {
+  const body = (await fetch("http://example.com/likes/" + id)).body();
+  const json = await body.json();
+  return buildLikeFromJSON(json);
 }
-class PasswordResetToken {
-  constructor() {
-    this.object = "password-reset-token";
-  }
-  static async fromAPI(response) {
-    const result = await (await response.body()).json();
-    return new PasswordResetToken(result);
-  }
+function buildPasswordResetTokenFromJSON(json) {
+  return json;
 }
-function fetchPasswordResetTokenById(id) {
-  return PasswordResetToken.fromAPI(
-    fetch("http://example.com/password-reset-tokens/" + id)
-  );
+async function fetchPasswordResetTokenById(id) {
+  const body = (
+    await fetch("http://example.com/password-reset-tokens/" + id)
+  ).body();
+  const json = await body.json();
+  return buildPasswordResetTokenFromJSON(json);
 }
 export {
-  Like,
-  PasswordResetToken,
-  Post,
-  User,
+  buildLikeFromJSON,
+  buildPasswordResetTokenFromJSON,
+  buildPostFromJSON,
+  buildUserFromJSON,
   fetchLikeById,
   fetchPasswordResetTokenById,
   fetchPostById,
   fetchUserById,
 };
+```
+
+This also generates a `contrived-api-endpoint-codegenerator.ts.d` file:
+
+```ts
+declare type BaseType = {
+  id: number;
+};
+export declare type Post = BaseType & {
+  object: "post";
+};
+export declare function buildPostFromJSON(json: Object): Post;
+export declare function fetchPostById(id: number): Promise<Post>;
+export declare type User = BaseType & {
+  object: "user";
+};
+export declare function buildUserFromJSON(json: Object): User;
+export declare function fetchUserById(id: number): Promise<User>;
+export declare type Like = BaseType & {
+  object: "like";
+};
+export declare function buildLikeFromJSON(json: Object): Like;
+export declare function fetchLikeById(id: number): Promise<Like>;
+export declare type PasswordResetToken = BaseType & {
+  object: "password-reset-token";
+  used: boolean;
+  expiry: Date;
+};
+export declare function buildPasswordResetTokenFromJSON(
+  json: Object
+): PasswordResetToken;
+export declare function fetchPasswordResetTokenById(
+  id: number
+): Promise<PasswordResetToken>;
+export {};
 ```
 
 ## Changelog
@@ -237,7 +341,7 @@ atbuild ./input.jsb ./output.js --pretty --no-header
 
 ## Webpack Loader
 
-**The recommended way to use AtBuild is through the Webpack loader**. This configures Webpack to run any file that ends in `.jsb` through AtBuild automatically.
+**The recommended way to use AtBuild is through the Webpack loader**
 
 Buildtime code is run through a [high performance bundler](https://esbuild.github.io/) for you automatically, so you can write your buildtime code using the same modern JavaScript as the rest of your code. This also means you can import other modules, and those modules don't have to be `.jsb` files - they can be any other file in your codebase (so long as it runs in Node after bundling).
 
@@ -252,20 +356,18 @@ module.exports = {
     rules: [
       // ...
 
-       // AtBuild.js Webpack Loader
+      // AtBuild.js Webpack Loader
       {
-        // File extension is .jsb
-        test: /\.jsb$/,
+        test: /\.(jsb|js|ts|tsx|jsx|@js)$/,
         exclude: /node_modules/,
-        type: "javascript/auto",
+        enforce: "pre",
         use: [
           {
-            loader: "atbuild/webpack-loader
-          },
-          // Run Babel on runtime code afterwards (optional)
-          {
-            loader: "babel-loader",
-            options: {/* your babel options in here if relevant */},
+            loader: "atbuild/webpack-loader,
+            options: {
+              // Generate a .d.ts file automatically so your IDE can more easily interop with AtBuild files.
+              typescript: true,
+            }
           },
         ]
       },

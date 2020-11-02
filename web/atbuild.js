@@ -16,7 +16,6 @@ var __export = (target, all) => {
 // src/atbuild.ts
 var require_atbuild = __commonJS((exports, module) => {
   __export(exports, {
-    $: () => $,
     AtBuild: () => AtBuild,
     default: () => atbuild_default,
     requireFromString: () => requireFromString
@@ -357,9 +356,13 @@ var require_atbuild = __commonJS((exports, module) => {
     BuildtimeCode: 0,
     RuntimeCode: 1
   };
-  var atbuild_default = AtBuild;
-  function $(_args) {
+  const _AtBuild = function $2(args) {
+    return args;
+  };
+  for (let key in AtBuild) {
+    _AtBuild[key] = AtBuild[key].bind(_AtBuild);
   }
+  var atbuild_default = _AtBuild;
 });
 export default require_atbuild();
 //# sourceMappingURL=atbuild.js.map

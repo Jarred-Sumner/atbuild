@@ -43,7 +43,7 @@
     "vscode-languageserver": "^6.1.1"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest src",
     "cli": "yarn --silent build-node && FORCE_DEV=true node dist/cli.js $1",
     "clear-test": "rm samples/*.d.ts",
     "update-readme": "node dist/cli.js ./README.md.jsb ./README.md",
