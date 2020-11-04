@@ -1,0 +1,5 @@
+@export function $sizeof(value: number) {
+  @build {
+    return (Math.log2n(value) + 1) | 0;
+  @}
+@}

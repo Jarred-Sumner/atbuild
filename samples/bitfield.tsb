@@ -1,0 +1,95 @@
+@export function $sizeof(value: number) {
+  @build {
+    return (Math.log2n(value) + 1) | 0;
+  @}
+@}
+
+@export function $BitField(object, _BitFieldClassName) {
+  @build {
+    const BitFieldClassName = _BitFieldClassName || "BitFieldClassName"
+    const BitFieldMixin = require("structurae").BitFieldMixin;
+    const { fields, masks, schema, offsets } = BitFieldMixin(object);
+
+    @run {
+      function() {
+        return class @(BitFieldClassName) {
+          static masks = @(masks);
+          static offsets = @(offsets);
+          static schema = @(schema);
+          static fields = @(fields);
+
+          @build {
+            for (let field of fields) {
+              @run {
+                @(field): number;
+              @}
+            }
+          @}
+
+          static encode(
+            @build {
+              for (let i = 0; i < fields.length; i++) {
+                @run {
+                  @(fields[i]): number,
+                }
+              }
+            @}
+          ) {
+            let result = 0;
+
+            @build {
+              for (let i = fields.length - 1; i >= 0; i--) {
+                const field = fields[i];
+                @run {
+                  result <<= @(schema[field]);
+                  result |= @(field);
+                @}
+              }
+            @}
+
+            return result;
+          }
+
+          @build {
+            for (let index of [0,1]) {
+              @run {
+                @build {
+                  if (index === 0) {
+                    @run {
+                      static decodeRef(value: number, result: @(BitFieldClassName)) {
+                    @}
+                  } else {
+                    @run {
+                      static cached = new Array(@(fields.length))
+                      static decode(value: number) {
+                        const result = this.cached;
+                    @}
+                  }
+                @}
+
+                let value = data;
+                @build {
+                  for (let i = 0; i < fields.length; i++) {
+                    const field = fields[i];
+                    const size = schema[field];
+                    @run {
+                      result.@(field) = value & @(masks[field]);
+                      value >>= @(size);
+                    }
+                  }
+
+                  @run {
+                    return result;
+                  @}
+                @}
+
+                }
+              @}
+            @}
+          }
+        @}
+      }()
+    @}
+  @}
+@}
+

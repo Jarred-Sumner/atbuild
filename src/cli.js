@@ -135,7 +135,7 @@ async function run(input, destination, directory) {
     output = await bundle(source, {
       filename: input,
       destination: destination,
-      directory: directory || path.dirname(destination),
+      directory: directory || destination,
       mode: cli.flags.mode,
       typescript: cli.flags.types,
       filepath: input,

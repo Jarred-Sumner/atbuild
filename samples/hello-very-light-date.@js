@@ -1,0 +1,125 @@
+
+@@
+
+
+var formatters = {
+  // Year
+  y: @lib function(token) {
+    // From http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_tokens
+    // | Year     |     y | yy |   yyy |  yyyy | yyyyy |
+    // |----------|-------|----|-------|-------|-------|
+    // | AD 1     |     1 | 01 |   001 |  0001 | 00001 |
+    // | AD 12    |    12 | 12 |   012 |  0012 | 00012 |
+    // | AD 123   |   123 | 23 |   123 |  0123 | 00123 |
+    // | AD 1234  |  1234 | 34 |  1234 |  1234 | 01234 |
+    // | AD 12345 | 12345 | 45 | 12345 | 12345 | 12345 |
+
+    var signedYear = $date.getUTCFullYear()
+    // Returns 1 for 1 BC (which is year 0 in JavaScript)
+    var year = Math.max(signedYear, 1);
+
+    @if (token === "yy") {
+      @return (year % 100).toString(10).padStart(@{token.length}, "0")
+    @} else {
+      @return year.toString(10).padStart(@{token.length}, "0")
+    @}
+
+  @}-,
+
+  // Month
+  M: @lib function(token) {
+    var month = $date.getUTCMonth()
+
+   @if (token === "MM") {
+      @return (month + 1).padStart(2, "0")
+   @} else if (token === "M") {
+     @return (month + 1).toString(10)
+   @}
+  @}-,
+
+  // Day of the month
+  d: function(token) {
+    return $date.getUTCDate().padStart(@{token.length})
+  },
+
+  // Hour [1-12]
+  h: @lib function(token) {
+    @if (token.length === 2) {
+      @return $date.getUTCHours() % 12 || 12).toString(10).padStart(2)
+    @} else {
+      @return $date.getUTCHours() % 12 || 12).toString(10)
+    @}
+  @}-,
+
+  // Hour [0-23]
+  H: @build function(token) {
+    if (token.length === 2) {
+      @run <$formattedDate, $date> {
+        $formattedDate += $date.getUTCHours()).toString(10).padStart(2)
+      }
+    } else {
+      @return $date.getUTCHours()).toString(10)
+    }
+  @}-,
+
+  // Minute
+  m: @lib function(token) {
+    @if (token.length > 1) {
+      @return $date.getUTCMinutes().toString(10).padStart(2)
+    @} else {
+      @return date.getUTCMinutes().toString(10)
+    @}
+  @}-,
+
+  // Second
+  s: @lib function(token) {
+    @if (token.length > 1) {
+      @return $date.getUTCSeconds().toString(10).padStart(2)
+    @} else {
+      @return date.getUTCSeconds().toString(10)
+    @}
+  @}-,
+}
+@@-
+
+
+
+@export lib function $createDateFormatter(format) {
+  @for (let i = 0; i < format.length; i++) {
+    @let lookAheadCount = 0;
+
+    // Check for repeated characters
+    // So if i = 0 and format = "hh:mm:ss"
+    // This becomes "hh"
+    @for (lookAheadCount = 0; lookAheadCount + i < format.length && format[lookAheadCount + i] === format[i]; lookAheadCount++) {
+
+    @}
+
+    @let token = tokens.substring(i, i + lookAheadCount + 1);
+
+    @if (formatters[token]) {
+      @formatters[token](token);
+    @}
+
+    @i += lookAheadCount
+  @}
+@}-
+
+
+
+ function (unixTimestamp: number) {
+    let hours = Math.floor(unixTimestamp / 3600).toString(10);
+    let minutes = Math.floor((seconds - hours * 3600) / 60).toString(10);
+    let seconds = (unixTimestamp - hours * 3600 - minutes * 60).toString(10);
+
+    if (hours < 10) {
+      hours = "0" + hours;
+    }
+    if (minutes < 10) {
+      minutes = "0" + minutes;
+    }
+    if (seconds < 10) {
+      seconds = "0" + seconds;
+    }
+    return hours + ":" + minutes + ":" + seconds
+  }

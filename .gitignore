@@ -5,3 +5,4 @@ dist
 .DS_Store
 bench-data/threejs
 samples-out
+.out.js

@@ -1,6 +1,6 @@
-# AtBuild – JavaScript Preprocessor
+# AtBuild – Experimental JavaScript Preprocessor
 
-AtBuild is an experimental JavaScript preprocessor. It lets you write JavaScript that writes JavaScript.
+AtBuild is a proceedural code generation tool for JavaScript. It lets you write JavaScript that writes JavaScript.
 
 Use it for:
 
@@ -14,7 +14,7 @@ Use it for:
 There are two flavors of AtBuild.
 
 1. AtBuild Light: compatible with current JavaScript syntax
-2. AtBuild Full: a powerful JavaScript-based templating language for generating code. It's close to but not quite JavaScript, so you should write it in `.jsb` files instead.
+2. AtBuild Full: a powerful JavaScript-based templating language for generating code. It's close to but not quite JavaScript, which is why it has it's own file extension: `.jsb`
 
 ### Atbuild Light
 
@@ -40,9 +40,7 @@ const didRemoveBuildTimeCode = false;
 export const isRemoved = $(!didRemoveBuildTimeCode);
 ```
 
-```bash
-atbuild ./input.js ./output.js
-```
+⌨️ `atbuild ./input.js ./output.js`
 
 `output.js`:
 
@@ -61,18 +59,16 @@ Unlike other buildtime code generation tools, you can `import` from `node_module
 import { $createDateFormatter } from "atbuild-date"; // $
 
 // This library doesn't actually exist! But someone could make it.
-export const formatHourSeconds = $createDateFormatter("HH:MM:SS");
+export const formatHourMinuteSeconds = $createDateFormatter("HH:MM:SS");
 ```
 
-```bash
-atbuild ./input.js ./output.js
-```
+⌨️ `atbuild ./input.js ./output.js`
 
 `output.js`:
 
 ```js
 // Credit: https://stackoverflow.com/questions/6312993/javascript-seconds-to-time-string-with-format-hhmmss
-export const formatHourSeconds = function (unixTimestamp) {
+export const formatHourMinuteSeconds = function (unixTimestamp) {
   let hours = Math.floor(unixTimestamp / 3600).toString(10);
   let minutes = Math.floor((seconds - hours * 3600) / 60).toString(10);
   let seconds = (unixTimestamp - hours * 3600 - minutes * 60).toString(10);
@@ -90,7 +86,9 @@ export const formatHourSeconds = function (unixTimestamp) {
 };
 ```
 
-For compatibility reasons, exporting build time code from JavaScript/TypeScript outside of the file is not supported. But, that's why there's Atbuild Full, so you could write libraries that proceedurally generate code like the one above.
+And it supports types.
+
+For compatibility reasons, exporting build time code from JavaScript/TypeScript outside of the file is not supported. But, that's why there's Atbuild Full, which lets you write libraries for proceedurally generating code at build time.
 
 ### Atbuild Full
 

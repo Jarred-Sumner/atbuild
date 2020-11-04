@@ -1,0 +1,7 @@
+@export function $log(value: string) {
+  @run {
+    function(value) {
+      console.log(value)
+    }
+  @}
+@}

@@ -1,0 +1,92 @@
+# Atbuild Full
+
+Atbuild does not parse JavaScript and is not a fork of JavaScript.
+
+It's more like a templating language for generating code that happens to execute & bundle JavaScript. Theoretically, someone could use Atbuild for other languages with few modifications.
+
+In this templating language, there are four keywords. All other text is assumed to be part of the parent scope. From the language's perspective, if the text isn't `@build`, `@run`, `@()`, `@}`, or `@export function`, like Jon Snow, it knows nothing.
+
+- `@build`: execute code at build-time, do not include it in the runtime code.
+- `@run`: execute code at run-time
+- `@(code)`: Execute `code` in opposite scope (parent is `@build`? It means `@run`. Parent is `@run`? It means `@build`)
+- `@export function`: Export a build-time function that can be used in Atbuild Light (inside regular JavaScript/Typescript files)
+
+Lets dive right in with an example that shows many features altogether.
+
+```java
+// This exports a function that returns a date time formatter.
+@export function $createDateTimeFormatter(format) {
+  // By default, everything inside @run { is executed at runtime.
+  @run {
+    return (date) => {
+      let formattedDate = "";
+
+      // This changes the default, so everything inside @build is executed at build time.
+      @build {
+        for (let i = 0; i < format.length; i++) {
+          let lookAheadCount = 0;
+
+          for (lookAheadCount = 0; lookAheadCount + i < format.length && format[lookAheadCount + i] === format[i]; lookAheadCount++) {
+          //  Merge repeated characters
+          //  So if i = 0 and format = "hh:mm:ss"
+          //  This becomes "hh"
+          }
+          let token = tokens.substring(i, i + lookAheadCount + 1);
+
+
+          if (formatters[token]) {
+            // formatters would be defined elsewhere in the same file, but is too big to show an example here.
+            const tokenFormatter = formatters[token];
+
+            // Now we switch back to runtime
+            @run {
+                            // @(code) is shorthand for "run at opposite scope"
+                            // so this runs at build-time.
+              formattedDate += @(tokenFormatter(token)<"date">)
+            @}
+          }
+
+          i += lookAheadCount
+        }
+      @}
+
+      return formattedDate;
+    }
+  @}
+@}
+```
+
+## All the ways you can create scopes
+
+Most of the time, you'll use a multiline scope. That looks like this:
+
+```ruby
+@build {
+  const buildTimeOnly = true;
+  const isMultilineScope = true;
+@}
+```
+
+That compiles into this, which is executed at buildtime.
+
+```js
+const buildTimeOnly = true;
+const isMultilineScope = true;
+```
+
+```ruby
+@build {
+  const buildTimeOnly = true;
+  const isMultilineScope = true;
+@}
+```
+
+### Multiline scopes
+
+```ruby
+@build {
+
+
+
+@}
+```

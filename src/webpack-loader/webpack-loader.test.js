@@ -59,6 +59,19 @@ describe("AtBuild Webpack Loader", function () {
     expect(result).toContain(`module.exports = "Hi"`);
   });
 
+  it("works export function very light date", async function () {
+    expect.assertions(1);
+
+    const [_result, fs] = await webpack("./samples/hello-datetimestamp");
+
+    const result = fs.readFileSync(
+      _result.compilation.compiler.outputPath + "/bundle.js",
+      "utf8"
+    );
+    // expect(result.includes("hello-nested-require.@js")).toBe(true);
+    expect(result).toContain(`module.exports = "Hi"`);
+  });
+
   it("works async", async function () {
     expect.assertions(1);
 
