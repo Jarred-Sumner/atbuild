@@ -279,7 +279,7 @@ export const PlaygroundPage = ({ tsb, sidebar }) => {
             <Editor
               value={output}
               readOnly
-              language={mode === EditMode.ast ? "json" : "javascript"}
+              language={mode === EditMode.ast ? "json" : "typescript"}
             >
               {error && (
                 <div className="ErrorView-container">

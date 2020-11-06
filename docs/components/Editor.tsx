@@ -45,6 +45,21 @@ export const Editor = React.memo(
             width={width}
             editorDidMount={onMonacoMount}
             height={height}
+            editorWillMount={(monaco) => {
+              monaco.languages.typescript.javascriptDefaults.setCompilerOptions(
+                {
+                  target: monaco.languages.typescript.ScriptTarget.ESNext,
+                  allowNonTsExtensions: true,
+                }
+              );
+
+              monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions(
+                {
+                  noSemanticValidation: true,
+                  noSyntaxValidation: true,
+                }
+              );
+            }}
             language={language}
             theme="vs-light"
             value={value}
