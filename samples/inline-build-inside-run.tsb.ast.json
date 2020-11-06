@@ -1,0 +1,128 @@
+{
+  "children": [
+    {
+      "from": 1,
+      "name": "$InlineBuildInsideRunSyntax",
+      "value": "",
+      "to": 216,
+      "children": [
+        {
+          "from": 49,
+          "to": 50,
+          "value": "\n",
+          "children": [],
+          "scope": null,
+          "keyword": "source",
+          "column": {
+            "start": 34,
+            "end": 4
+          },
+          "line": {
+            "start": 1,
+            "end": 2
+          }
+        },
+        {
+          "from": 51,
+          "to": 213,
+          "children": [
+            {
+              "from": 57,
+              "to": 93,
+              "value": "\n    function() {\n      return class ",
+              "children": [],
+              "scope": null,
+              "keyword": "source",
+              "column": {
+                "start": 5,
+                "end": 20
+              },
+              "line": {
+                "start": 2,
+                "end": 4
+              }
+            },
+            {
+              "from": 94,
+              "to": 119,
+              "children": [
+                {
+                  "from": 102,
+                  "to": 119,
+                  "value": "BitFieldClassName",
+                  "children": [],
+                  "scope": null,
+                  "keyword": "source",
+                  "column": {
+                    "start": 22,
+                    "end": 0
+                  },
+                  "line": {
+                    "start": 4,
+                    "end": 0
+                  }
+                }
+              ],
+              "scope": "inline",
+              "keyword": "build",
+              "column": {
+                "start": 20,
+                "end": 40
+              },
+              "line": {
+                "start": 4,
+                "end": 4
+              }
+            },
+            {
+              "from": 121,
+              "to": 213,
+              "value": "extends Error {\n        constructor() {\n          this.hi = true;\n        }\n      }\n    }\n  ",
+              "children": [],
+              "scope": null,
+              "keyword": "source",
+              "column": {
+                "start": 42,
+                "end": 3
+              },
+              "line": {
+                "start": 4,
+                "end": 10
+              }
+            }
+          ],
+          "scope": "multiline",
+          "keyword": "run",
+          "column": {
+            "start": 2,
+            "end": 3
+          },
+          "line": {
+            "start": 2,
+            "end": 10
+          }
+        }
+      ],
+      "scope": "multiline",
+      "keyword": "export",
+      "column": {
+        "start": 1,
+        "end": 1
+      },
+      "line": {
+        "start": 1,
+        "end": 11
+      }
+    }
+  ],
+  "scope": null,
+  "keyword": "root",
+  "column": {
+    "start": 0,
+    "end": 0
+  },
+  "line": {
+    "start": 0,
+    "end": 0
+  }
+}

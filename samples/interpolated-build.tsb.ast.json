@@ -1,0 +1,46 @@
+{
+  "children": [
+    {
+      "from": 0,
+      "to": 19,
+      "children": [
+        {
+          "from": 2,
+          "to": 19,
+          "value": "console.log(\"HI\")",
+          "children": [],
+          "scope": null,
+          "keyword": "source",
+          "column": {
+            "start": 1,
+            "end": 0
+          },
+          "line": {
+            "start": 0,
+            "end": 0
+          }
+        }
+      ],
+      "scope": "inline",
+      "keyword": "build",
+      "column": {
+        "start": 1,
+        "end": 19
+      },
+      "line": {
+        "start": 0,
+        "end": 0
+      }
+    }
+  ],
+  "scope": null,
+  "keyword": "root",
+  "column": {
+    "start": 0,
+    "end": 0
+  },
+  "line": {
+    "start": 0,
+    "end": 0
+  }
+}

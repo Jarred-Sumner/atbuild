@@ -1,0 +1,80 @@
+{
+  "children": [
+    {
+      "from": 0,
+      "name": "$sizeof",
+      "value": "value",
+      "to": 79,
+      "children": [
+        {
+          "from": 33,
+          "to": 42,
+          "value": "\n  return ",
+          "children": [],
+          "scope": null,
+          "keyword": "source",
+          "column": {
+            "start": 19,
+            "end": 10
+          },
+          "line": {
+            "start": 0,
+            "end": 1
+          }
+        },
+        {
+          "from": 43,
+          "to": 77,
+          "children": [
+            {
+              "from": 51,
+              "to": 77,
+              "value": "(Math.log2(value) + 1) | 0",
+              "children": [],
+              "scope": null,
+              "keyword": "source",
+              "column": {
+                "start": 12,
+                "end": 0
+              },
+              "line": {
+                "start": 1,
+                "end": 0
+              }
+            }
+          ],
+          "scope": "inline",
+          "keyword": "build",
+          "column": {
+            "start": 10,
+            "end": 39
+          },
+          "line": {
+            "start": 1,
+            "end": 1
+          }
+        }
+      ],
+      "scope": "multiline",
+      "keyword": "export",
+      "column": {
+        "start": 1,
+        "end": 1
+      },
+      "line": {
+        "start": 0,
+        "end": 2
+      }
+    }
+  ],
+  "scope": null,
+  "keyword": "root",
+  "column": {
+    "start": 0,
+    "end": 0
+  },
+  "line": {
+    "start": 0,
+    "end": 0
+  }
+}

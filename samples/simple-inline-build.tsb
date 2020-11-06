@@ -1,0 +1,3 @@
+@export function $sizeof(value) {
+  return @build ((Math.log2(value) + 1) | 0)
+@}

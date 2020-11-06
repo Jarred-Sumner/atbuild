@@ -17,15 +17,12 @@ var __export = (target, all) => {
 var require_atbuild = __commonJS((exports, module) => {
   __export(exports, {
     AtBuild: () => AtBuild,
-    default: () => atbuild_default,
+    default: () => $,
     requireFromString: () => requireFromString
   });
   let fs;
-  const BUILD_TIME_MATCHER = /^\s*@(.*)/;
-  const MULTILINE_BUILD_TIME_MATCHER = /^\s*@@(.*)/;
-  const RUNTIME_MATCHER = /\@\{([^@}]*)\}/gm;
   const HEADER_STRING = '/* eslint-disable */\n// @ts-nocheck\n// @ts-ignore\n// @noflow\n"use strict";\n\n';
-  const getMaxLine = function(currentLine, node) {
+  const getMaxLine2 = function(currentLine, node) {
     return Math.max(currentLine, node.lineNumber);
   };
   let requireFromString;
@@ -42,106 +39,10 @@ var require_atbuild = __commonJS((exports, module) => {
   }
   class AtBuild {
     static buildAST(code) {
-      const nodes = [];
-      let lineMatch = null;
-      let lines = String(code).split("\n");
-      let isMultiline = false;
-      for (let i = 0; i < lines.length; i++) {
-        if (lines[i].trim().length === 0) {
-          continue;
-        }
-        if (lineMatch = lines[i].match(MULTILINE_BUILD_TIME_MATCHER)) {
-          if (isMultiline) {
-            isMultiline = false;
-          } else {
-            isMultiline = true;
-          }
-          let scopeValue = 0;
-          if (lineMatch[1].trimEnd().endsWith("{")) {
-            scopeValue++;
-          } else if (lineMatch[1].trimEnd().endsWith("{")) {
-            scopeValue--;
-          }
-          let string = lineMatch[1];
-          for (let i2 = 0; i2 < lineMatch[0].indexOf(lineMatch[1]) + 1; i2++) {
-            string = " " + string;
-          }
-          nodes.push({
-            lineNumber: i,
-            type: "MultilineBuildtimeCode",
-            value: string,
-            scope: scopeValue
-          });
-        } else if (isMultiline) {
-          nodes.push({
-            lineNumber: i,
-            type: "MultilineBuildtimeCode",
-            value: lines[i]
-          });
-        } else if (lineMatch = lines[i].match(BUILD_TIME_MATCHER)) {
-          let scopeValue = 0;
-          if (lineMatch[1].trimEnd().endsWith("{")) {
-            scopeValue++;
-          } else if (lineMatch[1].trimEnd().endsWith("{")) {
-            scopeValue--;
-          }
-          let string = lineMatch[1];
-          for (let i2 = 0; i2 < lineMatch[0].indexOf(lineMatch[1]) + 1; i2++) {
-            string = " " + string;
-          }
-          nodes.push({
-            lineNumber: i,
-            type: "BuildtimeCode",
-            value: string,
-            scope: scopeValue
-          });
-        } else {
-          let line = [
-            {
-              lineNumber: i,
-              type: "RuntimecodeLineStart"
-            },
-            {
-              lineNumber: i,
-              type: "RuntimeCode",
-              value: lines[i],
-              column: 0
-            }
-          ];
-          let result;
-          let lineToMatch = lines[i];
-          let offset = 0;
-          for (let result2 of lineToMatch.matchAll(RUNTIME_MATCHER)) {
-            const [input, match] = result2;
-            const index = result2.index;
-            const original = line[line.length - 1].value;
-            line[line.length - 1].value = original.substring(0, index - offset);
-            line.length += 2;
-            line[line.length - 2] = {
-              lineNumber: i,
-              type: "InterpolatedCode",
-              value: match,
-              column: index - offset
-            };
-            lineToMatch = result2.input.substring(offset = index + input.length);
-            line[line.length - 1] = {
-              type: "RuntimeCode",
-              lineNumber: i,
-              value: lineToMatch,
-              column: offset
-            };
-          }
-          nodes.push(...line);
-          nodes.push({
-            lineNumber: i,
-            type: "RuntimecodeLineEnd"
-          });
-        }
-      }
-      return nodes;
+      return buildAST(code);
     }
     static transformASTBuildTimeOnly(nodes) {
-      const maxLineNumber = nodes.reduce(getMaxLine, 0);
+      const maxLineNumber = nodes.reduce(getMaxLine2, 0);
       let lines = new Array(maxLineNumber + 1);
       for (let i = 0; i < lines.length; i++) {
         lines[i] = "";
@@ -175,56 +76,6 @@ var require_atbuild = __commonJS((exports, module) => {
       }
       return lines.join("");
     }
-    static transformAST(nodes, asFunction, exposeFunctions = false) {
-      let code;
-      if (asFunction) {
-        code = "module.exports.default = async function __atBuild(require) {  var __CODE__ = [];\n\n";
-      } else {
-        code = "var __CODE__ = [];\n\n";
-      }
-      const maxLineNumber = nodes.reduce(getMaxLine, 0);
-      let lines = new Array(maxLineNumber + 3 + (exposeFunctions | 0));
-      for (let i = 0; i < lines.length; i++) {
-        lines[i] = "";
-      }
-      for (let node of nodes) {
-        switch (node.type) {
-          case "MultilineBuildtimeCode":
-          case "BuildtimeCode": {
-            lines[node.lineNumber] += node.value + "\n";
-            break;
-          }
-          case "InterpolatedCode": {
-            lines[node.lineNumber] += "${" + node.value + "}";
-            break;
-          }
-          case "RuntimeCode": {
-            lines[node.lineNumber] += node.value.replace(/`/igm, "\\`");
-            break;
-          }
-          case "RuntimecodeLineStart": {
-            lines[node.lineNumber] += "__CODE__.push(`";
-            break;
-          }
-          case "RuntimecodeLineEnd": {
-            lines[node.lineNumber] += "`);\n";
-            break;
-          }
-        }
-      }
-      lines.unshift(code);
-      if (exposeFunctions) {
-        lines[lines.length - 2] = `for (let key of Object.keys(module.exports)) { module.exports["$" + key] = module.exports[key]; }
-`;
-      }
-      if (asFunction) {
-        lines[lines.length - 1] = `return __CODE__.join("\\n");
-}; module.exports.__specialInitFunction = true;`;
-      } else {
-        lines[lines.length - 1] = `module.exports.default =  __CODE__.join("\\n");`;
-      }
-      return lines.join("");
-    }
     static *findNodesAtLine(nodes, lineNumber) {
       for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
@@ -250,7 +101,7 @@ var require_atbuild = __commonJS((exports, module) => {
         return;
       }
       let code = "var __CODE__ = [];\n\n";
-      const maxLineNumber = nodes.reduce(getMaxLine, 0);
+      const maxLineNumber = nodes.reduce(getMaxLine2, 0);
       let lines = new Array(maxLineNumber + 3);
       for (let i = 0; i < lines.length; i++) {
         lines[i] = "";
@@ -352,17 +203,213 @@ var require_atbuild = __commonJS((exports, module) => {
       return source;
     }
   }
+  AtBuild.transformAST = transformAST;
   AtBuild.ASTResponseType = {
     BuildtimeCode: 0,
     RuntimeCode: 1
   };
-  const _AtBuild = function $2(args) {
-    return args;
-  };
-  for (let key in AtBuild) {
-    _AtBuild[key] = AtBuild[key].bind(_AtBuild);
+  function $(arg) {
+    return arg;
   }
-  var atbuild_default = _AtBuild;
 });
+
+// src/fullAst.ts
+const BUILD_TIME_MATCHER = /^\s*@(.*)/;
+const MULTILINE_BUILD_TIME_MATCHER = /^\s*@@(.*)/;
+const RUNTIME_MATCHER = /\@\{([^@}]*)\}/gm;
+var ASTNode;
+(function(ASTNode2) {
+  ASTNode2[ASTNode2["RuntimeCode"] = 0] = "RuntimeCode";
+  ASTNode2[ASTNode2["BuildtimeCode"] = 1] = "BuildtimeCode";
+  ASTNode2[ASTNode2["MultilineBuildtimeCode"] = 2] = "MultilineBuildtimeCode";
+  ASTNode2[ASTNode2["RuntimecodeLineStart"] = 3] = "RuntimecodeLineStart";
+  ASTNode2[ASTNode2["InterpolatedCode"] = 4] = "InterpolatedCode";
+  ASTNode2[ASTNode2["RuntimecodeLineEnd"] = 5] = "RuntimecodeLineEnd";
+  ASTNode2[ASTNode2["ExportFunctionStart"] = 6] = "ExportFunctionStart";
+  ASTNode2[ASTNode2["ExportFunctionEnd"] = 7] = "ExportFunctionEnd";
+})(ASTNode || (ASTNode = {}));
+function buildAST(code) {
+  const nodes = [];
+  let lineMatch = null;
+  let lines = String(code).split("\n");
+  let isMultiline = false;
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].trim().length === 0) {
+      continue;
+    }
+    if (lineMatch = lines[i].match(MULTILINE_BUILD_TIME_MATCHER)) {
+      if (isMultiline) {
+        isMultiline = false;
+      } else {
+        isMultiline = true;
+      }
+      let scopeValue = 0;
+      if (lineMatch[1].trimEnd().endsWith("{")) {
+        scopeValue++;
+      } else if (lineMatch[1].trimEnd().endsWith("{")) {
+        scopeValue--;
+      }
+      let string = lineMatch[1];
+      for (let i2 = 0; i2 < lineMatch[0].indexOf(lineMatch[1]) + 1; i2++) {
+        string = " " + string;
+      }
+      nodes.push({
+        lineNumber: i,
+        type: 2,
+        value: string,
+        scope: scopeValue
+      });
+    } else if (isMultiline) {
+      nodes.push({
+        lineNumber: i,
+        type: 2,
+        value: lines[i]
+      });
+    } else if (lineMatch = lines[i].match(BUILD_TIME_MATCHER)) {
+      let scopeValue = 0;
+      if (lineMatch[1].trimEnd().endsWith("{")) {
+        scopeValue++;
+      } else if (lineMatch[1].trimEnd().endsWith("{")) {
+        scopeValue--;
+      }
+      let string = lineMatch[1];
+      for (let i2 = 0; i2 < lineMatch[0].indexOf(lineMatch[1]) + 1; i2++) {
+        string = " " + string;
+      }
+      nodes.push({
+        lineNumber: i,
+        type: 1,
+        value: string,
+        scope: scopeValue
+      });
+    } else if (lineMatch = lines[i].match(BUILD_TIME_MATCHER)) {
+      let scopeValue = 0;
+      if (lineMatch[1].trimEnd().endsWith("{")) {
+        scopeValue++;
+      } else if (lineMatch[1].trimEnd().endsWith("{")) {
+        scopeValue--;
+      }
+      let string = lineMatch[1];
+      for (let i2 = 0; i2 < lineMatch[0].indexOf(lineMatch[1]) + 1; i2++) {
+        string = " " + string;
+      }
+      nodes.push({
+        lineNumber: i,
+        type: 1,
+        value: string,
+        scope: scopeValue
+      });
+    } else if (lineMatch = lines[i].match(BUILD_TIME_MATCHER)) {
+      let scopeValue = 0;
+      if (lineMatch[1].trimEnd().endsWith("{")) {
+        scopeValue++;
+      } else if (lineMatch[1].trimEnd().endsWith("{")) {
+        scopeValue--;
+      }
+      let string = lineMatch[1];
+      for (let i2 = 0; i2 < lineMatch[0].indexOf(lineMatch[1]) + 1; i2++) {
+        string = " " + string;
+      }
+      nodes.push({
+        lineNumber: i,
+        type: 1,
+        value: string,
+        scope: scopeValue
+      });
+    } else {
+      let line = [
+        {
+          lineNumber: i,
+          type: 3
+        },
+        {
+          lineNumber: i,
+          type: 0,
+          value: lines[i],
+          column: 0
+        }
+      ];
+      let result;
+      let lineToMatch = lines[i];
+      let offset = 0;
+      for (let result2 of lineToMatch.matchAll(RUNTIME_MATCHER)) {
+        const [input, match] = result2;
+        const index = result2.index;
+        const original = line[line.length - 1].value;
+        line[line.length - 1].value = original.substring(0, index - offset);
+        line.length += 2;
+        line[line.length - 2] = {
+          lineNumber: i,
+          type: 4,
+          value: match,
+          column: index - offset
+        };
+        lineToMatch = result2.input.substring(offset = index + input.length);
+        line[line.length - 1] = {
+          type: 0,
+          lineNumber: i,
+          value: lineToMatch,
+          column: offset
+        };
+      }
+      nodes.push(...line);
+      nodes.push({
+        lineNumber: i,
+        type: 5
+      });
+    }
+  }
+  return nodes;
+}
+function transformAST(nodes, asFunction, exposeFunctions = false) {
+  let code;
+  if (asFunction) {
+    code = "module.exports.default = async function __atBuild(require) {  var __CODE__ = [];\n\n";
+  } else {
+    code = "var __CODE__ = [];\n\n";
+  }
+  const maxLineNumber = nodes.reduce(getMaxLine, 0);
+  let lines = new Array(maxLineNumber + 3 + (exposeFunctions | 0));
+  for (let i = 0; i < lines.length; i++) {
+    lines[i] = "";
+  }
+  for (let node of nodes) {
+    switch (node.type) {
+      case 2:
+      case 1: {
+        lines[node.lineNumber] += node.value + "\n";
+        break;
+      }
+      case 4: {
+        lines[node.lineNumber] += "${" + node.value + "}";
+        break;
+      }
+      case 0: {
+        lines[node.lineNumber] += node.value.replace(/`/igm, "\\`");
+        break;
+      }
+      case 3: {
+        lines[node.lineNumber] += "__CODE__.push(`";
+        break;
+      }
+      case 5: {
+        lines[node.lineNumber] += "`);\n";
+        break;
+      }
+    }
+  }
+  lines.unshift(code);
+  if (exposeFunctions) {
+    lines[lines.length - 2] = `for (let key of Object.keys(module.exports)) { module.exports["$" + key] = module.exports[key]; }
+`;
+  }
+  if (asFunction) {
+    lines[lines.length - 1] = `return __CODE__.join("\\n");
+}; module.exports.__specialInitFunction = true;`;
+  } else {
+    lines[lines.length - 1] = `module.exports.default =  __CODE__.join("\\n");`;
+  }
+  return lines.join("");
+}
 export default require_atbuild();
 //# sourceMappingURL=atbuild.js.map

@@ -22,11 +22,13 @@
     "@babel/core": "^7.11.6",
     "@babel/preset-env": "^7.11.5",
     "@babel/preset-typescript": "^7.12.1",
+    "@types/benchmark": "^2.1.0",
     "@types/jest": "^26.0.15",
     "@types/webpack": "^4.41.24",
     "babel-jest": "^26.5.2",
     "babel-loader": "^8.1.0",
-    "jest": "^26.5.3",
+    "benchmark": "^2.1.4",
+    "jest": "^26.6.3",
     "jest-cli": "^26.5.3",
     "lodash": "^4.17.20",
     "memfs": "^3.2.0",
@@ -44,6 +46,7 @@
   },
   "scripts": {
     "test": "jest src",
+    "bench": "node bench-data/full2-bench.js",
     "cli": "yarn --silent build-node && FORCE_DEV=true node dist/cli.js $1",
     "clear-test": "rm samples/*.d.ts",
     "update-readme": "node dist/cli.js ./README.md.jsb ./README.md",
@@ -62,6 +65,7 @@
     "postcompile-vscode": "cp dist/atbuild.js ./atbuild-vscode/client/out/atbuild.js; cp dist/atbuild.js ./atbuild-vscode/server/out/atbuild.js"
   },
   "dependencies": {
+    "atbuild": "/Users/jarredsumner/Code/atbuild",
     "esbuild": "https://github.com/Jarred-Sumner/esbuild/releases/download/pluginbuild/esbuild-0.8.1.tgz",
     "loader-utils": "^2.0.0",
     "meow": "^7.1.1"

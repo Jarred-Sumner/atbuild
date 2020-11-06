@@ -12,7 +12,7 @@
 
     @run {
       function() {
-        return class @(BitFieldClassName) {
+        return class @build (BitFieldClassName) {
           static masks = @(masks);
           static offsets = @(offsets);
           static schema = @(schema);
@@ -75,15 +75,13 @@
                     @run {
                       result.@(field) = value & @(masks[field]);
                       value >>= @(size);
-                    }
+                    @}
                   }
 
                   @run {
                     return result;
                   @}
                 @}
-
-                }
               @}
             @}
           }
