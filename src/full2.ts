@@ -419,7 +419,7 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
         if (sourceNode) {
           sourceNode.colEnd = column;
           sourceNode.lineEnd = line;
-          sourceNode.to = position - 1;
+          sourceNode.to = position;
           sourceNode = null;
           //sourceNode.value = code.substring(sourceNode.from, position);
         }
@@ -759,7 +759,7 @@ export function transformAST(root: ASTNode, code: string): string {
       root.children[i].keyword !== ASTNodeKeyword.export
     ) {
       needsRootSource = true;
-      source += `\n${SOURCE_CODE_VARIABLE} = [];\n`;
+      source += `\n${SOURCE_CODE_VARIABLE} = "";\n`;
     }
 
     source += visit(root.children[i], i, root, true, code);
@@ -775,7 +775,7 @@ export function transformAST(root: ASTNode, code: string): string {
       source += ";";
     }
 
-    source += `\nvar ${SOURCE_CODE_VARIABLE};\nmodule.exports.default = ${SOURCE_CODE_VARIABLE}.join("");\n${SOURCE_CODE_VARIABLE} = null;\n`;
+    source += `\nvar ${SOURCE_CODE_VARIABLE};\nmodule.exports.default = ${SOURCE_CODE_VARIABLE};\n${SOURCE_CODE_VARIABLE} = "";\n`;
   }
   return source;
 }
@@ -821,7 +821,7 @@ function visit(
     case ASTNodeKeyword.build: {
       if (node.scope === Scope.inline) {
         if (node.parent && node.parent.keyword === ASTNodeKeyword.run) {
-          source += `${SOURCE_CODE_VARIABLE}.push(`;
+          source += `${SOURCE_CODE_VARIABLE} += (`;
         }
         // source += `(function ${functionName}(${SOURCE_CODE_VARIABLE})  { return (`;
         if (node.children) {
@@ -875,7 +875,7 @@ function visit(
       }(${node.value.trim().split(",").join(", ")})${
         node.functionDeclarationSuffix
       } {
-        const ${SOURCE_CODE_VARIABLE} = typeof this.${SOURCE_CODE_VARIABLE} === 'undefined' ? [] : this.${SOURCE_CODE_VARIABLE};
+        let ${SOURCE_CODE_VARIABLE} = typeof this.${SOURCE_CODE_VARIABLE} === 'undefined' ? [] : this.${SOURCE_CODE_VARIABLE};
 
         const buildEval = (function ${functionName}() {\n`;
       if (node.children) {
@@ -888,7 +888,7 @@ function visit(
       //   .map(quotedVariableMapping)
       //   .join(", ");
       source += `\n})();
-  return typeof buildEval === 'undefined' ? ${SOURCE_CODE_VARIABLE}.join("") : buildEval;
+  return typeof buildEval === 'undefined' ? ${SOURCE_CODE_VARIABLE} : buildEval;
 }));\n\n`;
 
       break;
@@ -970,9 +970,9 @@ function visit(
           }
           value = slottedValue.join("");
         }
-        source += `${SOURCE_CODE_VARIABLE}.push("${value
+        source += `${SOURCE_CODE_VARIABLE} += "${value
           .replace(/\n/gm, "\\n")
-          .replace(/"/gm, '\\"')}");${trailingNewline ? "\n" : ""}`;
+          .replace(/"/gm, '\\"')}";${trailingNewline ? "\n" : ""}`;
       } else {
         throw "Unhandled keyword type";
       }

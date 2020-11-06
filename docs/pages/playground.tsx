@@ -9,6 +9,11 @@ import { Editor } from "../components/Editor";
 
 const ENABLE_PRETTIER = true;
 
+let worker: Worker;
+if (typeof window !== "undefined") {
+  worker = new Worker("/eval/EvalWorker.worker.js");
+}
+
 export async function getStaticProps(context) {
   const { fetchSidebarContent } = require("../components/Sidebar");
   const util = require("util");
@@ -44,7 +49,7 @@ const DEFAULT_FILE = "simple-nested-once.tsb";
 enum EditMode {
   code = "build",
   ast = "ast",
-  eval = "bundle",
+  bundle = "bundle",
 }
 
 const Tab = ({ children, value, isActive }) => {
@@ -99,14 +104,15 @@ const Tab = ({ children, value, isActive }) => {
 const CLI_MODE_LABEL = {
   [EditMode.ast]: "--ast --no-bundle",
   [EditMode.code]: "--print --no-bundle",
-  [EditMode.eval]: "--bundle",
+  [EditMode.bundle]: "--bundle",
 };
 export const PlaygroundPage = ({ tsb, sidebar }) => {
   const router = useRouter();
 
   const defaultFile = router.query.file || DEFAULT_FILE;
-  const [code, setCode] = React.useState(tsb[defaultFile]);
+  const [code, _setCode] = React.useState(tsb[defaultFile]);
   const [error, setError] = React.useState<Error>(null);
+  const [evalOutput, setEvalOutput] = React.useState<string>(null);
   const mode = React.useMemo(() => {
     if (
       typeof router.query?.output !== "undefined" &&
@@ -117,6 +123,41 @@ export const PlaygroundPage = ({ tsb, sidebar }) => {
       return EditMode.code;
     }
   }, [router.query.output]);
+
+  const setCode = React.useCallback(
+    (code) => {
+      setError(null);
+      _setCode(code);
+    },
+    [_setCode, setError]
+  );
+
+  const onEval = React.useCallback(
+    (event: MessageEvent) => {
+      console.log(event.data);
+      setEvalOutput(event.data.code);
+    },
+    [setEvalOutput]
+  );
+
+  const onEvalError = React.useCallback(
+    (event: ErrorEvent) => {
+      console.error(event.error);
+      setError(event.error);
+    },
+    [setError]
+  );
+
+  if (typeof window !== "undefined") {
+    React.useEffect(() => {
+      worker.addEventListener("message", onEval);
+      worker.addEventListener("error", onEvalError);
+      return () => {
+        worker.removeEventListener("message", onEval);
+        worker.removeEventListener("error", onEvalError);
+      };
+    }, [worker, onEval, onEvalError]);
+  }
 
   const onChangeFile = React.useCallback(
     (event) => {
@@ -134,11 +175,36 @@ export const PlaygroundPage = ({ tsb, sidebar }) => {
 
   const lastOutput = React.useRef();
 
+  const ast = React.useMemo(() => {
+    try {
+      return buildAST(code);
+    } catch (exception) {
+      setError(exception);
+    }
+  }, [code, buildAST, setError]);
+
+  const source = React.useMemo(() => {
+    if (ast) {
+      try {
+        return transformAST(ast, code);
+      } catch (exception) {
+        setError(exception);
+      }
+    } else {
+      return null;
+    }
+  }, [code, transformAST, setError]);
+
+  React.useEffect(() => {
+    if (source && source.length) {
+      worker.postMessage({ code: source, ast: ast.toJSON() });
+    }
+  }, [source, worker, ast]);
+
   const output = React.useMemo(() => {
     let _output;
     try {
       if (mode == EditMode.code) {
-        const source = transformAST(buildAST(code, defaultFile), code);
         if (ENABLE_PRETTIER) {
           _output = format(source, { plugins: [parserBabel] }) || source;
         } else {
@@ -146,6 +212,8 @@ export const PlaygroundPage = ({ tsb, sidebar }) => {
         }
 
         _output = `// This code is executed at build-time and replaced with the contents of ___source___, often making the bundle much smaller. \n\n${_output}`;
+      } else if (mode === EditMode.bundle) {
+        _output = evalOutput;
       } else {
         _output = buildAST(code, defaultFile).toJSON();
       }
@@ -163,7 +231,17 @@ export const PlaygroundPage = ({ tsb, sidebar }) => {
     } else if (mode === EditMode.ast) {
       return lastOutput.current || {};
     }
-  }, [code, buildAST, transformAST, setError, mode, defaultFile, lastOutput]);
+  }, [
+    code,
+    buildAST,
+    transformAST,
+    source,
+    setError,
+    mode,
+    defaultFile,
+    lastOutput,
+    evalOutput,
+  ]);
 
   return (
     <Page noScroll sidebar={sidebar} dark={false}>
@@ -186,7 +264,7 @@ export const PlaygroundPage = ({ tsb, sidebar }) => {
         <div className="Previewer">
           <div className="HeaderBar HeaderBar--second">
             <div className="TabList">
-              <Tab isActive={mode === EditMode.eval} value={EditMode.eval}>
+              <Tab isActive={mode === EditMode.bundle} value={EditMode.bundle}>
                 Output
               </Tab>
               <Tab isActive={mode === EditMode.code} value={EditMode.code}>

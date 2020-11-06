@@ -14,7 +14,7 @@ Use it for:
 There are two flavors of AtBuild.
 
 1. AtBuild Light: compatible with current JavaScript syntax
-2. AtBuild Full: a powerful JavaScript-based templating language for generating code. It's close to but not quite JavaScript, which is why it has it's own file extension: `.jsb`
+2. AtBuild Full: a powerful JavaScript-based templating language for generating code. It's close to but not quite JavaScript, which is why it has it's own file extension: `.jsb`/`.tsb`
 
 ### Atbuild Light
 
@@ -92,61 +92,103 @@ For compatibility reasons, exporting build time code from JavaScript/TypeScript 
 
 ### Atbuild Full
 
-Atbuild Full has two rules:
+Atbuild Full adds a few new keywords to JavaScript. It lets you evaluate & generate code at build time using JavaScript.
 
-1. Any line that starts with `@` will be evaluated at buildtime instead of runtime.
+1. `@build`: code contained inside `@build` will be run at build-time instead of runtime
 
-2. Any line containing `@{codeInHere}` will be evaluated at buildtime instead of runtime.
+```js
+@build
+  const yourBrowserDoesntKnowAboutThisCode = true;
+@end
+```
+
+2. `@run`: code contained inside `@run` will be included at runtime.
+
+```js
+@run
+  console.log("This code will be included at runtime");
+@end
+```
+
+3. `@run` and `@build` can be nested. `@()` is like string interpolation but for generating code.
+
+```js
+@build
+  // This for loop isn't included in the runtime code.
+  for (let i = 0; i < 3;i++) {
+    @run
+      console.log("This code will be included at runtime @(i)");
+    @end
+  }
+@end
+```
+
+And this is the output:
+
+```js
+console.log("This code will be included at runtime 0");
+console.log("This code will be included at runtime 1");
+console.log("This code will be included at runtime 2");
+```
+
+4. `@export function $FunctionNameGoesHere(arguments, in, here)` adds a build-time exported function that can be called from regular JavaScript/TypeScript files. Before it reaches the browser, the function call is replaced with the code generated from the function call.
 
 You write some of your JavaScript in `.jsb` files, and by default, all the code in the file will be evaluated at runtime.
 
-But, if the line starts with an `@` or if it contains `@{}`, those parts of the file will be switched out, and run at buildtime instead.
-
 The code evaluated at buildtime is also JavaScript.
+
+All of this works with your bundler, so you can import React components and generates type definitions.
 
 ## Contrived example:
 
 ```js
 // contrived-api-endpoint-codegenerator.jsb.
-@@
+@build
 
 import { kebabCase, startCase, toLower} from 'lodash';
-
 const titleize = str => startCase(toLower(str));
-
 const BASE_URL = `http://example.com`;
 
-@@-
+@end
 
 type BaseType = {
   id: number;
 }
 
-@for (let objectName of ["Post", "User", "Like", "PasswordResetToken"]) {
-  export type @{objectName} = BaseType & {
-    object: "@{kebabCase(objectName)}";
+@build
+  for (let objectName of ["Post", "User", "Like", "PasswordResetToken"]) {
+    @run
+      export type @(objectName) = BaseType & {
+        object: "@(kebabCase(objectName))";
 
-    @switch(objectName) {
-      @case "PasswordResetToken": {
-        used: boolean;
-        expiry: Date;
-      @}
-    @}
+        @build
+        switch(objectName) {
+          case "PasswordResetToken": {
+            @run
+              used: boolean;
+              expiry: Date;
+            @end
+          }
+        }
+        @end
+      }
+
+      export function build@(objectName)FromJSON(json: Object): @(objectName) {
+        return json;
+      }
+
+      export async function fetch@(objectName)ById(id: number): Promise<@(objectName)> {
+        @build
+          var base = BASE_URL + `/${kebabCase(objectName)}s/`;
+        @end
+
+        const body = (await fetch("@(base)" + id)).body()
+        const json = await body.json()
+        return build@(objectName)FromJSON(json);
+      }
+    @end
   }
-
-  export function build@{objectName}FromJSON(json: Object): @{objectName} {
-    return json;
-  }
-
-  export async function fetch${objectName}ById(id: number): Promise<@{objectName}> {
-    @var base = BASE_URL + `/${kebabCase(objectName)}s/`;
-
-    const body = (await fetch("@{base}" + id)).body()
-    const json = await body.json()
-    return build@{objectName}FromJSON(json);
-  }
-
-@}
+@end
 ```
 
 After we run it through `atbuild ./contrived-api-endpoint-codegenerator.jsb`, it becomes:
@@ -236,6 +278,8 @@ export {};
 
 ## Changelog
 
+**November 6th**: New syntax for Atbuild Full, and a new parser to go with it.
+
 **October 30th, 2020**: Added support for nested buildtime modules to export functions that are only available at buildtime. This allows you to write zero-runtime libraries.
 
 **October 30th, 2020**: Added support for nested buildtime modules in the webpack-loader, so you can import jsb files from inside jsb files and it will work as expected (buildtime code is executed, runtime code is generated)
@@ -243,42 +287,6 @@ export {};
 **October 29th, 2020**: Added support for bundling buildtime code in the webpack loader, meaning you can use the same syntax for buildtime code and runtime code. This also makes it easy to import runtime modules at buildtime. The webpack-loader uses [esbuild](https://esbuild.github.io/) for bundling the backend code.
 
 **October 28th, 2020**: Extremely WIP VSCode extension.
-
-**October 28th, 2020**: `await` is now supported for buildtime code (not in webpack)
-
-**October 28th, 2020**: New syntax: `@@` allows multiline buildtime code generation.
-
-For example:
-
-```java
-// The code inside @@ is run at build-time.
-@@
-const fetch = require("node-fetch")
-const resp = await fetch("https://github.com/Jarred-Sumner/atbuild/commit/master.patch")
-const text = await resp.text()
-@@
-
-
-// At buildtime, `@{text}` is replaced with the output from https://github.com/Jarred-Sumner/atbuild/commit/master.patch.
-module.exports = `@{text}`
-```
-
-**October 28th, 2020**: Added support for `require` in buildtime code. Runtime code works like normal and is run through Babel or any other loaders you use. ~Buildtime code isn't run through babel, but this might be implemented later via webpack's `this._compilation_.createChildCompiler`, which would run buildtime and runtime code both through webpack.~ Fixed
-
-For example:
-
-```java
-// The code inside @@ is run at build-time.
-@@
-const fetch = require("node-fetch")
-const resp = await fetch("https://github.com/Jarred-Sumner/atbuild/commit/master.patch")
-const text = await resp.text()
-@@
-
-
-// At buildtime, `@{text}` is replaced with the output from https://github.com/Jarred-Sumner/atbuild/commit/master.patch.
-module.exports = `@{text}`
-```
 
 **October 28th, 2020**: Added support for `require` in buildtime code. Runtime code works like normal and is run through Babel or any other loaders you use. ~Buildtime code isn't run through babel, but this might be implemented later via webpack's `this._compilation_.createChildCompiler`, which would run buildtime and runtime code both through webpack.~ Fixed
 

@@ -51,7 +51,7 @@ module.exports = withCSS(
           use: {
             loader: "url-loader",
             options: {
-              limit: 100000,
+              limit: 10000,
               name: "[name].[ext]",
             },
           },
