@@ -138,7 +138,7 @@ export const PlaygroundPage = ({ tsb, sidebar }) => {
     let _output;
     try {
       if (mode == EditMode.code) {
-        const source = transformAST(buildAST(code, defaultFile));
+        const source = transformAST(buildAST(code, defaultFile), code);
         if (ENABLE_PRETTIER) {
           _output = format(source, { plugins: [parserBabel] }) || source;
         } else {

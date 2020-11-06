@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { debug } from "webpack";
 import { buildAST, transformAST, ASTNode } from "./full2";
 
 const _path = (name) => path.join(__dirname, "../samples", name);
@@ -29,7 +30,7 @@ describe("Full2", () => {
   let ast: ASTNode, code: string, source: string;
   function run(file) {
     ast = buildAST((source = SAMPLES[file]), paths[file]);
-    code = transformAST(ast);
+    code = transformAST(ast, source);
     fs.writeFileSync(paths[file] + ".out.js", code);
     fs.writeFileSync(
       paths[file] + ".ast.json",
@@ -68,6 +69,7 @@ describe("Full2", () => {
 
   it("loads hoursFormatter sample", () => {
     run("hoursFormatter");
+    debugger;
   });
 
   it("loads log sample", () => {

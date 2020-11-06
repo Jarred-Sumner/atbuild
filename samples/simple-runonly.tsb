@@ -1,7 +1,7 @@
-@export function $log(value: string) {
-  @run {
+@export function $log(value: string)
+  @run
     function(value) {
       console.log(value)
     }
-  @}
-@}
+  @end
+@end

@@ -44,6 +44,7 @@ export enum ASTNodeKeyword {
   inline = 4,
   replacer = 5,
   root = 6,
+  interpolate = 7,
 }
 
 export interface ASTNode {
@@ -55,6 +56,7 @@ export interface ASTNode {
   scope: Scope;
   value?: string;
   lineStart: number;
+  functionDeclarationSuffix: string;
   lineEnd: number;
   colStart: number;
   colEnd: number;
@@ -69,6 +71,7 @@ let astNodeBase: ASTNode = {
   keyword: ASTNodeKeyword.source,
   name: "",
   value: "",
+  functionDeclarationSuffix: "",
   lineStart: 0,
   lineEnd: 0,
   colStart: 0,
@@ -147,6 +150,7 @@ if (process.env.NODE_ENV === "test") {
 }
 
 const charTypes = new Uint8Array(255);
+const emptyCharTypes = new Uint8Array(255);
 const incrementLineNumber = new Uint8Array(255);
 
 enum ControlIdentifier {
@@ -156,7 +160,7 @@ enum ControlIdentifier {
   build = 3,
   run = 4,
   closeScope = 5,
-  interpolateBuild = 6,
+  interpolate = 6,
 }
 
 const Keywords = {
@@ -205,43 +209,57 @@ const operationsByControlIdentifier = new Uint8Array(8);
 
 const keywordNames = new Array(6);
 
+function getControlIdentifier(code: string, position: number) {
+  if (code[position + 1] === "e" && code[position + 2] === "n") {
+    return ControlIdentifier.closeScope;
+  } else {
+    return controlIdentifierTypes[code.charCodeAt(position + 1)];
+  }
+}
+
+emptyCharTypes.fill(0);
+emptyCharTypes[CharacterType.whitespace] = 1;
+emptyCharTypes[CharacterType.newline] = 1;
 controlIdentifierTypes[Keywords.inline.prefixCode] = ControlIdentifier.inline;
 controlIdentifierTypes[Keywords.run.prefixCode] = ControlIdentifier.run;
 controlIdentifierTypes[Keywords.build.prefixCode] = ControlIdentifier.build;
 controlIdentifierTypes[Keywords.export.prefixCode] = ControlIdentifier.export;
-controlIdentifierTypes["(".charCodeAt(0)] = ControlIdentifier.interpolateBuild;
-controlIdentifierTypes["}".charCodeAt(0)] = ControlIdentifier.closeScope;
+controlIdentifierTypes["(".charCodeAt(0)] = ControlIdentifier.interpolate;
 
 controlIdentifierSkipLength[ControlIdentifier.inline] = "inline".length;
 controlIdentifierSkipLength[ControlIdentifier.run] = "run".length;
 controlIdentifierSkipLength[ControlIdentifier.build] = "build".length;
-controlIdentifierSkipLength[ControlIdentifier.interpolateBuild] = "(".length;
+controlIdentifierSkipLength[ControlIdentifier.interpolate] = "(".length;
 controlIdentifierSkipLength[
   ControlIdentifier.export
 ] = "export function".length;
-controlIdentifierSkipLength[ControlIdentifier.closeScope] = 1;
+controlIdentifierSkipLength[ControlIdentifier.closeScope] = "end".length;
 
 keywordNames[ControlIdentifier.inline] = "inline";
 keywordNames[ControlIdentifier.run] = "run";
 keywordNames[ControlIdentifier.build] = "build";
 keywordNames[ControlIdentifier.export] = "export function";
-keywordNames[ControlIdentifier.closeScope] = "}";
-keywordNames[ControlIdentifier.interpolateBuild] = "(";
+keywordNames[ControlIdentifier.closeScope] = "end";
+keywordNames[ControlIdentifier.interpolate] = "(";
 
 operationsByControlIdentifier.fill(ParseOperation.determineKeywordAttribute);
 operationsByControlIdentifier[ControlIdentifier.export] =
   ParseOperation.determineName;
-operationsByControlIdentifier[ControlIdentifier.interpolateBuild] =
+operationsByControlIdentifier[ControlIdentifier.interpolate] =
   ParseOperation.closeInline;
 
 const keywordTypes = new Uint8Array(8);
 keywordTypes[ControlIdentifier.inline] = ASTNodeKeyword.inline;
 keywordTypes[ControlIdentifier.run] = ASTNodeKeyword.run;
 keywordTypes[ControlIdentifier.build] = ASTNodeKeyword.build;
-keywordTypes[ControlIdentifier.interpolateBuild] = ASTNodeKeyword.build;
+keywordTypes[ControlIdentifier.interpolate] = ASTNodeKeyword.interpolate;
 keywordTypes[ControlIdentifier.export] = ASTNodeKeyword.export;
 
 incrementLineNumber[CharacterType.newline] = 1;
+
+const backtrackAmount = new Int8Array(16);
+backtrackAmount[CharacterType.newline] = -1;
+backtrackAmount[CharacterType.whitespace] = -1;
 
 for (let code = 0; code < 256; code++) {
   if ((code > 64 && code < 91) || (code > 96 && code < 123)) {
@@ -254,10 +272,6 @@ for (let code = 0; code < 256; code++) {
     charTypes[code] = CharacterType.whitespace;
   } else if (code === "@".charCodeAt(0)) {
     charTypes[code] = CharacterType.control;
-  } else if (code === "{".charCodeAt(0)) {
-    charTypes[code] = CharacterType.scopeOpener;
-  } else if (code === "}".charCodeAt(0)) {
-    charTypes[code] = CharacterType.scopeCloser;
   } else if (code === "(".charCodeAt(0)) {
     charTypes[code] = CharacterType.inlineOpener;
   } else if (code === ")".charCodeAt(0)) {
@@ -275,9 +289,11 @@ for (let code = 0; code < 256; code++) {
 enum ParseErrorType {
   invalidKeyword = 0,
   invalidExportFunction = 1,
+  strayOpenBrace = 2,
 }
 
 const ParseErrorNames = {
+  [ParseErrorType.strayOpenBrace]: "Invalid {",
   [ParseErrorType.invalidKeyword]: "Invalid keyword",
   [ParseErrorType.invalidExportFunction]: "Invalid export function",
 };
@@ -298,32 +314,44 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
     cursor: CharacterType = CharacterType.ignore,
     operation = ParseOperation.findControl,
     controlIdentifierType = ControlIdentifier.invalid,
+    prevCursor: CharacterType = cursor,
     line = 0,
     column = 0,
     skipLength = 0,
     parent: ASTNode = root,
     replacerNode: ASTNode,
     keywordNode: ASTNode,
-    depthCounter = 0,
+    inlineDepthCount = 0,
+    scopeDepthCount = 0,
     inlineStart = 0,
-    inlineEnd = 0,
-    scopeStart = 0,
-    scopeEnd = 0,
     nameStart = 0,
     variableMapOpenerStart = 0,
     variableMapArgumentStart = 0,
     lastNode: ASTNode,
+    endOfPreviousLine = 0,
+    endOfPreviousLineColumn = 0,
+    isLineEmpty = 1,
+    inlineEnd = 0,
     replacerStart = 0;
 
   // sourceNode.parent = parent;
   root.children = [];
   root.keyword = ASTNodeKeyword.root;
 
-  for (position = 0; position < code.length; position++) {
+  for (position = 0; position < code.length; position++, prevCursor = cursor) {
     cursor = charTypes[code.charCodeAt(position)];
-    line += incrementLineNumber[cursor];
+    if (incrementLineNumber[cursor]) {
+      endOfPreviousLine = position - 1;
+      endOfPreviousLineColumn = column;
+      line++;
+      column = -1;
+      isLineEmpty = 1;
+    } else {
+    }
+
+    isLineEmpty = Math.min(isLineEmpty, emptyCharTypes[cursor]);
+
     column++;
-    incrementLineNumber[cursor] && (column = 0);
 
     if (
       operation === ParseOperation.findControl &&
@@ -331,8 +359,8 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
     ) {
       // Look at the letter after "@"
       // Is it "r"? Its a run keyword. "e"? export. etc.
-      controlIdentifierType =
-        controlIdentifierTypes[code.charCodeAt(position + 1)];
+      controlIdentifierType = getControlIdentifier(code, position);
+
       skipLength = controlIdentifierSkipLength[controlIdentifierType] | 0;
       // assert its what we expect.
       if (
@@ -343,7 +371,7 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
         throw new AtbuildParseError(
           ParseErrorType.invalidKeyword,
           `Invalid @ keyword in ${filename}:${line}:${column - 1}`,
-          `Must be @run, @build, @export, @inline, or @}. Received "${code
+          `Must be @run, @build, @export function $, @inline, @(buildCode), or @end. Received "${code
             .substring(position)
             .split(" ")[0]
             .slice(0, 10)
@@ -351,41 +379,52 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
         );
       } else if (controlIdentifierType === ControlIdentifier.closeScope) {
         keywordNode.to = position;
-        keywordNode.lineEnd = line;
-        keywordNode.colEnd = column;
-        keywordNode.parent = parent;
+        keywordNode.lineEnd = line - 1;
+        keywordNode.colEnd = endOfPreviousLineColumn;
+        keywordNode.scope = Scope.multiline;
 
-        lastNode = keywordNode;
+        // parent.children.push(keywordNode);
 
         if (sourceNode) {
-          sourceNode.to = parent.to = position;
-          sourceNode.lineEnd = parent.lineEnd = line;
-          sourceNode.colEnd = parent.colEnd = column;
+          sourceNode.to = parent.to = keywordNode.to;
+          sourceNode.lineEnd = parent.lineEnd = line - 1;
+          sourceNode.colEnd = parent.colEnd = endOfPreviousLineColumn;
           sourceNode.parent = parent;
-          sourceNode.value = code.substring(sourceNode.from, sourceNode.to);
+          // sourceNode.value = code.substring(sourceNode.from, sourceNode.to);
           if (
-            !parent.children.includes(sourceNode) &&
-            sourceNode.to - sourceNode.from > 0
+            sourceNode.value.length &&
+            !keywordNode.children.includes(sourceNode)
           ) {
-            parent.children.push(sourceNode);
+            keywordNode.children.push(sourceNode);
           }
+          sourceNode = null;
         }
-
-        keywordNode = keywordNode.parent || root;
+        keywordNode = parent || root;
         parent = keywordNode.parent || root;
 
+        scopeDepthCount = 0;
+
         operation = ParseOperation.findControl;
-        sourceNode = null;
+
+        // lastNode = sourceNode = Object.create(astNodeBase);
+        // sourceNode.children = [];
+        // sourceNode.keyword = ASTNodeKeyword.source;
+        // sourceNode.from = position + 1; //+ backtrackAmount[prevCursor];
+        // sourceNode.lineStart = line;
+        // sourceNode.colStart = column;
+        // sourceNode.parent = parent;
+        // lastNode = keywordNode;
       } else {
         operation = operationsByControlIdentifier[controlIdentifierType];
         if (sourceNode) {
           sourceNode.colEnd = column;
           sourceNode.lineEnd = line;
           sourceNode.to = position - 1;
-          sourceNode.value = code.substring(sourceNode.from, position);
+          sourceNode = null;
+          //sourceNode.value = code.substring(sourceNode.from, position);
         }
 
-        variableMapOpenerStart = variableMapArgumentStart = inlineStart = inlineEnd = 0;
+        variableMapOpenerStart = variableMapArgumentStart = inlineStart = 0;
 
         keywordNode = Object.create(astNodeBase);
         keywordNode.children = [];
@@ -451,7 +490,7 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
       }
 
       operation = ParseOperation.determineKeywordAttribute;
-      variableMapOpenerStart = variableMapArgumentStart = inlineStart = inlineEnd = 0;
+      variableMapOpenerStart = variableMapArgumentStart = inlineStart = 0;
       // @export function $Foo(bacon) {
       //                      ^ cursor is here
     } else if (
@@ -461,13 +500,26 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
     ) {
       lastNode = keywordNode;
       inlineStart = position;
-      inlineEnd = 0;
       operation = ParseOperation.closeInline;
-      depthCounter = 0;
+      inlineDepthCount = 0;
       keywordNode.scope = Scope.multiline;
 
       // @run (bacon(
       //            ^ cursor is here
+    } else if (
+      operation === ParseOperation.determineKeywordAttribute &&
+      cursor === CharacterType.newline &&
+      (keywordNode.keyword === ASTNodeKeyword.build ||
+        keywordNode.keyword === ASTNodeKeyword.run) &&
+      keywordNode.scope === Scope.none
+    ) {
+      operation = ParseOperation.findControl;
+      lastNode = keywordNode;
+      keywordNode.scope = Scope.multiline;
+      parent.children.push(keywordNode);
+      parent = keywordNode;
+      // sourceNode = null;
+      sourceNode = null;
     } else if (
       operation === ParseOperation.determineKeywordAttribute &&
       cursor === CharacterType.inlineOpener &&
@@ -475,9 +527,8 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
     ) {
       lastNode = keywordNode;
       inlineStart = position;
-      inlineEnd = 0;
       operation = ParseOperation.closeInline;
-      depthCounter = 0;
+      inlineDepthCount = 0;
       keywordNode.scope = Scope.inline;
       sourceNode = Object.create(astNodeBase);
       sourceNode.from = position + 1;
@@ -492,23 +543,23 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
       cursor === CharacterType.inlineOpener
     ) {
       lastNode = keywordNode;
-      depthCounter++;
+      inlineDepthCount++;
       // @run (bacon()
       //             ^ cursor is here
     } else if (
       operation === ParseOperation.closeInline &&
       cursor === CharacterType.inlineCloser &&
-      depthCounter > 0
+      inlineDepthCount > 0
     ) {
       lastNode = keywordNode;
-      depthCounter--;
+      inlineDepthCount--;
       // @run (bacon())
       //              ^ cursor is here
       // This is the end of the node.
     } else if (
       operation === ParseOperation.closeInline &&
       cursor === CharacterType.inlineCloser &&
-      depthCounter === 0 &&
+      inlineDepthCount === 0 &&
       keywordNode.keyword !== ASTNodeKeyword.export
     ) {
       lastNode = keywordNode;
@@ -520,7 +571,7 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
 
       if (sourceNode) {
         sourceNode.to = position;
-        sourceNode.value = code.substring(sourceNode.from, sourceNode.to);
+        // sourceNode.value = code.substring(sourceNode.from, sourceNode.to);
         sourceNode.parent = keywordNode;
         keywordNode.children = [sourceNode];
         sourceNode = null;
@@ -530,55 +581,53 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
       keywordNode = parent;
 
       operation = ParseOperation.findControl;
+      sourceNode = Object.create(astNodeBase);
+
+      sourceNode.from = position + 1;
+      sourceNode.parent = keywordNode;
+      keywordNode.children.push(sourceNode);
+      // sourceNode = null;
 
       // @export function $BitField (bacon) {
       //                                  ^ cursor is here
     } else if (
       operation === ParseOperation.closeInline &&
       cursor === CharacterType.inlineCloser &&
-      depthCounter === 0 &&
+      inlineDepthCount === 0 &&
       keywordNode.keyword === ASTNodeKeyword.export
     ) {
       lastNode = keywordNode;
       keywordNode.value = code.substring(inlineStart + 1, position);
-
-      // Try to find the scope opener.
-      operation = ParseOperation.determineKeywordAttribute;
+      keywordNode.lineStart = line;
+      // Everything after this is the source of the function
+      operation = ParseOperation.findControl;
+      root.children.push(keywordNode);
+      keywordNode.parent = root;
+      inlineEnd = position + 1;
+      parent = keywordNode;
 
       // @run {
       //      ^ cursor is here
       // This is the start of a new scope.
     } else if (
-      operation === ParseOperation.determineKeywordAttribute &&
-      cursor === CharacterType.scopeOpener &&
-      keywordNode.scope === Scope.none
+      cursor === CharacterType.newline &&
+      parent.keyword === ASTNodeKeyword.export &&
+      line - 1 === parent.lineStart
     ) {
-      keywordNode.parent = parent;
-      keywordNode.scope = Scope.multiline;
-      (parent.children || (parent.children = [])).push(keywordNode);
-      parent = keywordNode;
-
-      if (sourceNode) {
-        sourceNode.colEnd = column;
-        sourceNode.lineEnd = line;
-        sourceNode.to = keywordNode.from - 1;
-        sourceNode.value = code.substring(sourceNode.from, sourceNode.to);
+      parent.functionDeclarationSuffix = code.substring(inlineEnd, position);
+      if (
+        parent.functionDeclarationSuffix.length &&
+        parent.functionDeclarationSuffix.lastIndexOf("{") ===
+          parent.functionDeclarationSuffix.length - 1
+      ) {
+        throw new AtbuildParseError(
+          ParseErrorType.strayOpenBrace,
+          `Unnecessary { at ${
+            line - 1
+          }:${endOfPreviousLineColumn} in ${filename}`,
+          `@export function should not have "{" or "}" at the start or end, it will be added at build-time. Use @end at the end.`
+        );
       }
-
-      sourceNode = Object.create(astNodeBase);
-      sourceNode.children = [];
-      sourceNode.keyword = ASTNodeKeyword.source;
-      sourceNode.from = position + 1;
-      sourceNode.lineStart = line;
-      sourceNode.colStart = column + 1;
-
-      sourceNode.parent = keywordNode;
-      lastNode = sourceNode;
-
-      (keywordNode.children || (keywordNode.children = [])).push(sourceNode);
-      operation = ParseOperation.findControl;
-      // const bacon = $variable;
-      //               ^ cursor is here.
     } else if (
       operation === ParseOperation.findControl &&
       cursor === CharacterType.replacerStart
@@ -646,11 +695,16 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
       inlineStart = position;
       lastNode = keywordNode;
     } else if (
-      (operation === ParseOperation.findControl ||
-        operation === ParseOperation.closeScope) &&
+      operation === ParseOperation.findControl &&
       cursor !== CharacterType.whitespace &&
       cursor !== CharacterType.newline &&
-      !sourceNode
+      !isLineEmpty &&
+      !sourceNode &&
+      !(
+        keywordNode &&
+        keywordNode.keyword === ASTNodeKeyword.export &&
+        line === keywordNode.lineStart
+      )
     ) {
       lastNode = sourceNode = Object.create(astNodeBase);
       sourceNode.children = [];
@@ -663,32 +717,65 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
     }
   }
 
-  // if (lastNode) {
-  //   lastNode.to = position;
-  //   lastNode.colEnd = column;
-  //   lastNode.lineEnd = line;
+  if (sourceNode && sourceNode.parent === root) {
+    sourceNode.to = root.to = position;
+  }
+
+  // if (sourceNode) {
+  //   sourceNode.to = Math.min(position - 1, sourceNode.to);
   // }
 
-  if (sourceNode) {
-    sourceNode.value = code.substring(sourceNode.from, sourceNode.to);
-    if (
-      sourceNode.parent &&
-      sourceNode.parent.children &&
-      !sourceNode.parent.children.includes(sourceNode)
-    ) {
-      sourceNode.parent.children.push(sourceNode);
-    } else if (!sourceNode.parent.children) {
-      sourceNode.parent.children.push(sourceNode);
-    }
-  }
+  // if (keywordNode) {
+  //   keywordNode.to = Math.min(position - 1, keywordNode.to);
+  // }
+
+  // if (parent) {
+  //   parent.to = Math.min(position - 1, parent.to);
+  // }
+
+  // if (sourceNode) {
+  //   sourceNode.value = code.substring(sourceNode.from, sourceNode.to);
+  //   if (
+  //     sourceNode.parent &&
+  //     sourceNode.parent.children &&
+  //     !sourceNode.parent.children.includes(sourceNode)
+  //   ) {
+  //     sourceNode.parent.children.push(sourceNode);
+  //   } else if (!sourceNode.parent.children) {
+  //     sourceNode.parent.children.push(sourceNode);
+  //   }
+  // }
 
   return root;
 }
 
-export function transformAST(root: ASTNode): string {
+export function transformAST(root: ASTNode, code: string): string {
   let source = "";
+  let needsRootSource = false;
+
   for (let i = 0; i < root.children.length; i++) {
-    source += visit(root.children[i], i, root, true);
+    if (
+      !needsRootSource &&
+      root.children[i].keyword !== ASTNodeKeyword.export
+    ) {
+      needsRootSource = true;
+      source += `\n${SOURCE_CODE_VARIABLE} = [];\n`;
+    }
+
+    source += visit(root.children[i], i, root, true, code);
+  }
+  if (needsRootSource) {
+    if (
+      !(
+        source[source.length - 1] === ";" ||
+        (source[source.length - 2] === ";" &&
+          source[source.length - 1] === "\n")
+      )
+    ) {
+      source += ";";
+    }
+
+    source += `\nvar ${SOURCE_CODE_VARIABLE};\nmodule.exports.default = ${SOURCE_CODE_VARIABLE}.join("");\n${SOURCE_CODE_VARIABLE} = null;\n`;
   }
   return source;
 }
@@ -704,7 +791,8 @@ function visit(
   node: ASTNode,
   i: number,
   parent: ASTNode | null,
-  trailingNewline = true
+  trailingNewline = true,
+  input: string
 ): string {
   let functionName = `${ASTNodeKeyword[node.keyword]}___${node.lineStart}_${
     node.colStart
@@ -712,39 +800,69 @@ function visit(
   let source = "";
 
   switch (node.keyword) {
-    case ASTNodeKeyword.build: {
-      if (node.parent && node.parent.keyword === ASTNodeKeyword.run) {
-        source += `${SOURCE_CODE_VARIABLE}.push(`;
+    case ASTNodeKeyword.interpolate: {
+      switch (parent.keyword) {
+        case ASTNodeKeyword.build:
+        case ASTNodeKeyword.export:
+        case ASTNodeKeyword.root: {
+          node.keyword = ASTNodeKeyword.run;
+          return visit(node, i, parent, trailingNewline, input);
+        }
+        case ASTNodeKeyword.run: {
+          node.keyword = ASTNodeKeyword.build;
+          return visit(node, i, parent, trailingNewline, input);
+        }
+
+        default:
+          throw "Invalid input";
       }
+    }
+
+    case ASTNodeKeyword.build: {
       if (node.scope === Scope.inline) {
-        source += `(function ${functionName}(${SOURCE_CODE_VARIABLE})  { return (`;
+        if (node.parent && node.parent.keyword === ASTNodeKeyword.run) {
+          source += `${SOURCE_CODE_VARIABLE}.push(`;
+        }
+        // source += `(function ${functionName}(${SOURCE_CODE_VARIABLE})  { return (`;
         if (node.children) {
           for (let child of node.children) {
-            source += visit(child, i + 1, node, false);
+            source += visit(child, i + 1, node, false, input);
           }
         }
-        const variableMapping = (node.variableMapping || [])
-          .map(quotedVariableMapping)
-          .join(", ");
-        source += `);})(${SOURCE_CODE_VARIABLE}, [${variableMapping}])`;
-      } else if (node.scope == Scope.multiline) {
-        source += `(function build__${i}(${SOURCE_CODE_VARIABLE}) {${
-          node.value || ""
-        }`;
+        // const variableMapping = (node.variableMapping || [])
+        //   .map(quotedVariableMapping)
+        //   .join(", ");
+        // source += `);})(${SOURCE_CODE_VARIABLE}, [${variableMapping}])`;
+      } else if (
+        node.scope === Scope.multiline &&
+        parent.keyword !== ASTNodeKeyword.root
+      ) {
+        // source += `(function build__${i}(){${node.value || ""}\n`;
         if (node.children) {
           for (let child of node.children) {
-            source += visit(child, i + 1, node, trailingNewline);
+            source += visit(child, i + 1, node, trailingNewline, input);
           }
         }
-        const variableMapping = (node.variableMapping || [])
-          .map(quotedVariableMapping)
-          .join(", ");
-        source += `}  )(${SOURCE_CODE_VARIABLE}, [${variableMapping}])`;
+
+        // source += `\n`;
+      } else if (
+        node.scope === Scope.multiline &&
+        parent.keyword === ASTNodeKeyword.root
+      ) {
+        if (node.children) {
+          for (let child of node.children) {
+            source += visit(child, i + 1, node, trailingNewline, input);
+          }
+        }
       } else {
         throw "Not implemented";
       }
 
-      if (node.parent && node.parent.keyword === ASTNodeKeyword.run) {
+      if (
+        node.scope === Scope.inline &&
+        parent &&
+        parent.keyword === ASTNodeKeyword.run
+      ) {
         source += `);`;
       }
 
@@ -752,20 +870,24 @@ function visit(
     }
 
     case ASTNodeKeyword.export: {
-      source += `\n(module.exports.${node.name} = (function ${node.name}(${
-        node.value && node.value.trim().length > 0 ? node.value + " ," : ""
-      }${SOURCE_CODE_VARIABLE} = [], ${REPLACERS_VARIABLE} = []) {
-  const buildEval = (function ${functionName}(${SOURCE_CODE_VARIABLE}) {`;
+      source += `\n(module.exports.${node.name} = (function ${
+        node.name
+      }(${node.value.trim().split(",").join(", ")})${
+        node.functionDeclarationSuffix
+      } {
+        const ${SOURCE_CODE_VARIABLE} = typeof this.${SOURCE_CODE_VARIABLE} === 'undefined' ? [] : this.${SOURCE_CODE_VARIABLE};
+
+        const buildEval = (function ${functionName}() {\n`;
       if (node.children) {
         for (let child of node.children) {
-          source += visit(child, i + 1, node, trailingNewline);
+          source += visit(child, i + 1, node, trailingNewline, input);
         }
       }
 
       // const variableMapping = (node.variableMapping || [])
       //   .map(quotedVariableMapping)
       //   .join(", ");
-      source += `})(${SOURCE_CODE_VARIABLE});
+      source += `\n})();
   return typeof buildEval === 'undefined' ? ${SOURCE_CODE_VARIABLE}.join("") : buildEval;
 }));\n\n`;
 
@@ -778,36 +900,38 @@ function visit(
     }
 
     case ASTNodeKeyword.run: {
-      if (parent.keyword !== ASTNodeKeyword.build) {
-        source += `(function run__${i}(${SOURCE_CODE_VARIABLE}, ${REPLACERS_VARIABLE}) {
-          ${node.value || ""}
-          `;
-      }
+      // if (parent.keyword !== ASTNodeKeyword.build) {
+      //   source += `(function run__${i}(${SOURCE_CODE_VARIABLE}, ${REPLACERS_VARIABLE}) {
+      //     ${node.value || ""}
+      //     `;
+      // }
 
       if (node.children) {
         for (let child of node.children) {
-          source += visit(child, i + 1, node);
+          source += visit(child, i + 1, node, trailingNewline, input);
         }
       }
 
-      if (parent.keyword !== ASTNodeKeyword.build) {
-        source += `})(${SOURCE_CODE_VARIABLE}, ${REPLACERS_VARIABLE});\n`;
-      }
+      // if (parent.keyword !== ASTNodeKeyword.build) {
+      //   source += `})();\n`;
+      // }
 
       break;
     }
 
     case ASTNodeKeyword.source: {
-      let value = node.value || "";
+      let value = input.substring(node.from, Math.min(node.to, input.length));
 
       if (
         parent.keyword === ASTNodeKeyword.build ||
-        parent.keyword === ASTNodeKeyword.root ||
         parent.keyword === ASTNodeKeyword.export ||
         parent.keyword === ASTNodeKeyword.inline
       ) {
         return trailingNewline ? value : value.trimEnd();
-      } else if (parent.keyword === ASTNodeKeyword.run) {
+      } else if (
+        parent.keyword === ASTNodeKeyword.run ||
+        parent.keyword === ASTNodeKeyword.root
+      ) {
         if (
           node.children &&
           node.children.length &&

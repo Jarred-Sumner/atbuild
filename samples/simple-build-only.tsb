@@ -1,5 +1,5 @@
-@export function $sizeof(value) {
-  @build {
+@export function $sizeof(value)
+  @build
     return (Math.log2(value) + 1) | 0;
-  @}
-@}
+  @end
+@end

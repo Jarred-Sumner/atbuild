@@ -1,0 +1,7 @@
+@build
+  for (let i = 0; i < 1000; i++) {
+    @run
+      console.log("HEY THERE! @(i)");
+    @end
+  }
+@end

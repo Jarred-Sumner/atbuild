@@ -1,12 +1,12 @@
 
-@export function $InlineBuildInsideRunSyntax() {
- @run {
+@export function $InlineBuildInsideRunSyntax()
+ @run
     function() {
-      return class @build (BitFieldClassName) extends Error {
+      return class @(BitFieldClassName) extends Error {
         constructor() {
           this.hi = true;
         }
       }
     }
-  @}
-@}
+  @end
+@end

@@ -1,16 +1,16 @@
-@export function $sizeof(value: number) {
-  @build {
+@export function $sizeof(value: number)
+  @build
     return (Math.log2n(value) + 1) | 0;
-  @}
-@}
+  @end
+@end
 
-@export function $BitField(object, _BitFieldClassName) {
-  @build {
+@export function $BitField(object, _BitFieldClassName)
+  @build
     const BitFieldClassName = _BitFieldClassName || "BitFieldClassName"
     const BitFieldMixin = require("structurae").BitFieldMixin;
     const { fields, masks, schema, offsets } = BitFieldMixin(object);
 
-    @run {
+    @run
       function() {
         return class @build (BitFieldClassName) {
           static masks = @(masks);
@@ -18,76 +18,75 @@
           static schema = @(schema);
           static fields = @(fields);
 
-          @build {
+          @build
             for (let field of fields) {
-              @run {
+              @run
                 @(field): number;
-              @}
+              @end
             }
-          @}
+          @end
 
           static encode(
-            @build {
+            @build
               for (let i = 0; i < fields.length; i++) {
-                @run {
+                @run
                   @(fields[i]): number,
-                }
+                @end
               }
-            @}
+            @end
           ) {
             let result = 0;
 
-            @build {
+            @build
               for (let i = fields.length - 1; i >= 0; i--) {
                 const field = fields[i];
-                @run {
+                @run
                   result <<= @(schema[field]);
                   result |= @(field);
-                @}
+                @end
               }
-            @}
+            @end
 
             return result;
           }
 
-          @build {
+          @build
             for (let index of [0,1]) {
-              @run {
-                @build {
+              @run
+                @build
                   if (index === 0) {
-                    @run {
+                    @run
                       static decodeRef(value: number, result: @(BitFieldClassName)) {
-                    @}
+                    @end
                   } else {
-                    @run {
+                    @run
                       static cached = new Array(@(fields.length))
                       static decode(value: number) {
                         const result = this.cached;
-                    @}
+                    @end
                   }
-                @}
+                @end
 
                 let value = data;
-                @build {
+                @build
                   for (let i = 0; i < fields.length; i++) {
                     const field = fields[i];
                     const size = schema[field];
-                    @run {
+                    @run
                       result.@(field) = value & @(masks[field]);
                       value >>= @(size);
-                    @}
+                    @end
                   }
 
-                  @run {
+                  @run
                     return result;
-                  @}
-                @}
-              @}
-            @}
+                  @end
+                @end
+            @end
           }
-        @}
+        @end
       }()
-    @}
-  @}
-@}
+    @end
+  @end
+@end
 

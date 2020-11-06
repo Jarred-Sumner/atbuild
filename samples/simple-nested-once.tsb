@@ -1,16 +1,18 @@
-@export function $createHoursFormatter(prefix: string) {
-  if (prefix === "hh") {
-    @run {
-      return function (date: Date) {
-        return (date.getUTCHours() % 12).padStart(2, "0")
-      }
-    @}
-  } else if (prefix === "h") {
-    @run {
-      return function (date: Date) {
-        return date.getUTCHours().padStart(2, "0")
-      }
-    @}
-  }
+@export function $createHoursFormatter(prefix: string)
+  @build
+    if (prefix === "hh") {
+      @run
+        return function (date: Date) {
+          return (date.getUTCHours() % 12).padStart(2, "0")
+        }
+      @end
+    } else if (prefix === "h") {
+      @run
+        return function (date: Date) {
+          return date.getUTCHours().padStart(2, "0")
+        }
+      @end
+    }
+  @end
 
-@}
+@end
