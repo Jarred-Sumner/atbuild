@@ -1267,6 +1267,11 @@
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.3.tgz#9c088679876f374eb5983f150d4787aa6fb32d7e"
   integrity sha512-FvUupuM3rlRsRtCN+fDudtmytGO6iHJuuRKS1Ss0pG5z8oX0diNEw94UEL7hgDbpN94rgaK5R7sWm6RrSkZuAQ==
 
+"@ungap/weakrefs@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@ungap/weakrefs/-/weakrefs-0.2.0.tgz#cbc3e92ca1d26579736313a210b8d7044c30f009"
+  integrity sha512-6MGYS+dIJG9yzI2j54jwkZZ5sobysMyMVbvQPfDlxBdVNI0OGgbePMNooosUnoYb9YgaJaQ52L45+0T6huIuVA==
+
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.9.0.tgz#bd850604b4042459a5a41cd7d338cbed695ed964"
@@ -1685,12 +1690,12 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
 
-
-atbuild@1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/atbuild/-/atbuild-1.5.0.tgz#3f8d6b10ae205139822c2c066c2483d8f15ff27c"
-  integrity sha512-anVYGrBVhEgHzFlFmGBrfE9iNTV40d2ZTUTqQ7hxVEqWRqSdVU7QyMMdRpBlQJyhN6XN0NC66IkKiuW+c8uWwg==
+atbuild@1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/atbuild/-/atbuild-1.5.2.tgz#39ba2b82362a75c359c9355264f34b37503976bf"
+  integrity sha512-a/DxHLMd/0ZF7H+Gt8ubJ3UsKIFLQ5VgoDtgVuMdnHgbeF6i1rwWOFBQDAOxcU0XUbpXjfS9IQmeOmCH29+WiA==
   dependencies:
+    "@ungap/weakrefs" "^0.2.0"
     esbuild "https://github.com/Jarred-Sumner/esbuild/releases/download/pluginbuild/esbuild-0.8.1.tgz"
     loader-utils "^2.0.0"
     meow "^7.1.1"

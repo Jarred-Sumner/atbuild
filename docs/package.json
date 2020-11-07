@@ -13,7 +13,7 @@
     "prebuild-eval-worker": "mkdir -p public/eval; cp node_modules/esbuild-wasm/esbuild.wasm ./public/eval/esbuild.wasm"
   },
   "engines": {
-    "node": "12.x"
+    "node": ">=12.x"
   },
   "dependencies": {
     "@mdx-js/loader": "^1.6.19",
@@ -21,7 +21,7 @@
     "@rehooks/component-size": "^1.0.3",
     "@zeit/next-css": "^1.0.1",
     "@zeit/next-workers": "^1.0.0",
-    "atbuild": "1.5.0",
+    "atbuild": "1.5.2",
     "esbuild": "^0.8.4",
     "esbuild-wasm": "^0.8.4",
     "file-loader": "^6.2.0",
