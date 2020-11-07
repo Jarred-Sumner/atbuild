@@ -1,6 +1,6 @@
 {
   "name": "atbuild",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "main": "dist/atbuild.js",
   "browser": "web/atbuild.js",
   "license": "MIT",
