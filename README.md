@@ -1,6 +1,6 @@
 # AtBuild – Experimental JavaScript Preprocessor
 
-AtBuild is a proceedural code generation tool for JavaScript. It lets you write JavaScript that writes JavaScript.
+AtBuild is a programmable code generation tool for JavaScript. It lets you write JavaScript that writes JavaScript.
 
 Use it for:
 
@@ -8,6 +8,8 @@ Use it for:
 - Write high-performance JavaScript libraries by removing the runtime
 - Determinstic dead code elimination
 - Move slow code from runtime to buildtime
+
+Try the playground: https://atbuild.vercel.app/bundle/date-formatter.tsb
 
 # How it works
 
