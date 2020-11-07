@@ -1,9 +1,3 @@
-let WeakRef = globalThis.WeakRef;
-
-if (typeof WeakRef === "undefined") {
-  WeakRef = require("@ungap/weakrefs/cjs").WeakRef;
-}
-
 enum CharacterType {
   ignore = 0,
   newline = 13, // \n
@@ -131,19 +125,21 @@ astNodeBase.toJSON = function () {
   };
 };
 
-Object.defineProperty(astNodeBase, "parent", {
-  get() {
-    return this._parent && this._parent.deref();
-  },
+if (typeof WeakRef !== "undefined") {
+  Object.defineProperty(astNodeBase, "parent", {
+    get() {
+      return this._parent && this._parent.deref();
+    },
 
-  set(parent) {
-    if (parent) {
-      return (this._parent = new WeakRef(parent));
-    } else {
-      return (this._parent = null);
-    }
-  },
-});
+    set(parent) {
+      if (parent) {
+        return (this._parent = new WeakRef(parent));
+      } else {
+        return (this._parent = null);
+      }
+    },
+  });
+}
 
 if (process.env.NODE_ENV === "test") {
   Object.defineProperty(astNodeBase, "k", {
