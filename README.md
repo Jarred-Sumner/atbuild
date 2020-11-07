@@ -94,11 +94,19 @@ atbuild ./input.jsb --print
 ```
 
 ```bash
-atbuild ./input.jsb ./output.js
+atbuild ./input.jsb ./output.js --no-bundle
 ```
 
 ```bash
-atbuild ./input.jsb ./output.js
+atbuild ./input.js ./output.js --ast
+```
+
+```bash
+atbuild ./*.js --outdir=./out
+```
+
+```bash
+atbuild ./*.ts --types
 ```
 
 # How it works
