@@ -89,9 +89,11 @@ And it supports types.
 
 For compatibility reasons, exporting build time code from JavaScript/TypeScript outside of the file is not supported. But, that's why there's Atbuild Full, which lets you write libraries for proceedurally generating code at build time.
 
-### Atbuild Full
+### AtBuild Full
 
 Atbuild Full adds a few new keywords to JavaScript. It lets you evaluate & generate code at build time using JavaScript.
+
+[More documentation](./docs-md/full.mdx)
 
 1. `@build`: code contained inside `@build` will be run at build-time instead of runtime
 
