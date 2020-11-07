@@ -15,6 +15,92 @@ Use it for:
   <img src="https://atbuild.vercel.app/screenshot.png" width="100%" />
 </a>
 
+# Installation
+
+With yarn:
+
+```bash
+yarn add atbuild
+```
+
+npm:
+
+```bash
+npm install atbuild
+```
+
+## Next.js integration
+
+To use with Next.js, add the following to your `next.config.js`;
+
+```js
+module.exports = require("atbuild/with-nextjs");
+```
+
+If you have an existing Next.js config, then use it like this:
+
+```js
+const withAtBuild = require("atbuild/with-nextjs");
+
+module.exports = withAtBuild({
+  webpack(config, options) {
+    // your webpack config here:
+  },
+});
+```
+
+## Webpack Loader
+
+Buildtime code is run through a [high performance bundler](https://esbuild.github.io/) for you automatically, so you can write your buildtime code using the same modern JavaScript as the rest of your code. This also means you can import other modules, and those modules don't have to be `.jsb` files - they can be any other file in your codebase (so long as it runs in Node after bundling).
+
+Runtime code is passed through webpack as regular JavaScript – so you can still use babel-loader as normal.
+
+```
+// Webpack config
+module.exports = {
+  // ...
+  module: {
+    // ...
+    rules: [
+      // ...
+
+      // AtBuild.js Webpack Loader
+      {
+        test: /\.(jsb|js|ts|tsx|jsx|tsb|@js)$/,
+        exclude: /node_modules/,
+        enforce: "pre",
+        use: [
+          {
+            loader: "atbuild/webpack-loader,
+            options: {
+              // Generate a .d.ts file automatically so your IDE can more easily interop with AtBuild files.
+              typescript: true,
+            }
+          },
+        ]
+      },
+    ],
+  }
+  // ...
+}
+```
+
+## CLI
+
+`atbuild` has a small CLI you can use.
+
+```bash
+atbuild ./input.jsb --print
+```
+
+```bash
+atbuild ./input.jsb ./output.js
+```
+
+```bash
+atbuild ./input.jsb ./output.js
+```
+
 # How it works
 
 There are two flavors of AtBuild.
@@ -315,94 +401,6 @@ But, here are some other ways you could use this:
 How is this different than [Prepack](https://prepack.io/)?
 
 Like AtBuild, Prepack inlines & prevaluates code. But, AtBuild lets you choose what code runs at runtime and what code runs at buildtime, and use that to generate code. Loops that conditionally add or remove runtime code are not possible with Prepack or with [`babel-plugin-codegen`](https://github.com/kentcdodds/babel-plugin-codegen).
-
-# Installation
-
-With yarn:
-
-```bash
-yarn add atbuild
-```
-
-npm:
-
-```bash
-npm install atbuild
-```
-
-## CLI
-
-`atbuild` has a small CLI you can use.
-
-```bash
-atbuild ./input.jsb
-```
-
-```bash
-atbuild ./input.jsb ./output.js
-```
-
-```bash
-atbuild ./input.jsb ./output.js --pretty --no-header
-```
-
-## Webpack Loader
-
-**The recommended way to use AtBuild is through the Webpack loader**
-
-Buildtime code is run through a [high performance bundler](https://esbuild.github.io/) for you automatically, so you can write your buildtime code using the same modern JavaScript as the rest of your code. This also means you can import other modules, and those modules don't have to be `.jsb` files - they can be any other file in your codebase (so long as it runs in Node after bundling).
-
-Runtime code is passed through webpack as regular JavaScript – so you can still use babel-loader as normal.
-
-```
-// Webpack config
-module.exports = {
-  // ...
-  module: {
-    // ...
-    rules: [
-      // ...
-
-      // AtBuild.js Webpack Loader
-      {
-        test: /\.(jsb|js|ts|tsx|jsx|tsb|@js)$/,
-        exclude: /node_modules/,
-        enforce: "pre",
-        use: [
-          {
-            loader: "atbuild/webpack-loader,
-            options: {
-              // Generate a .d.ts file automatically so your IDE can more easily interop with AtBuild files.
-              typescript: true,
-            }
-          },
-        ]
-      },
-    ],
-  }
-  // ...
-}
-```
-
-### Next.js integration
-
-To use with Next.js, add the following to your `next.config.js`;
-
-```js
-module.exports = require("atbuild/with-nextjs");
-```
-
-If you have an existing Next.js config, then use it like this:
-
-```js
-const withAtBuild = require("atbuild/with-nextjs");
-
-module.exports = withAtBuild({
-  webpack(config, options) {
-    // your webpack config here:
-  },
-});
-```
 
 ## Alternatives
 
