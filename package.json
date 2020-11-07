@@ -56,7 +56,7 @@
     "postbuild": "rimraf dist/**/*{.test.ts, .test.js, .ts.d.js}",
     "build": "yarn build-node && yarn build-web && yarn build-types",
     "build-web": "esbuild --sourcemap --define:\"process.env.NODE_ENV\"=\"'production'\" --define:\"process.env.WEB=true\" --bundle ./src/atbuild.ts ./src/light.ts --format=esm  --outdir=./web ",
-    "build-types": "yarn tsc --p tsconfig.json --outfile types",
+    "build-types": "yarn tsc --p tsconfig.json --outfile types || true",
     "prepublishOnly": "yarn build",
     "compile-vscode-client": "babel --config-file=./babel.config.js --extensions \".ts\" ./atbuild-vscode/client/src --ignore=atbuild-vscode/**/*.test.js -d ./atbuild-vscode/client/out --delete-dir-on-start",
     "compile-vscode-server": "babel --config-file=./babel.config.js --extensions \".ts\" ./atbuild-vscode/server/src --ignore=atbuild-vscode/**/*.test.js -d ./atbuild-vscode/server/out --delete-dir-on-start",
