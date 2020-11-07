@@ -9,7 +9,11 @@ Use it for:
 - Determinstic dead code elimination
 - Move slow code from runtime to buildtime
 
-Try the playground: https://atbuild.vercel.app/bundle/date-formatter.tsb
+Try the playground
+
+<a target="_blank" href="https://atbuild.vercel.app/bundle/date-formatter.tsb">
+<img src="" />
+</a>
 
 # How it works
 
@@ -22,7 +26,7 @@ There are two flavors of AtBuild.
 
 Atbuild Light preprocesses your JavaScript & TypeScript files by setting three conventions:
 
-1. Code inside of `$(buildTimeCodeInHere)` will be run & replaced at buildtime (❤️ jQuery)
+1. Code inside of `$(buildTimeCodeInHere)` will be run & replaced at buildtime
 2. Code fenced within `// $$` will be moved to buildtime
 3. Lines ending with `// $` with be moved to buildtime
 
@@ -63,7 +67,7 @@ import { $createDateFormatter } from "atbuild/demo/date-formatter"; // $
 export const formatTime = $createDateFormatter("hh:mm:ss");
 ```
 
-⌨️ `atbuild ./input.js ./output.js`
+[⌨️ `atbuild ./input.js ./output.js`](https://atbuild.vercel.app/bundle/date-formatter.tsb)
 
 `output.js`:
 

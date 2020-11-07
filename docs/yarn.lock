@@ -1685,22 +1685,12 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
 
-atbuild@../:
-  version "1.5.0"
-  dependencies:
-    atbuild "../"
-    esbuild "https://github.com/Jarred-Sumner/esbuild/releases/download/pluginbuild/esbuild-0.8.1.tgz"
-    loader-utils "^2.0.0"
-    meow "^7.1.1"
-  optionalDependencies:
-    vscode-languageserver "^6.1.1"
 
 atbuild@1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/atbuild/-/atbuild-1.5.0.tgz#3f8d6b10ae205139822c2c066c2483d8f15ff27c"
   integrity sha512-anVYGrBVhEgHzFlFmGBrfE9iNTV40d2ZTUTqQ7hxVEqWRqSdVU7QyMMdRpBlQJyhN6XN0NC66IkKiuW+c8uWwg==
   dependencies:
-    atbuild "../"
     esbuild "https://github.com/Jarred-Sumner/esbuild/releases/download/pluginbuild/esbuild-0.8.1.tgz"
     loader-utils "^2.0.0"
     meow "^7.1.1"
