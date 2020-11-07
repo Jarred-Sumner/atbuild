@@ -65,6 +65,7 @@
     "postcompile-vscode": "cp dist/atbuild.js ./atbuild-vscode/client/out/atbuild.js; cp dist/atbuild.js ./atbuild-vscode/server/out/atbuild.js"
   },
   "dependencies": {
+    "@ungap/weakrefs": "^0.2.0",
     "esbuild": "https://github.com/Jarred-Sumner/esbuild/releases/download/pluginbuild/esbuild-0.8.1.tgz",
     "loader-utils": "^2.0.0",
     "meow": "^7.1.1"

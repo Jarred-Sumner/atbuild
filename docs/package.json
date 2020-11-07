@@ -12,6 +12,9 @@
     "build-eval-worker": "esbuild ./lib/EvalWorker.worker.ts --bundle --format=iife --outfile=./public/eval/EvalWorker.worker.js",
     "prebuild-eval-worker": "mkdir -p public/eval; cp node_modules/esbuild-wasm/esbuild.wasm ./public/eval/esbuild.wasm"
   },
+  "engines": {
+    "node": "12.x"
+  },
   "dependencies": {
     "@mdx-js/loader": "^1.6.19",
     "@next/mdx": "^10.0.1",

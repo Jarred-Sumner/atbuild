@@ -1,3 +1,9 @@
+let WeakRef = globalThis.WeakRef;
+
+if (typeof WeakRef === "undefined") {
+  WeakRef = require("@ungap/weakrefs/cjs").WeakRef;
+}
+
 enum CharacterType {
   ignore = 0,
   newline = 13, // \n

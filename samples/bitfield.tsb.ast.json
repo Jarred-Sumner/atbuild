@@ -1,46 +1,28 @@
 {
-  "to": 2474,
   "children": [
     {
       "from": 0,
       "name": "$sizeof",
       "value": "value: number",
-      "to": 98,
+      "functionDeclarationSuffix": "",
       "children": [
         {
-          "from": 41,
-          "to": 43,
-          "value": "\n ",
-          "children": [],
-          "scope": null,
-          "keyword": "source",
-          "column": {
-            "start": 27,
-            "end": 5
-          },
-          "line": {
-            "start": 0,
-            "end": 1
-          }
-        },
-        {
-          "from": 44,
-          "to": 95,
+          "from": 42,
+          "to": 96,
           "children": [
             {
-              "from": 52,
-              "to": 95,
-              "value": "\n    return (Math.log2n(value) + 1) | 0;\n  ",
+              "from": 53,
+              "to": 91,
               "children": [],
               "scope": null,
               "keyword": "source",
               "column": {
-                "start": 6,
-                "end": 3
+                "start": 5,
+                "end": 39
               },
               "line": {
-                "start": 1,
-                "end": 3
+                "start": 2,
+                "end": 2
               }
             }
           ],
@@ -56,121 +38,55 @@
           }
         }
       ],
-      "scope": "multiline",
+      "scope": null,
       "keyword": "export",
       "column": {
         "start": 1,
-        "end": 1
+        "end": 0
       },
       "line": {
         "start": 0,
-        "end": 4
+        "end": 0
       }
     },
     {
-      "from": 102,
+      "from": 103,
       "name": "$BitField",
       "value": "object, _BitFieldClassName",
-      "to": 2394,
+      "functionDeclarationSuffix": "",
       "children": [
         {
-          "from": 158,
-          "to": 160,
-          "value": "\n ",
-          "children": [],
-          "scope": null,
-          "keyword": "source",
-          "column": {
-            "start": 42,
-            "end": 5
-          },
-          "line": {
-            "start": 6,
-            "end": 7
-          }
-        },
-        {
-          "from": 161,
-          "to": 1299,
+          "from": 160,
+          "to": 2450,
           "children": [
             {
-              "from": 169,
-              "to": 379,
-              "value": "\n    const BitFieldClassName = _BitFieldClassName || \"BitFieldClassName\"\n    const BitFieldMixin = require(\"structurae\").BitFieldMixin;\n    const { fields, masks, schema, offsets } = BitFieldMixin(object);\n\n   ",
+              "from": 171,
+              "to": 377,
               "children": [],
               "scope": null,
               "keyword": "source",
               "column": {
-                "start": 6,
-                "end": 7
+                "start": 5,
+                "end": 5
               },
               "line": {
-                "start": 7,
-                "end": 12
+                "start": 9,
+                "end": 13
               }
             },
             {
-              "from": 380,
-              "to": 760,
+              "from": 377,
+              "to": 2445,
               "children": [
                 {
-                  "from": 386,
-                  "to": 426,
-                  "value": "\n      function() {\n        return class ",
+                  "from": 388,
+                  "to": 422,
                   "children": [],
                   "scope": null,
                   "keyword": "source",
                   "column": {
-                    "start": 8,
+                    "start": 7,
                     "end": 22
-                  },
-                  "line": {
-                    "start": 12,
-                    "end": 14
-                  }
-                },
-                {
-                  "from": 427,
-                  "to": 452,
-                  "children": [
-                    {
-                      "from": 435,
-                      "to": 452,
-                      "value": "BitFieldClassName",
-                      "children": [],
-                      "scope": null,
-                      "keyword": "source",
-                      "column": {
-                        "start": 24,
-                        "end": 0
-                      },
-                      "line": {
-                        "start": 14,
-                        "end": 0
-                      }
-                    }
-                  ],
-                  "scope": "inline",
-                  "keyword": "build",
-                  "column": {
-                    "start": 22,
-                    "end": 42
-                  },
-                  "line": {
-                    "start": 14,
-                    "end": 14
-                  }
-                },
-                {
-                  "from": 454,
-                  "to": 480,
-                  "value": "{\n          static masks = ",
-                  "children": [],
-                  "scope": null,
-                  "keyword": "source",
-                  "column": {
-                    "start": 44,
-                    "end": 26
                   },
                   "line": {
                     "start": 14,
@@ -178,18 +94,17 @@
                   }
                 },
                 {
-                  "from": 481,
-                  "to": 488,
+                  "from": 422,
+                  "to": 441,
                   "children": [
                     {
-                      "from": 483,
-                      "to": 488,
-                      "value": "masks",
+                      "from": 424,
+                      "to": 441,
                       "children": [],
                       "scope": null,
                       "keyword": "source",
                       "column": {
-                        "start": 26,
+                        "start": 22,
                         "end": 0
                       },
                       "line": {
@@ -201,8 +116,8 @@
                   "scope": "inline",
                   "keyword": "build",
                   "column": {
-                    "start": 26,
-                    "end": 32
+                    "start": 22,
+                    "end": 40
                   },
                   "line": {
                     "start": 15,
@@ -210,34 +125,32 @@
                   }
                 },
                 {
-                  "from": 489,
-                  "to": 517,
-                  "value": ";\n          static offsets = ",
+                  "from": 442,
+                  "to": 469,
                   "children": [],
                   "scope": null,
                   "keyword": "source",
                   "column": {
-                    "start": 33,
-                    "end": 28
+                    "start": 0,
+                    "end": 26
                   },
                   "line": {
-                    "start": 15,
+                    "start": 0,
                     "end": 16
                   }
                 },
                 {
-                  "from": 518,
-                  "to": 527,
+                  "from": 469,
+                  "to": 476,
                   "children": [
                     {
-                      "from": 520,
-                      "to": 527,
-                      "value": "offsets",
+                      "from": 471,
+                      "to": 476,
                       "children": [],
                       "scope": null,
                       "keyword": "source",
                       "column": {
-                        "start": 28,
+                        "start": 26,
                         "end": 0
                       },
                       "line": {
@@ -249,8 +162,8 @@
                   "scope": "inline",
                   "keyword": "build",
                   "column": {
-                    "start": 28,
-                    "end": 36
+                    "start": 26,
+                    "end": 32
                   },
                   "line": {
                     "start": 16,
@@ -258,34 +171,32 @@
                   }
                 },
                 {
-                  "from": 528,
-                  "to": 555,
-                  "value": ";\n          static schema = ",
+                  "from": 477,
+                  "to": 506,
                   "children": [],
                   "scope": null,
                   "keyword": "source",
                   "column": {
-                    "start": 37,
-                    "end": 27
+                    "start": 0,
+                    "end": 28
                   },
                   "line": {
-                    "start": 16,
+                    "start": 0,
                     "end": 17
                   }
                 },
                 {
-                  "from": 556,
-                  "to": 564,
+                  "from": 506,
+                  "to": 515,
                   "children": [
                     {
-                      "from": 558,
-                      "to": 564,
-                      "value": "schema",
+                      "from": 508,
+                      "to": 515,
                       "children": [],
                       "scope": null,
                       "keyword": "source",
                       "column": {
-                        "start": 27,
+                        "start": 28,
                         "end": 0
                       },
                       "line": {
@@ -297,8 +208,8 @@
                   "scope": "inline",
                   "keyword": "build",
                   "column": {
-                    "start": 27,
-                    "end": 34
+                    "start": 28,
+                    "end": 36
                   },
                   "line": {
                     "start": 17,
@@ -306,29 +217,27 @@
                   }
                 },
                 {
-                  "from": 565,
-                  "to": 592,
-                  "value": ";\n          static fields = ",
+                  "from": 516,
+                  "to": 544,
                   "children": [],
                   "scope": null,
                   "keyword": "source",
                   "column": {
-                    "start": 35,
+                    "start": 0,
                     "end": 27
                   },
                   "line": {
-                    "start": 17,
+                    "start": 0,
                     "end": 18
                   }
                 },
                 {
-                  "from": 593,
-                  "to": 601,
+                  "from": 544,
+                  "to": 552,
                   "children": [
                     {
-                      "from": 595,
-                      "to": 601,
-                      "value": "fields",
+                      "from": 546,
+                      "to": 552,
                       "children": [],
                       "scope": null,
                       "keyword": "source",
@@ -354,69 +263,96 @@
                   }
                 },
                 {
-                  "from": 602,
-                  "to": 614,
-                  "value": ";\n\n         ",
+                  "from": 553,
+                  "to": 581,
                   "children": [],
                   "scope": null,
                   "keyword": "source",
                   "column": {
-                    "start": 35,
-                    "end": 13
+                    "start": 0,
+                    "end": 27
                   },
                   "line": {
-                    "start": 18,
-                    "end": 20
+                    "start": 0,
+                    "end": 19
                   }
                 },
                 {
-                  "from": 615,
-                  "to": 760,
+                  "from": 581,
+                  "to": 589,
                   "children": [
                     {
-                      "from": 623,
-                      "to": 677,
-                      "value": "\n            for (let field of fields) {\n             ",
+                      "from": 583,
+                      "to": 589,
                       "children": [],
                       "scope": null,
                       "keyword": "source",
                       "column": {
-                        "start": 14,
-                        "end": 17
+                        "start": 27,
+                        "end": 0
                       },
                       "line": {
-                        "start": 20,
-                        "end": 22
+                        "start": 19,
+                        "end": 0
+                      }
+                    }
+                  ],
+                  "scope": "inline",
+                  "keyword": "build",
+                  "column": {
+                    "start": 27,
+                    "end": 34
+                  },
+                  "line": {
+                    "start": 19,
+                    "end": 19
+                  }
+                },
+                {
+                  "from": 590,
+                  "to": 603,
+                  "children": [],
+                  "scope": null,
+                  "keyword": "source",
+                  "column": {
+                    "start": 0,
+                    "end": 11
+                  },
+                  "line": {
+                    "start": 0,
+                    "end": 21
+                  }
+                },
+                {
+                  "from": 603,
+                  "to": 746,
+                  "children": [
+                    {
+                      "from": 622,
+                      "to": 664,
+                      "children": [],
+                      "scope": null,
+                      "keyword": "source",
+                      "column": {
+                        "start": 13,
+                        "end": 15
+                      },
+                      "line": {
+                        "start": 22,
+                        "end": 23
                       }
                     },
                     {
-                      "from": 678,
-                      "to": 733,
+                      "from": 664,
+                      "to": 746,
                       "children": [
                         {
-                          "from": 684,
-                          "to": 700,
-                          "value": "\n                ",
-                          "children": [],
-                          "scope": null,
-                          "keyword": "source",
-                          "column": {
-                            "start": 18,
-                            "end": 17
-                          },
-                          "line": {
-                            "start": 22,
-                            "end": 23
-                          }
-                        },
-                        {
-                          "from": 701,
-                          "to": 708,
+                          "from": 685,
+                          "to": 692,
                           "children": [
                             {
-                              "from": 703,
-                              "to": 708,
-                              "value": "field",
+                              "from": 687,
+                              "to": 692,
                               "children": [],
                               "scope": null,
                               "keyword": "source",
@@ -425,7 +361,7 @@
                                 "end": 0
                               },
                               "line": {
-                                "start": 23,
+                                "start": 24,
                                 "end": 0
                               }
                             }
@@ -437,23 +373,22 @@
                             "end": 23
                           },
                           "line": {
-                            "start": 23,
-                            "end": 23
+                            "start": 24,
+                            "end": 24
                           }
                         },
                         {
-                          "from": 709,
-                          "to": 733,
-                          "value": ": number;\n              ",
+                          "from": 693,
+                          "to": 717,
                           "children": [],
                           "scope": null,
                           "keyword": "source",
                           "column": {
-                            "start": 24,
-                            "end": 15
+                            "start": 0,
+                            "end": 32
                           },
                           "line": {
-                            "start": 23,
+                            "start": 0,
                             "end": 24
                           }
                         }
@@ -462,11 +397,26 @@
                       "keyword": "run",
                       "column": {
                         "start": 15,
-                        "end": 15
+                        "end": 13
                       },
                       "line": {
-                        "start": 22,
-                        "end": 24
+                        "start": 23,
+                        "end": 26
+                      }
+                    },
+                    {
+                      "from": 734,
+                      "to": 746,
+                      "children": [],
+                      "scope": null,
+                      "keyword": "source",
+                      "column": {
+                        "start": 13,
+                        "end": 13
+                      },
+                      "line": {
+                        "start": 26,
+                        "end": 26
                       }
                     }
                   ],
@@ -474,17 +424,323 @@
                   "keyword": "build",
                   "column": {
                     "start": 11,
-                    "end": 11
+                    "end": 13
                   },
                   "line": {
-                    "start": 20,
+                    "start": 21,
                     "end": 26
                   }
                 },
                 {
-                  "from": 748,
-                  "to": 760,
-                  "value": "}\n          ",
+                  "from": 762,
+                  "to": 789,
+                  "children": [],
+                  "scope": null,
+                  "keyword": "source",
+                  "column": {
+                    "start": 11,
+                    "end": 13
+                  },
+                  "line": {
+                    "start": 29,
+                    "end": 30
+                  }
+                },
+                {
+                  "from": 789,
+                  "to": 962,
+                  "children": [
+                    {
+                      "from": 810,
+                      "to": 868,
+                      "children": [],
+                      "scope": null,
+                      "keyword": "source",
+                      "column": {
+                        "start": 15,
+                        "end": 17
+                      },
+                      "line": {
+                        "start": 31,
+                        "end": 32
+                      }
+                    },
+                    {
+                      "from": 868,
+                      "to": 962,
+                      "children": [
+                        {
+                          "from": 891,
+                          "to": 902,
+                          "children": [
+                            {
+                              "from": 893,
+                              "to": 902,
+                              "children": [],
+                              "scope": null,
+                              "keyword": "source",
+                              "column": {
+                                "start": 19,
+                                "end": 0
+                              },
+                              "line": {
+                                "start": 33,
+                                "end": 0
+                              }
+                            }
+                          ],
+                          "scope": "inline",
+                          "keyword": "build",
+                          "column": {
+                            "start": 19,
+                            "end": 29
+                          },
+                          "line": {
+                            "start": 33,
+                            "end": 33
+                          }
+                        },
+                        {
+                          "from": 903,
+                          "to": 929,
+                          "children": [],
+                          "scope": null,
+                          "keyword": "source",
+                          "column": {
+                            "start": 0,
+                            "end": 38
+                          },
+                          "line": {
+                            "start": 0,
+                            "end": 33
+                          }
+                        }
+                      ],
+                      "scope": "multiline",
+                      "keyword": "run",
+                      "column": {
+                        "start": 17,
+                        "end": 15
+                      },
+                      "line": {
+                        "start": 32,
+                        "end": 35
+                      }
+                    },
+                    {
+                      "from": 948,
+                      "to": 962,
+                      "children": [],
+                      "scope": null,
+                      "keyword": "source",
+                      "column": {
+                        "start": 15,
+                        "end": 15
+                      },
+                      "line": {
+                        "start": 35,
+                        "end": 35
+                      }
+                    }
+                  ],
+                  "scope": "multiline",
+                  "keyword": "build",
+                  "column": {
+                    "start": 13,
+                    "end": 15
+                  },
+                  "line": {
+                    "start": 30,
+                    "end": 35
+                  }
+                },
+                {
+                  "from": 977,
+                  "to": 1022,
+                  "children": [],
+                  "scope": null,
+                  "keyword": "source",
+                  "column": {
+                    "start": 11,
+                    "end": 13
+                  },
+                  "line": {
+                    "start": 37,
+                    "end": 40
+                  }
+                },
+                {
+                  "from": 1022,
+                  "to": 1286,
+                  "children": [
+                    {
+                      "from": 1043,
+                      "to": 1147,
+                      "children": [],
+                      "scope": null,
+                      "keyword": "source",
+                      "column": {
+                        "start": 15,
+                        "end": 17
+                      },
+                      "line": {
+                        "start": 41,
+                        "end": 43
+                      }
+                    },
+                    {
+                      "from": 1147,
+                      "to": 1286,
+                      "children": [
+                        {
+                          "from": 1170,
+                          "to": 1181,
+                          "children": [],
+                          "scope": null,
+                          "keyword": "source",
+                          "column": {
+                            "start": 19,
+                            "end": 30
+                          },
+                          "line": {
+                            "start": 44,
+                            "end": 44
+                          }
+                        },
+                        {
+                          "from": 1181,
+                          "to": 1196,
+                          "children": [
+                            {
+                              "from": 1183,
+                              "to": 1196,
+                              "children": [],
+                              "scope": null,
+                              "keyword": "source",
+                              "column": {
+                                "start": 30,
+                                "end": 0
+                              },
+                              "line": {
+                                "start": 44,
+                                "end": 0
+                              }
+                            }
+                          ],
+                          "scope": "inline",
+                          "keyword": "build",
+                          "column": {
+                            "start": 30,
+                            "end": 44
+                          },
+                          "line": {
+                            "start": 44,
+                            "end": 44
+                          }
+                        },
+                        {
+                          "from": 1197,
+                          "to": 1227,
+                          "children": [],
+                          "scope": null,
+                          "keyword": "source",
+                          "column": {
+                            "start": 0,
+                            "end": 29
+                          },
+                          "line": {
+                            "start": 0,
+                            "end": 45
+                          }
+                        },
+                        {
+                          "from": 1227,
+                          "to": 1234,
+                          "children": [
+                            {
+                              "from": 1229,
+                              "to": 1234,
+                              "children": [],
+                              "scope": null,
+                              "keyword": "source",
+                              "column": {
+                                "start": 29,
+                                "end": 0
+                              },
+                              "line": {
+                                "start": 45,
+                                "end": 0
+                              }
+                            }
+                          ],
+                          "scope": "inline",
+                          "keyword": "build",
+                          "column": {
+                            "start": 29,
+                            "end": 35
+                          },
+                          "line": {
+                            "start": 45,
+                            "end": 45
+                          }
+                        },
+                        {
+                          "from": 1235,
+                          "to": 1253,
+                          "children": [],
+                          "scope": null,
+                          "keyword": "source",
+                          "column": {
+                            "start": 0,
+                            "end": 36
+                          },
+                          "line": {
+                            "start": 0,
+                            "end": 45
+                          }
+                        }
+                      ],
+                      "scope": "multiline",
+                      "keyword": "run",
+                      "column": {
+                        "start": 17,
+                        "end": 15
+                      },
+                      "line": {
+                        "start": 43,
+                        "end": 47
+                      }
+                    },
+                    {
+                      "from": 1272,
+                      "to": 1286,
+                      "children": [],
+                      "scope": null,
+                      "keyword": "source",
+                      "column": {
+                        "start": 15,
+                        "end": 15
+                      },
+                      "line": {
+                        "start": 47,
+                        "end": 47
+                      }
+                    }
+                  ],
+                  "scope": "multiline",
+                  "keyword": "build",
+                  "column": {
+                    "start": 13,
+                    "end": 15
+                  },
+                  "line": {
+                    "start": 40,
+                    "end": 47
+                  }
+                },
+                {
+                  "from": 1304,
+                  "to": 1342,
                   "children": [],
                   "scope": null,
                   "keyword": "source",
@@ -493,8 +749,561 @@
                     "end": 11
                   },
                   "line": {
-                    "start": 25,
-                    "end": 26
+                    "start": 50,
+                    "end": 53
+                  }
+                },
+                {
+                  "from": 1342,
+                  "to": 2438,
+                  "children": [
+                    {
+                      "from": 1361,
+                      "to": 1402,
+                      "children": [],
+                      "scope": null,
+                      "keyword": "source",
+                      "column": {
+                        "start": 13,
+                        "end": 15
+                      },
+                      "line": {
+                        "start": 54,
+                        "end": 55
+                      }
+                    },
+                    {
+                      "from": 1402,
+                      "to": 2419,
+                      "children": [
+                        {
+                          "from": 1423,
+                          "to": 1887,
+                          "children": [
+                            {
+                              "from": 1448,
+                              "to": 1487,
+                              "children": [],
+                              "scope": null,
+                              "keyword": "source",
+                              "column": {
+                                "start": 19,
+                                "end": 21
+                              },
+                              "line": {
+                                "start": 57,
+                                "end": 58
+                              }
+                            },
+                            {
+                              "from": 1487,
+                              "to": 1598,
+                              "children": [
+                                {
+                                  "from": 1514,
+                                  "to": 1554,
+                                  "children": [],
+                                  "scope": null,
+                                  "keyword": "source",
+                                  "column": {
+                                    "start": 23,
+                                    "end": 63
+                                  },
+                                  "line": {
+                                    "start": 59,
+                                    "end": 59
+                                  }
+                                },
+                                {
+                                  "from": 1554,
+                                  "to": 1573,
+                                  "children": [
+                                    {
+                                      "from": 1556,
+                                      "to": 1573,
+                                      "children": [],
+                                      "scope": null,
+                                      "keyword": "source",
+                                      "column": {
+                                        "start": 63,
+                                        "end": 0
+                                      },
+                                      "line": {
+                                        "start": 59,
+                                        "end": 0
+                                      }
+                                    }
+                                  ],
+                                  "scope": "inline",
+                                  "keyword": "build",
+                                  "column": {
+                                    "start": 63,
+                                    "end": 81
+                                  },
+                                  "line": {
+                                    "start": 59,
+                                    "end": 59
+                                  }
+                                },
+                                {
+                                  "from": 1574,
+                                  "to": 1598,
+                                  "children": [],
+                                  "scope": null,
+                                  "keyword": "source",
+                                  "column": {
+                                    "start": 0,
+                                    "end": 84
+                                  },
+                                  "line": {
+                                    "start": 0,
+                                    "end": 59
+                                  }
+                                }
+                              ],
+                              "scope": "multiline",
+                              "keyword": "run",
+                              "column": {
+                                "start": 21,
+                                "end": 84
+                              },
+                              "line": {
+                                "start": 58,
+                                "end": 59
+                              }
+                            },
+                            {
+                              "from": 1621,
+                              "to": 1650,
+                              "children": [],
+                              "scope": null,
+                              "keyword": "source",
+                              "column": {
+                                "start": 19,
+                                "end": 21
+                              },
+                              "line": {
+                                "start": 61,
+                                "end": 62
+                              }
+                            },
+                            {
+                              "from": 1650,
+                              "to": 1887,
+                              "children": [
+                                {
+                                  "from": 1677,
+                                  "to": 1703,
+                                  "children": [],
+                                  "scope": null,
+                                  "keyword": "source",
+                                  "column": {
+                                    "start": 23,
+                                    "end": 49
+                                  },
+                                  "line": {
+                                    "start": 63,
+                                    "end": 63
+                                  }
+                                },
+                                {
+                                  "from": 1703,
+                                  "to": 1718,
+                                  "children": [
+                                    {
+                                      "from": 1705,
+                                      "to": 1718,
+                                      "children": [],
+                                      "scope": null,
+                                      "keyword": "source",
+                                      "column": {
+                                        "start": 49,
+                                        "end": 0
+                                      },
+                                      "line": {
+                                        "start": 63,
+                                        "end": 0
+                                      }
+                                    }
+                                  ],
+                                  "scope": "inline",
+                                  "keyword": "build",
+                                  "column": {
+                                    "start": 49,
+                                    "end": 63
+                                  },
+                                  "line": {
+                                    "start": 63,
+                                    "end": 63
+                                  }
+                                },
+                                {
+                                  "from": 1719,
+                                  "to": 1846,
+                                  "children": [],
+                                  "scope": null,
+                                  "keyword": "source",
+                                  "column": {
+                                    "start": 0,
+                                    "end": 51
+                                  },
+                                  "line": {
+                                    "start": 0,
+                                    "end": 65
+                                  }
+                                }
+                              ],
+                              "scope": "multiline",
+                              "keyword": "run",
+                              "column": {
+                                "start": 21,
+                                "end": 19
+                              },
+                              "line": {
+                                "start": 62,
+                                "end": 67
+                              }
+                            },
+                            {
+                              "from": 1869,
+                              "to": 1887,
+                              "children": [],
+                              "scope": null,
+                              "keyword": "source",
+                              "column": {
+                                "start": 19,
+                                "end": 19
+                              },
+                              "line": {
+                                "start": 67,
+                                "end": 67
+                              }
+                            }
+                          ],
+                          "scope": "multiline",
+                          "keyword": "build",
+                          "column": {
+                            "start": 17,
+                            "end": 19
+                          },
+                          "line": {
+                            "start": 56,
+                            "end": 67
+                          }
+                        },
+                        {
+                          "from": 1909,
+                          "to": 1943,
+                          "children": [],
+                          "scope": null,
+                          "keyword": "source",
+                          "column": {
+                            "start": 17,
+                            "end": 17
+                          },
+                          "line": {
+                            "start": 70,
+                            "end": 71
+                          }
+                        },
+                        {
+                          "from": 1943,
+                          "to": 2394,
+                          "children": [
+                            {
+                              "from": 1968,
+                              "to": 2123,
+                              "children": [],
+                              "scope": null,
+                              "keyword": "source",
+                              "column": {
+                                "start": 19,
+                                "end": 21
+                              },
+                              "line": {
+                                "start": 72,
+                                "end": 75
+                              }
+                            },
+                            {
+                              "from": 2123,
+                              "to": 2254,
+                              "children": [
+                                {
+                                  "from": 2150,
+                                  "to": 2157,
+                                  "children": [],
+                                  "scope": null,
+                                  "keyword": "source",
+                                  "column": {
+                                    "start": 23,
+                                    "end": 30
+                                  },
+                                  "line": {
+                                    "start": 76,
+                                    "end": 76
+                                  }
+                                },
+                                {
+                                  "from": 2157,
+                                  "to": 2164,
+                                  "children": [
+                                    {
+                                      "from": 2159,
+                                      "to": 2164,
+                                      "children": [],
+                                      "scope": null,
+                                      "keyword": "source",
+                                      "column": {
+                                        "start": 30,
+                                        "end": 0
+                                      },
+                                      "line": {
+                                        "start": 76,
+                                        "end": 0
+                                      }
+                                    }
+                                  ],
+                                  "scope": "inline",
+                                  "keyword": "build",
+                                  "column": {
+                                    "start": 30,
+                                    "end": 36
+                                  },
+                                  "line": {
+                                    "start": 76,
+                                    "end": 76
+                                  }
+                                },
+                                {
+                                  "from": 2165,
+                                  "to": 2176,
+                                  "children": [],
+                                  "scope": null,
+                                  "keyword": "source",
+                                  "column": {
+                                    "start": 0,
+                                    "end": 48
+                                  },
+                                  "line": {
+                                    "start": 0,
+                                    "end": 76
+                                  }
+                                },
+                                {
+                                  "from": 2176,
+                                  "to": 2190,
+                                  "children": [
+                                    {
+                                      "from": 2178,
+                                      "to": 2190,
+                                      "children": [],
+                                      "scope": null,
+                                      "keyword": "source",
+                                      "column": {
+                                        "start": 48,
+                                        "end": 0
+                                      },
+                                      "line": {
+                                        "start": 76,
+                                        "end": 0
+                                      }
+                                    }
+                                  ],
+                                  "scope": "inline",
+                                  "keyword": "build",
+                                  "column": {
+                                    "start": 48,
+                                    "end": 61
+                                  },
+                                  "line": {
+                                    "start": 76,
+                                    "end": 76
+                                  }
+                                },
+                                {
+                                  "from": 2191,
+                                  "to": 2225,
+                                  "children": [],
+                                  "scope": null,
+                                  "keyword": "source",
+                                  "column": {
+                                    "start": 0,
+                                    "end": 33
+                                  },
+                                  "line": {
+                                    "start": 0,
+                                    "end": 77
+                                  }
+                                },
+                                {
+                                  "from": 2225,
+                                  "to": 2231,
+                                  "children": [
+                                    {
+                                      "from": 2227,
+                                      "to": 2231,
+                                      "children": [],
+                                      "scope": null,
+                                      "keyword": "source",
+                                      "column": {
+                                        "start": 33,
+                                        "end": 0
+                                      },
+                                      "line": {
+                                        "start": 77,
+                                        "end": 0
+                                      }
+                                    }
+                                  ],
+                                  "scope": "inline",
+                                  "keyword": "build",
+                                  "column": {
+                                    "start": 33,
+                                    "end": 38
+                                  },
+                                  "line": {
+                                    "start": 77,
+                                    "end": 77
+                                  }
+                                },
+                                {
+                                  "from": 2232,
+                                  "to": 2254,
+                                  "children": [],
+                                  "scope": null,
+                                  "keyword": "source",
+                                  "column": {
+                                    "start": 0,
+                                    "end": 39
+                                  },
+                                  "line": {
+                                    "start": 0,
+                                    "end": 77
+                                  }
+                                }
+                              ],
+                              "scope": "multiline",
+                              "keyword": "run",
+                              "column": {
+                                "start": 21,
+                                "end": 39
+                              },
+                              "line": {
+                                "start": 75,
+                                "end": 77
+                              }
+                            },
+                            {
+                              "from": 2277,
+                              "to": 2298,
+                              "children": [],
+                              "scope": null,
+                              "keyword": "source",
+                              "column": {
+                                "start": 19,
+                                "end": 19
+                              },
+                              "line": {
+                                "start": 79,
+                                "end": 81
+                              }
+                            },
+                            {
+                              "from": 2298,
+                              "to": 2377,
+                              "children": [
+                                {
+                                  "from": 2323,
+                                  "to": 2356,
+                                  "children": [],
+                                  "scope": null,
+                                  "keyword": "source",
+                                  "column": {
+                                    "start": 21,
+                                    "end": 34
+                                  },
+                                  "line": {
+                                    "start": 82,
+                                    "end": 82
+                                  }
+                                }
+                              ],
+                              "scope": "multiline",
+                              "keyword": "run",
+                              "column": {
+                                "start": 19,
+                                "end": 19
+                              },
+                              "line": {
+                                "start": 81,
+                                "end": 83
+                              }
+                            }
+                          ],
+                          "scope": "multiline",
+                          "keyword": "build",
+                          "column": {
+                            "start": 17,
+                            "end": 17
+                          },
+                          "line": {
+                            "start": 71,
+                            "end": 84
+                          }
+                        }
+                      ],
+                      "scope": "multiline",
+                      "keyword": "run",
+                      "column": {
+                        "start": 15,
+                        "end": 11
+                      },
+                      "line": {
+                        "start": 55,
+                        "end": 86
+                      }
+                    },
+                    {
+                      "from": 2409,
+                      "to": 2419,
+                      "children": [],
+                      "scope": null,
+                      "keyword": "source",
+                      "column": {
+                        "start": 11,
+                        "end": 11
+                      },
+                      "line": {
+                        "start": 86,
+                        "end": 86
+                      }
+                    }
+                  ],
+                  "scope": "multiline",
+                  "keyword": "build",
+                  "column": {
+                    "start": 11,
+                    "end": 9
+                  },
+                  "line": {
+                    "start": 53,
+                    "end": 88
+                  }
+                },
+                {
+                  "from": 2430,
+                  "to": 2438,
+                  "children": [],
+                  "scope": null,
+                  "keyword": "source",
+                  "column": {
+                    "start": 7,
+                    "end": 9
+                  },
+                  "line": {
+                    "start": 88,
+                    "end": 88
                   }
                 }
               ],
@@ -502,330 +1311,11 @@
               "keyword": "run",
               "column": {
                 "start": 5,
-                "end": 11
+                "end": 5
               },
               "line": {
-                "start": 12,
-                "end": 26
-              }
-            },
-            {
-              "from": 774,
-              "to": 800,
-              "value": "static encode(\n           ",
-              "children": [],
-              "scope": null,
-              "keyword": "source",
-              "column": {
-                "start": 11,
-                "end": 15
-              },
-              "line": {
-                "start": 28,
-                "end": 29
-              }
-            },
-            {
-              "from": 801,
-              "children": [
-                {
-                  "from": 809,
-                  "to": 881,
-                  "value": "\n              for (let i = 0; i < fields.length; i++) {\n               ",
-                  "children": [],
-                  "scope": null,
-                  "keyword": "source",
-                  "column": {
-                    "start": 16,
-                    "end": 19
-                  },
-                  "line": {
-                    "start": 29,
-                    "end": 31
-                  }
-                },
-                {
-                  "from": 882,
-                  "to": 975,
-                  "children": [
-                    {
-                      "from": 888,
-                      "to": 906,
-                      "value": "\n                  ",
-                      "children": [],
-                      "scope": null,
-                      "keyword": "source",
-                      "column": {
-                        "start": 20,
-                        "end": 19
-                      },
-                      "line": {
-                        "start": 31,
-                        "end": 32
-                      }
-                    },
-                    {
-                      "from": 907,
-                      "to": 918,
-                      "children": [
-                        {
-                          "from": 909,
-                          "to": 918,
-                          "value": "fields[i]",
-                          "children": [],
-                          "scope": null,
-                          "keyword": "source",
-                          "column": {
-                            "start": 19,
-                            "end": 0
-                          },
-                          "line": {
-                            "start": 32,
-                            "end": 0
-                          }
-                        }
-                      ],
-                      "scope": "inline",
-                      "keyword": "build",
-                      "column": {
-                        "start": 19,
-                        "end": 29
-                      },
-                      "line": {
-                        "start": 32,
-                        "end": 32
-                      }
-                    },
-                    {
-                      "from": 919,
-                      "to": 975,
-                      "value": ": number,\n                }\n              }\n            ",
-                      "children": [],
-                      "scope": null,
-                      "keyword": "source",
-                      "column": {
-                        "start": 30,
-                        "end": 13
-                      },
-                      "line": {
-                        "start": 32,
-                        "end": 35
-                      }
-                    }
-                  ],
-                  "scope": "multiline",
-                  "keyword": "run",
-                  "column": {
-                    "start": 17,
-                    "end": 13
-                  },
-                  "line": {
-                    "start": 31,
-                    "end": 35
-                  }
-                }
-              ],
-              "scope": "multiline",
-              "keyword": "build",
-              "column": {
                 "start": 13,
-                "end": 0
-              },
-              "line": {
-                "start": 29,
-                "end": 0
-              }
-            },
-            {
-              "from": 988,
-              "to": 1032,
-              "value": ") {\n            let result = 0;\n\n           ",
-              "children": [],
-              "scope": null,
-              "keyword": "source",
-              "column": {
-                "start": 11,
-                "end": 15
-              },
-              "line": {
-                "start": 36,
-                "end": 39
-              }
-            },
-            {
-              "from": 1033,
-              "to": 1299,
-              "children": [
-                {
-                  "from": 1041,
-                  "to": 1159,
-                  "value": "\n              for (let i = fields.length - 1; i >= 0; i--) {\n                const field = fields[i];\n               ",
-                  "children": [],
-                  "scope": null,
-                  "keyword": "source",
-                  "column": {
-                    "start": 16,
-                    "end": 19
-                  },
-                  "line": {
-                    "start": 39,
-                    "end": 42
-                  }
-                },
-                {
-                  "from": 1160,
-                  "to": 1268,
-                  "children": [
-                    {
-                      "from": 1166,
-                      "to": 1195,
-                      "value": "\n                  result <<= ",
-                      "children": [],
-                      "scope": null,
-                      "keyword": "source",
-                      "column": {
-                        "start": 20,
-                        "end": 30
-                      },
-                      "line": {
-                        "start": 42,
-                        "end": 43
-                      }
-                    },
-                    {
-                      "from": 1196,
-                      "to": 1211,
-                      "children": [
-                        {
-                          "from": 1198,
-                          "to": 1211,
-                          "value": "schema[field]",
-                          "children": [],
-                          "scope": null,
-                          "keyword": "source",
-                          "column": {
-                            "start": 30,
-                            "end": 0
-                          },
-                          "line": {
-                            "start": 43,
-                            "end": 0
-                          }
-                        }
-                      ],
-                      "scope": "inline",
-                      "keyword": "build",
-                      "column": {
-                        "start": 30,
-                        "end": 44
-                      },
-                      "line": {
-                        "start": 43,
-                        "end": 43
-                      }
-                    },
-                    {
-                      "from": 1212,
-                      "to": 1241,
-                      "value": ";\n                  result |= ",
-                      "children": [],
-                      "scope": null,
-                      "keyword": "source",
-                      "column": {
-                        "start": 45,
-                        "end": 29
-                      },
-                      "line": {
-                        "start": 43,
-                        "end": 44
-                      }
-                    },
-                    {
-                      "from": 1242,
-                      "to": 1249,
-                      "children": [
-                        {
-                          "from": 1244,
-                          "to": 1249,
-                          "value": "field",
-                          "children": [],
-                          "scope": null,
-                          "keyword": "source",
-                          "column": {
-                            "start": 29,
-                            "end": 0
-                          },
-                          "line": {
-                            "start": 44,
-                            "end": 0
-                          }
-                        }
-                      ],
-                      "scope": "inline",
-                      "keyword": "build",
-                      "column": {
-                        "start": 29,
-                        "end": 35
-                      },
-                      "line": {
-                        "start": 44,
-                        "end": 44
-                      }
-                    },
-                    {
-                      "from": 1250,
-                      "to": 1268,
-                      "value": ";\n                ",
-                      "children": [],
-                      "scope": null,
-                      "keyword": "source",
-                      "column": {
-                        "start": 36,
-                        "end": 17
-                      },
-                      "line": {
-                        "start": 44,
-                        "end": 45
-                      }
-                    }
-                  ],
-                  "scope": "multiline",
-                  "keyword": "run",
-                  "column": {
-                    "start": 17,
-                    "end": 17
-                  },
-                  "line": {
-                    "start": 42,
-                    "end": 45
-                  }
-                }
-              ],
-              "scope": "multiline",
-              "keyword": "build",
-              "column": {
-                "start": 13,
-                "end": 13
-              },
-              "line": {
-                "start": 39,
-                "end": 47
-              }
-            },
-            {
-              "from": 1285,
-              "to": 1299,
-              "value": "}\n            ",
-              "children": [],
-              "scope": null,
-              "keyword": "source",
-              "column": {
-                "start": 15,
-                "end": 13
-              },
-              "line": {
-                "start": 46,
-                "end": 47
+                "end": 89
               }
             }
           ],
@@ -833,629 +1323,23 @@
           "keyword": "build",
           "column": {
             "start": 3,
-            "end": 13
+            "end": 3
           },
           "line": {
-            "start": 7,
-            "end": 47
-          }
-        },
-        {
-          "from": 1315,
-          "to": 1352,
-          "value": "return result;\n          }\n\n         ",
-          "children": [],
-          "scope": null,
-          "keyword": "source",
-          "column": {
-            "start": 13,
-            "end": 13
-          },
-          "line": {
-            "start": 49,
-            "end": 52
-          }
-        },
-        {
-          "from": 1353,
-          "to": 1904,
-          "children": [
-            {
-              "from": 1361,
-              "to": 1414,
-              "value": "\n            for (let index of [0,1]) {\n             ",
-              "children": [],
-              "scope": null,
-              "keyword": "source",
-              "column": {
-                "start": 14,
-                "end": 17
-              },
-              "line": {
-                "start": 52,
-                "end": 54
-              }
-            },
-            {
-              "from": 1415,
-              "to": 1904,
-              "children": [
-                {
-                  "from": 1421,
-                  "to": 1437,
-                  "value": "\n               ",
-                  "children": [],
-                  "scope": null,
-                  "keyword": "source",
-                  "column": {
-                    "start": 18,
-                    "end": 19
-                  },
-                  "line": {
-                    "start": 54,
-                    "end": 55
-                  }
-                },
-                {
-                  "from": 1438,
-                  "children": [
-                    {
-                      "from": 1446,
-                      "to": 1503,
-                      "value": "\n                  if (index === 0) {\n                   ",
-                      "children": [],
-                      "scope": null,
-                      "keyword": "source",
-                      "column": {
-                        "start": 20,
-                        "end": 23
-                      },
-                      "line": {
-                        "start": 55,
-                        "end": 57
-                      }
-                    },
-                    {
-                      "from": 1504,
-                      "to": 1617,
-                      "children": [
-                        {
-                          "from": 1510,
-                          "to": 1572,
-                          "value": "\n                      static decodeRef(value: number, result: ",
-                          "children": [],
-                          "scope": null,
-                          "keyword": "source",
-                          "column": {
-                            "start": 24,
-                            "end": 63
-                          },
-                          "line": {
-                            "start": 57,
-                            "end": 58
-                          }
-                        },
-                        {
-                          "from": 1573,
-                          "to": 1592,
-                          "children": [
-                            {
-                              "from": 1575,
-                              "to": 1592,
-                              "value": "BitFieldClassName",
-                              "children": [],
-                              "scope": null,
-                              "keyword": "source",
-                              "column": {
-                                "start": 63,
-                                "end": 0
-                              },
-                              "line": {
-                                "start": 58,
-                                "end": 0
-                              }
-                            }
-                          ],
-                          "scope": "inline",
-                          "keyword": "build",
-                          "column": {
-                            "start": 63,
-                            "end": 81
-                          },
-                          "line": {
-                            "start": 58,
-                            "end": 58
-                          }
-                        },
-                        {
-                          "from": 1593,
-                          "to": 1617,
-                          "value": ") {\n                    ",
-                          "children": [],
-                          "scope": null,
-                          "keyword": "source",
-                          "column": {
-                            "start": 82,
-                            "end": 21
-                          },
-                          "line": {
-                            "start": 58,
-                            "end": 59
-                          }
-                        }
-                      ],
-                      "scope": "multiline",
-                      "keyword": "run",
-                      "column": {
-                        "start": 21,
-                        "end": 21
-                      },
-                      "line": {
-                        "start": 57,
-                        "end": 59
-                      }
-                    }
-                  ],
-                  "scope": "multiline",
-                  "keyword": "build",
-                  "column": {
-                    "start": 17,
-                    "end": 0
-                  },
-                  "line": {
-                    "start": 55,
-                    "end": 0
-                  }
-                },
-                {
-                  "from": 1638,
-                  "to": 1666,
-                  "value": "} else {\n                   ",
-                  "children": [],
-                  "scope": null,
-                  "keyword": "source",
-                  "column": {
-                    "start": 19,
-                    "end": 23
-                  },
-                  "line": {
-                    "start": 60,
-                    "end": 61
-                  }
-                },
-                {
-                  "from": 1667,
-                  "to": 1865,
-                  "children": [
-                    {
-                      "from": 1673,
-                      "to": 1721,
-                      "value": "\n                      static cached = new Array(",
-                      "children": [],
-                      "scope": null,
-                      "keyword": "source",
-                      "column": {
-                        "start": 24,
-                        "end": 49
-                      },
-                      "line": {
-                        "start": 61,
-                        "end": 62
-                      }
-                    },
-                    {
-                      "from": 1722,
-                      "to": 1737,
-                      "children": [
-                        {
-                          "from": 1724,
-                          "to": 1737,
-                          "value": "fields.length",
-                          "children": [],
-                          "scope": null,
-                          "keyword": "source",
-                          "column": {
-                            "start": 49,
-                            "end": 0
-                          },
-                          "line": {
-                            "start": 62,
-                            "end": 0
-                          }
-                        }
-                      ],
-                      "scope": "inline",
-                      "keyword": "build",
-                      "column": {
-                        "start": 49,
-                        "end": 63
-                      },
-                      "line": {
-                        "start": 62,
-                        "end": 62
-                      }
-                    },
-                    {
-                      "from": 1738,
-                      "to": 1865,
-                      "value": ")\n                      static decode(value: number) {\n                        const result = this.cached;\n                    ",
-                      "children": [],
-                      "scope": null,
-                      "keyword": "source",
-                      "column": {
-                        "start": 64,
-                        "end": 21
-                      },
-                      "line": {
-                        "start": 62,
-                        "end": 65
-                      }
-                    }
-                  ],
-                  "scope": "multiline",
-                  "keyword": "run",
-                  "column": {
-                    "start": 21,
-                    "end": 21
-                  },
-                  "line": {
-                    "start": 61,
-                    "end": 65
-                  }
-                }
-              ],
-              "scope": "multiline",
-              "keyword": "run",
-              "column": {
-                "start": 15,
-                "end": 17
-              },
-              "line": {
-                "start": 54,
-                "end": 67
-              }
-            },
-            {
-              "from": 1886,
-              "to": 1904,
-              "value": "}\n                ",
-              "children": [],
-              "scope": null,
-              "keyword": "source",
-              "column": {
-                "start": 19,
-                "end": 17
-              },
-              "line": {
-                "start": 66,
-                "end": 67
-              }
-            }
-          ],
-          "scope": "multiline",
-          "keyword": "build",
-          "column": {
-            "start": 11,
-            "end": 17
-          },
-          "line": {
-            "start": 52,
-            "end": 67
-          }
-        },
-        {
-          "from": 1924,
-          "to": 1957,
-          "value": "let value = data;\n               ",
-          "children": [],
-          "scope": null,
-          "keyword": "source",
-          "column": {
-            "start": 17,
-            "end": 19
-          },
-          "line": {
-            "start": 69,
-            "end": 70
-          }
-        },
-        {
-          "from": 1958,
-          "children": [
-            {
-              "from": 1966,
-              "to": 2139,
-              "value": "\n                  for (let i = 0; i < fields.length; i++) {\n                    const field = fields[i];\n                    const size = schema[field];\n                   ",
-              "children": [],
-              "scope": null,
-              "keyword": "source",
-              "column": {
-                "start": 20,
-                "end": 23
-              },
-              "line": {
-                "start": 70,
-                "end": 74
-              }
-            },
-            {
-              "from": 2140,
-              "to": 2273,
-              "children": [
-                {
-                  "from": 2146,
-                  "to": 2175,
-                  "value": "\n                      result.",
-                  "children": [],
-                  "scope": null,
-                  "keyword": "source",
-                  "column": {
-                    "start": 24,
-                    "end": 30
-                  },
-                  "line": {
-                    "start": 74,
-                    "end": 75
-                  }
-                },
-                {
-                  "from": 2176,
-                  "to": 2183,
-                  "children": [
-                    {
-                      "from": 2178,
-                      "to": 2183,
-                      "value": "field",
-                      "children": [],
-                      "scope": null,
-                      "keyword": "source",
-                      "column": {
-                        "start": 30,
-                        "end": 0
-                      },
-                      "line": {
-                        "start": 75,
-                        "end": 0
-                      }
-                    }
-                  ],
-                  "scope": "inline",
-                  "keyword": "build",
-                  "column": {
-                    "start": 30,
-                    "end": 36
-                  },
-                  "line": {
-                    "start": 75,
-                    "end": 75
-                  }
-                },
-                {
-                  "from": 2185,
-                  "to": 2194,
-                  "value": "= value & ",
-                  "children": [],
-                  "scope": null,
-                  "keyword": "source",
-                  "column": {
-                    "start": 38,
-                    "end": 48
-                  },
-                  "line": {
-                    "start": 75,
-                    "end": 75
-                  }
-                },
-                {
-                  "from": 2195,
-                  "to": 2209,
-                  "children": [
-                    {
-                      "from": 2197,
-                      "to": 2209,
-                      "value": "masks[field]",
-                      "children": [],
-                      "scope": null,
-                      "keyword": "source",
-                      "column": {
-                        "start": 48,
-                        "end": 0
-                      },
-                      "line": {
-                        "start": 75,
-                        "end": 0
-                      }
-                    }
-                  ],
-                  "scope": "inline",
-                  "keyword": "build",
-                  "column": {
-                    "start": 48,
-                    "end": 61
-                  },
-                  "line": {
-                    "start": 75,
-                    "end": 75
-                  }
-                },
-                {
-                  "from": 2210,
-                  "to": 2243,
-                  "value": ";\n                      value >>= ",
-                  "children": [],
-                  "scope": null,
-                  "keyword": "source",
-                  "column": {
-                    "start": 62,
-                    "end": 33
-                  },
-                  "line": {
-                    "start": 75,
-                    "end": 76
-                  }
-                },
-                {
-                  "from": 2244,
-                  "to": 2250,
-                  "children": [
-                    {
-                      "from": 2246,
-                      "to": 2250,
-                      "value": "size",
-                      "children": [],
-                      "scope": null,
-                      "keyword": "source",
-                      "column": {
-                        "start": 33,
-                        "end": 0
-                      },
-                      "line": {
-                        "start": 76,
-                        "end": 0
-                      }
-                    }
-                  ],
-                  "scope": "inline",
-                  "keyword": "build",
-                  "column": {
-                    "start": 33,
-                    "end": 38
-                  },
-                  "line": {
-                    "start": 76,
-                    "end": 76
-                  }
-                },
-                {
-                  "from": 2251,
-                  "to": 2273,
-                  "value": ";\n                    ",
-                  "children": [],
-                  "scope": null,
-                  "keyword": "source",
-                  "column": {
-                    "start": 39,
-                    "end": 21
-                  },
-                  "line": {
-                    "start": 76,
-                    "end": 77
-                  }
-                }
-              ],
-              "scope": "multiline",
-              "keyword": "run",
-              "column": {
-                "start": 21,
-                "end": 21
-              },
-              "line": {
-                "start": 74,
-                "end": 77
-              }
-            }
-          ],
-          "scope": "multiline",
-          "keyword": "build",
-          "column": {
-            "start": 17,
-            "end": 0
-          },
-          "line": {
-            "start": 70,
-            "end": 0
-          }
-        },
-        {
-          "from": 2294,
-          "to": 2314,
-          "value": "}\n\n                 ",
-          "children": [],
-          "scope": null,
-          "keyword": "source",
-          "column": {
-            "start": 19,
-            "end": 21
-          },
-          "line": {
-            "start": 78,
-            "end": 80
-          }
-        },
-        {
-          "from": 2315,
-          "to": 2375,
-          "children": [
-            {
-              "from": 2321,
-              "to": 2375,
-              "value": "\n                    return result;\n                  ",
-              "children": [],
-              "scope": null,
-              "keyword": "source",
-              "column": {
-                "start": 22,
-                "end": 19
-              },
-              "line": {
-                "start": 80,
-                "end": 82
-              }
-            }
-          ],
-          "scope": "multiline",
-          "keyword": "run",
-          "column": {
-            "start": 19,
-            "end": 19
-          },
-          "line": {
-            "start": 80,
-            "end": 82
+            "start": 8,
+            "end": 90
           }
         }
       ],
-      "scope": "multiline",
+      "scope": null,
       "keyword": "export",
       "column": {
         "start": 1,
-        "end": 17
+        "end": 0
       },
       "line": {
-        "start": 6,
-        "end": 83
-      }
-    },
-    {
-      "from": 2439,
-      "to": 2449,
-      "value": "}\n        ",
-      "children": [],
-      "scope": null,
-      "keyword": "source",
-      "column": {
-        "start": 11,
-        "end": 9
-      },
-      "line": {
-        "start": 86,
-        "end": 87
-      }
-    },
-    {
-      "from": 2458,
-      "to": 2466,
-      "value": "}()\n    ",
-      "children": [],
-      "scope": null,
-      "keyword": "source",
-      "column": {
         "start": 7,
-        "end": 5
-      },
-      "line": {
-        "start": 88,
-        "end": 89
+        "end": 0
       }
     }
   ],
@@ -1463,10 +1347,10 @@
   "keyword": "root",
   "column": {
     "start": 0,
-    "end": 1
+    "end": 0
   },
   "line": {
     "start": 0,
-    "end": 91
+    "end": 0
   }
 }

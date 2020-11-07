@@ -13,6 +13,60 @@ var __export = (target, all) => {
     __defProp(target, name, {get: all[name], enumerable: true});
 };
 
+// node_modules/@ungap/weakrefs/cjs/index.js
+var require_cjs = __commonJS((exports, module) => {
+  /*! (c) Andrea Giammarchi - ISC */
+  var self = exports || {};
+  try {
+    self.WeakRef = WeakRef;
+    self.FinalizationGroup = FinalizationGroup;
+  } catch (o_O) {
+    (function(WeakMap2, defineProperties) {
+      var wr = new WeakMap2();
+      function WeakRef3(value) {
+        wr.set(this, value);
+      }
+      defineProperties(WeakRef3.prototype, {
+        deref: {
+          value: function deref() {
+            return wr.get(this);
+          }
+        }
+      });
+      var fg = new WeakMap2();
+      function FinalizationGroup2(fn) {
+        fg.set(this, []);
+      }
+      defineProperties(FinalizationGroup2.prototype, {
+        register: {
+          value: function register(value, name) {
+            var names = fg.get(this);
+            if (names.indexOf(name) < 0)
+              names.push(name);
+          }
+        },
+        unregister: {
+          value: function unregister(value, name) {
+            var names = fg.get(this);
+            var i = names.indexOf(name);
+            if (-1 < i)
+              names.splice(i, 1);
+            return -1 < i;
+          }
+        },
+        cleanupSome: {
+          value: function cleanupSome(fn) {
+            fn(fg.get(this));
+          }
+        }
+      });
+      self.WeakRef = WeakRef3;
+      self.FinalizationGroup = FinalizationGroup2;
+    })(WeakMap, Object.defineProperties);
+  }
+  module.exports = self;
+});
+
 // src/atbuild.ts
 var require_atbuild = __commonJS((exports, module) => {
   __export(exports, {
@@ -92,6 +146,10 @@ var require_atbuild = __commonJS((exports, module) => {
 });
 
 // src/fullAst.ts
+let WeakRef2 = globalThis.WeakRef;
+if (typeof WeakRef2 === "undefined") {
+  WeakRef2 = require_cjs().WeakRef;
+}
 var CharacterType;
 (function(CharacterType2) {
   CharacterType2[CharacterType2["ignore"] = 0] = "ignore";
@@ -202,7 +260,7 @@ Object.defineProperty(astNodeBase, "parent", {
   },
   set(parent) {
     if (parent) {
-      return this._parent = new WeakRef(parent);
+      return this._parent = new WeakRef2(parent);
     } else {
       return this._parent = null;
     }

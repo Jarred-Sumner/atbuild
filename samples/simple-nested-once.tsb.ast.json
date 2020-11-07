@@ -4,121 +4,133 @@
       "from": 0,
       "name": "$createHoursFormatter",
       "value": "prefix: string",
+      "functionDeclarationSuffix": "",
       "children": [
         {
-          "from": 56,
-          "to": 85,
-          "value": "\n  if (prefix === \"hh\") {\n   ",
-          "children": [],
-          "scope": null,
-          "keyword": "source",
-          "column": {
-            "start": 42,
-            "end": 7
-          },
-          "line": {
-            "start": 0,
-            "end": 2
-          }
-        },
-        {
-          "from": 86,
-          "to": 200,
+          "from": 57,
+          "to": 393,
           "children": [
             {
-              "from": 92,
-              "to": 200,
-              "value": "\n      return function (date: Date) {\n        return (date.getUTCHours() % 12).padStart(2, \"0\")\n      }\n    ",
+              "from": 68,
+              "to": 97,
               "children": [],
               "scope": null,
               "keyword": "source",
               "column": {
-                "start": 8,
-                "end": 5
-              },
-              "line": {
-                "start": 2,
-                "end": 6
-              }
-            },
-            {
-              "from": 205,
-              "to": 237,
-              "value": "} else if (prefix === \"h\") {\n   ",
-              "children": [],
-              "scope": null,
-              "keyword": "source",
-              "column": {
-                "start": 3,
+                "start": 5,
                 "end": 7
               },
               "line": {
-                "start": 7,
-                "end": 8
+                "start": 2,
+                "end": 3
               }
             },
             {
-              "from": 238,
-              "to": 353,
+              "from": 97,
+              "to": 217,
               "children": [
                 {
-                  "from": 244,
-                  "to": 345,
-                  "value": "\n      return function (date: Date) {\n        return date.getUTCHours().padStart(2, \"0\")\n      }\n    ",
+                  "from": 110,
+                  "to": 217,
                   "children": [],
                   "scope": null,
                   "keyword": "source",
                   "column": {
-                    "start": 8,
-                    "end": 5
+                    "start": 9,
+                    "end": 9
                   },
                   "line": {
-                    "start": 8,
-                    "end": 12
-                  }
-                },
-                {
-                  "from": 350,
-                  "to": 353,
-                  "value": "}\n\n",
-                  "children": [],
-                  "scope": null,
-                  "keyword": "source",
-                  "column": {
-                    "start": 3,
-                    "end": 1
-                  },
-                  "line": {
-                    "start": 13,
-                    "end": 15
+                    "start": 4,
+                    "end": 6
                   }
                 }
               ],
               "scope": "multiline",
               "keyword": "run",
               "column": {
+                "start": 7,
+                "end": 9
+              },
+              "line": {
+                "start": 3,
+                "end": 6
+              }
+            },
+            {
+              "from": 226,
+              "to": 261,
+              "children": [],
+              "scope": null,
+              "keyword": "source",
+              "column": {
                 "start": 5,
-                "end": 1
+                "end": 7
               },
               "line": {
                 "start": 8,
-                "end": 15
+                "end": 9
+              }
+            },
+            {
+              "from": 261,
+              "to": 387,
+              "children": [
+                {
+                  "from": 274,
+                  "to": 374,
+                  "children": [],
+                  "scope": null,
+                  "keyword": "source",
+                  "column": {
+                    "start": 9,
+                    "end": 9
+                  },
+                  "line": {
+                    "start": 10,
+                    "end": 12
+                  }
+                }
+              ],
+              "scope": "multiline",
+              "keyword": "run",
+              "column": {
+                "start": 7,
+                "end": 5
+              },
+              "line": {
+                "start": 9,
+                "end": 14
+              }
+            },
+            {
+              "from": 383,
+              "to": 387,
+              "children": [],
+              "scope": null,
+              "keyword": "source",
+              "column": {
+                "start": 5,
+                "end": 5
+              },
+              "line": {
+                "start": 14,
+                "end": 14
               }
             }
           ],
           "scope": "multiline",
-          "keyword": "run",
+          "keyword": "build",
           "column": {
-            "start": 5,
-            "end": 5
+            "start": 3,
+            "end": 0
           },
           "line": {
-            "start": 2,
-            "end": 6
+            "start": 1,
+            "end": 16
           }
         }
       ],
-      "scope": "multiline",
+      "scope": null,
       "keyword": "export",
       "column": {
         "start": 1,
