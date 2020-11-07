@@ -9,7 +9,7 @@ Use it for:
 - Determinstic dead code elimination
 - Move slow code from runtime to buildtime
 
-<a target="_blank" href="https://atbuild.vercel.app/bundle/date-formatter.tsb">
+<a target="_blank" href="https://atbuild.jarred.vercel.app/bundle/date-formatter.tsb">
   <strong>Try the playground</strong>
 
   <img src="https://atbuild.jarred.vercel.app/screenshot.png" width="100%" />
@@ -67,7 +67,7 @@ import { $createDateFormatter } from "atbuild/demo/date-formatter"; // $
 export const formatTime = $createDateFormatter("hh:mm:ss");
 ```
 
-[⌨️ `atbuild ./input.js ./output.js`](https://atbuild.vercel.app/bundle/date-formatter.tsb)
+[⌨️ `atbuild ./input.js ./output.js`](https://atbuild.jarred.vercel.app/bundle/date-formatter.tsb)
 
 `output.js`:
 
