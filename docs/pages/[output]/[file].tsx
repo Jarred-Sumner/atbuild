@@ -1,12 +1,20 @@
 import { Page } from "../../components/Page";
 import * as React from "react";
-import { buildAST, transformAST } from "atbuild/src/fullAst";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { format } from "prettier/standalone";
 import parserBabel from "prettier/parser-babel";
 import { Editor } from "../../components/Editor";
 import Head from "next/head";
+
+let buildAST, transformAST;
+if (process.env.NODE_ENV === "development") {
+  buildAST = require("atbuild/src/fullAst").buildAST;
+  transformAST = require("atbuild/src/fullAst").transformAST;
+} else {
+  buildAST = require("atbuild").buildAST;
+  transformAST = require("atbuild").transformAST;
+}
 
 const ENABLE_PRETTIER = true;
 

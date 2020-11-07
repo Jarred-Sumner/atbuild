@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "prebuild": "yarn build-eval-worker",
+    "prebuild": "yarn build-eval-worker;",
     "start": "next start",
     "build-eval-worker": "esbuild ./lib/EvalWorker.worker.ts --bundle --format=iife --outfile=./public/eval/EvalWorker.worker.js",
     "prebuild-eval-worker": "mkdir -p public/eval; cp node_modules/esbuild-wasm/esbuild.wasm ./public/eval/esbuild.wasm",
@@ -17,7 +17,7 @@
     "@rehooks/component-size": "^1.0.3",
     "@zeit/next-css": "^1.0.1",
     "@zeit/next-workers": "^1.0.0",
-    "atbuild": "^1.3.3",
+    "atbuild": "latest",
     "esbuild": "^0.8.4",
     "esbuild-wasm": "^0.8.4",
     "file-loader": "^6.2.0",
