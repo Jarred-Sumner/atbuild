@@ -12,8 +12,8 @@ if (process.env.NODE_ENV === "development") {
   buildAST = require("atbuild/src/fullAst").buildAST;
   transformAST = require("atbuild/src/fullAst").transformAST;
 } else {
-  buildAST = require("atbuild").buildAST;
-  transformAST = require("atbuild").transformAST;
+  buildAST = require("atbuild/dist/fullAst").buildAST;
+  transformAST = require("atbuild/dist/fullAst").transformAST;
 }
 
 const ENABLE_PRETTIER = true;
