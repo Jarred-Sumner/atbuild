@@ -6,13 +6,7 @@ const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const withCSS = require("@zeit/next-css");
 const withWorker = require("@zeit/next-workers");
 
-let ATBUILD_PATH = "";
-if (typeof process.env.NODE_ENV !== "production") {
-  ATBUILD_PATH = require("path").resolve("../dist/with-nextjs.js");
-} else {
-  ATBUILD_PATH = "atbuild/dist/with-nextjs";
-}
-const withAtBuild = require(ATBUILD_PATH);
+const withAtBuild = require("atbuild/dist/with-nextjs");
 
 const withMDX = require("@next/mdx")({
   extension: /\.mdx?$/,
