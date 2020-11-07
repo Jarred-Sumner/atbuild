@@ -396,6 +396,7 @@ If you have an existing Next.js config, then use it like this:
 
 ```js
 const withAtBuild = require("atbuild/with-nextjs");
+
 module.exports = withAtBuild({
   webpack(config, options) {
     // your webpack config here:
