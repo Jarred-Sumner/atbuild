@@ -12,7 +12,7 @@ Use it for:
 Try the playground
 
 <a target="_blank" href="https://atbuild.vercel.app/bundle/date-formatter.tsb">
-<img src="" />
+  <img src="https://atbuild.jarred.vercel.app/screenshot.png" height="577" />
 </a>
 
 # How it works
@@ -363,7 +363,7 @@ module.exports = {
 
       // AtBuild.js Webpack Loader
       {
-        test: /\.(jsb|js|ts|tsx|jsx|@js)$/,
+        test: /\.(jsb|js|ts|tsx|jsx|tsb|@js)$/,
         exclude: /node_modules/,
         enforce: "pre",
         use: [
@@ -408,7 +408,7 @@ if (nextBabelLoaderContainer) {
   }
 
   config.module.rules.unshift({
-    test: /\.jsb$/,
+    test: /\.(jsb|js|ts|tsx|jsx|tsb|@js)$/,
     use: [
       // Pass the loader in before atbuild, so that atbuild runs first.g
       loader,
