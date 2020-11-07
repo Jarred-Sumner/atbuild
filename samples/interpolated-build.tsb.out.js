@@ -1,1 +1,6 @@
-(function build___0_1__0_19(___source___)  { return (console.log("HI"));})(___source___, [])
+var _this = {["___source___"]: ""};
+_this.___source___ += "console.log(\"HI\")";
+_this.___source___ += "";
+
+module.exports.default = _this.___source___;
+_this.___source___ = "";

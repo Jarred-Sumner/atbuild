@@ -1,4 +1,5 @@
 {
+  "to": 20,
   "children": [
     {
       "from": 0,
@@ -7,7 +8,6 @@
         {
           "from": 2,
           "to": 19,
-          "value": "console.log(\"HI\")",
           "children": [],
           "scope": null,
           "keyword": "source",
@@ -22,10 +22,25 @@
         }
       ],
       "scope": "inline",
-      "keyword": "build",
+      "keyword": "run",
       "column": {
         "start": 1,
         "end": 19
+      },
+      "line": {
+        "start": 0,
+        "end": 0
+      }
+    },
+    {
+      "from": 20,
+      "to": 20,
+      "children": [],
+      "scope": null,
+      "keyword": "source",
+      "column": {
+        "start": 0,
+        "end": 0
       },
       "line": {
         "start": 0,

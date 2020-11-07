@@ -1,4 +1,4 @@
-@export function $multipleFields(fields) {
+@export function $multipleFields(fields)
     @run
       let result = 0;
     @end

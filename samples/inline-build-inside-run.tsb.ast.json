@@ -4,32 +4,15 @@
       "from": 1,
       "name": "$InlineBuildInsideRunSyntax",
       "value": "",
-      "to": 216,
+      "functionDeclarationSuffix": "",
       "children": [
         {
           "from": 49,
-          "to": 50,
-          "value": "\n",
-          "children": [],
-          "scope": null,
-          "keyword": "source",
-          "column": {
-            "start": 34,
-            "end": 4
-          },
-          "line": {
-            "start": 1,
-            "end": 2
-          }
-        },
-        {
-          "from": 51,
-          "to": 213,
+          "to": 208,
           "children": [
             {
-              "from": 57,
-              "to": 93,
-              "value": "\n    function() {\n      return class ",
+              "from": 58,
+              "to": 90,
               "children": [],
               "scope": null,
               "keyword": "source",
@@ -38,23 +21,22 @@
                 "end": 20
               },
               "line": {
-                "start": 2,
+                "start": 3,
                 "end": 4
               }
             },
             {
-              "from": 94,
-              "to": 119,
+              "from": 90,
+              "to": 109,
               "children": [
                 {
-                  "from": 102,
-                  "to": 119,
-                  "value": "BitFieldClassName",
+                  "from": 92,
+                  "to": 109,
                   "children": [],
                   "scope": null,
                   "keyword": "source",
                   "column": {
-                    "start": 22,
+                    "start": 20,
                     "end": 0
                   },
                   "line": {
@@ -67,7 +49,7 @@
               "keyword": "build",
               "column": {
                 "start": 20,
-                "end": 40
+                "end": 38
               },
               "line": {
                 "start": 4,
@@ -75,19 +57,18 @@
               }
             },
             {
-              "from": 121,
-              "to": 213,
-              "value": "extends Error {\n        constructor() {\n          this.hi = true;\n        }\n      }\n    }\n  ",
+              "from": 110,
+              "to": 203,
               "children": [],
               "scope": null,
               "keyword": "source",
               "column": {
-                "start": 42,
-                "end": 3
+                "start": 0,
+                "end": 5
               },
               "line": {
-                "start": 4,
-                "end": 10
+                "start": 0,
+                "end": 9
               }
             }
           ],
@@ -103,15 +84,15 @@
           }
         }
       ],
-      "scope": "multiline",
+      "scope": null,
       "keyword": "export",
       "column": {
         "start": 1,
-        "end": 1
+        "end": 0
       },
       "line": {
         "start": 1,
-        "end": 11
+        "end": 0
       }
     }
   ],

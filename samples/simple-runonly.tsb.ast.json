@@ -4,42 +4,25 @@
       "from": 0,
       "name": "$log",
       "value": "value: string",
-      "to": 106,
+      "functionDeclarationSuffix": "",
       "children": [
         {
-          "from": 38,
-          "to": 40,
-          "value": "\n ",
-          "children": [],
-          "scope": null,
-          "keyword": "source",
-          "column": {
-            "start": 24,
-            "end": 5
-          },
-          "line": {
-            "start": 0,
-            "end": 1
-          }
-        },
-        {
-          "from": 41,
-          "to": 103,
+          "from": 39,
+          "to": 104,
           "children": [
             {
-              "from": 47,
-              "to": 103,
-              "value": "\n    function(value) {\n      console.log(value)\n    }\n  ",
+              "from": 48,
+              "to": 99,
               "children": [],
               "scope": null,
               "keyword": "source",
               "column": {
-                "start": 6,
-                "end": 3
+                "start": 5,
+                "end": 5
               },
               "line": {
-                "start": 1,
-                "end": 5
+                "start": 2,
+                "end": 4
               }
             }
           ],
@@ -55,15 +38,15 @@
           }
         }
       ],
-      "scope": "multiline",
+      "scope": null,
       "keyword": "export",
       "column": {
         "start": 1,
-        "end": 1
+        "end": 0
       },
       "line": {
         "start": 0,
-        "end": 6
+        "end": 0
       }
     }
   ],

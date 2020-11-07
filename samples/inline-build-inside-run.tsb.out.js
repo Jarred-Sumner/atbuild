@@ -1,9 +1,23 @@
+var _this = {["___source___"]: ""};
 
-(module.exports.$InlineBuildInsideRunSyntax = (function $InlineBuildInsideRunSyntax(___source___ = [], ___replacers___ = []) {
-  const buildEval = (function export___1_1__11_1(___source___) {
-___source___.push("\n    function() {\n      return class ");
-___source___.push((function build___4_20__4_40(___source___)  { return (BitFieldClassName);})(___source___, []));___source___.push("extends Error {\n        constructor() {\n          this.hi = true;\n        }\n      }\n    }\n  ");
-})(___source___);
-  return typeof buildEval === 'undefined' ? ___source___.join("") : buildEval;
+;var $InlineBuildInsideRunSyntax = (module.exports.$InlineBuildInsideRunSyntax = (function $InlineBuildInsideRunSyntax() {
+        let originalThis = _this;
+
+        if (!this || typeof this["___source___"] === 'undefined') {
+          _this = {
+            ["___source___"]: ""
+          }
+        } else {
+          _this = this;
+        }
+
+        const buildEval = (function export___1_1__0_0() {
+_this.___source___ += "function() {\n      return class ";
+_this.___source___ += (BitFieldClassName);_this.___source___ += " extends Error {\n        constructor() {\n          this.hi = true;\n        }\n      }\n    }\n  ";
+
+})();
+    let output = _this.___source___;
+    _this = originalThis;
+  return typeof buildEval === 'undefined' ? output : buildEval;
 }));
 
