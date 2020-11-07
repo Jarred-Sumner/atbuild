@@ -30,7 +30,7 @@ export async function getStaticPaths(context) {
   const fs = require("fs");
   const glob = util.promisify(_glob);
   const flatten = require("lodash").flatten;
-  const dir = path.resolve(process.cwd(), "../samples");
+  const dir = path.resolve(process.cwd(), "./samples");
   const tsbSamples = await glob(dir + "/*.tsb");
   const paths = {
     paths: [

@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "prebuild": "yarn build-eval-worker;",
+    "prebuild": "yarn build-eval-worker; yarn copy-samples",
+    "precopy-samples": "rm -rf samples",
+    "copy-samples": "cp -r ../samples ./samples",
     "start": "next start",
     "build-eval-worker": "esbuild ./lib/EvalWorker.worker.ts --bundle --format=iife --outfile=./public/eval/EvalWorker.worker.js",
     "prebuild-eval-worker": "mkdir -p public/eval; cp node_modules/esbuild-wasm/esbuild.wasm ./public/eval/esbuild.wasm"
