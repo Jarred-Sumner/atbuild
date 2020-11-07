@@ -231,6 +231,10 @@ export async function handleESBuildResult(
     return;
   }
 
+  if (typeof code === "function") {
+    code = code.toString();
+  }
+
   if (
     onEmpty &&
     (typeof code === "undefined" ||
@@ -239,7 +243,7 @@ export async function handleESBuildResult(
     onEmpty();
     return;
   }
-
+  // console.log(typings, "types?");
   if (typings) {
     emitTypeDeclarationFile(resourcePath, code, typings, writeFile);
     let result;
@@ -310,8 +314,8 @@ const modes = {
 
 const extensionForMode = [".atbuild", ""];
 
-const DEFAULT_JS_EXTENSIONS = [".js", ".ts", ".jsx", ".tsx"];
-const DEFAULT_ATBUILD_EXTENSIONS = [".jsb", ".@js", ".tsb", ".@ts"];
+export const DEFAULT_JS_EXTENSIONS = [".js", ".ts", ".jsx", ".tsx"];
+export const DEFAULT_ATBUILD_EXTENSIONS = [".jsb", ".@js", ".tsb", ".@ts"];
 
 export function runWithOptions(
   _code,
@@ -409,15 +413,20 @@ export function runWithOptions(
       break;
     }
     case modes.light: {
-      emptyHandler = () => callback(null, _code);
+      let ast = buildAST(_code);
+      // console.log(!ast || ast.buildNodeCount === 0, "SKIP?");
+      if (!ast || ast.buildNodeCount === 0) {
+        return _code;
+      }
 
+      emptyHandler = () => callback(null, _code);
       esbuildInput.stdin = {
-        contents: transformAST(buildAST(_code), _code),
+        contents: transformAST(ast, _code),
 
         // These are all optional:
         resolveDir: path.dirname(resourcePath),
         sourcefile: path.basename(resourcePath) + ".js",
-        loader: "js",
+        loader: fileExtension.includes("ts") ? "tsx" : "jsx",
       };
       esbuildInput.outfile = resourcePath + ".js";
       // console.log(
@@ -461,10 +470,10 @@ export function runWithOptions(
 
 export default function loader(_code) {
   if (this.getOptions) {
-    optionsGetter = this.getOptions;
+    opts = this.getOptions(schema);
+  } else {
+    opts = getOptions(this);
   }
-
-  opts = optionsGetter(schema);
 
   const result = runWithOptions(
     _code,

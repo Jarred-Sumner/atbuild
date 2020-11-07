@@ -1,6 +1,17 @@
 module.exports = (nextConfig = {}) => {
+  if (!nextConfig.pageExtensions) {
+    nextConfig.pageExtensions = ["@js", "jsb", "tsb", "@ts", "js", "jsx"];
+  } else {
+    nextConfig.pageExtensions.unshift("@js", "jsb", "tsb", "@ts");
+  }
+
   return Object.assign({}, nextConfig, {
-    webpack(config, options) {
+    webpack(_config, options) {
+      let config = _config;
+      if (nextConfig.webpack) {
+        config = nextConfig.webpack(config, options);
+      }
+
       const nextBabelLoaderContainer = config.module.rules.find((rule) => {
         return (
           (rule.use &&
@@ -22,7 +33,7 @@ module.exports = (nextConfig = {}) => {
           );
         }
 
-        config.resolve.extensions.push(".@js", ".jsb", ".tsb", "@ts");
+        config.resolve.extensions.unshift(".@js", ".jsb", ".tsb", ".@ts");
 
         const fs = require("fs");
         let tsconfig;
@@ -30,9 +41,10 @@ module.exports = (nextConfig = {}) => {
           tsconfig = require(require("path").resolve("./tsconfig.json"));
         }
 
-        config.module.rules.unshift({
+        config.module.rules.push({
           test: /\.(@js|jsb)$/,
           type: "javascript/auto",
+          enforce: "pre",
           use: [
             loader,
             {
@@ -45,9 +57,10 @@ module.exports = (nextConfig = {}) => {
           ],
         });
 
-        config.module.rules.unshift({
+        config.module.rules.push({
           test: /\.(@ts|tsb)$/,
           type: "javascript/auto",
+          enforce: "pre",
           use: [
             loader,
             {
@@ -67,7 +80,6 @@ module.exports = (nextConfig = {}) => {
           enforce: "pre",
           exclude: /node_modules/,
           use: [
-            loader,
             {
               loader: "atbuild/dist/webpack-loader",
               options: {

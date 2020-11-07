@@ -180,6 +180,8 @@ function buildAST(source, emptyFunctionNameReplacer = "") {
         runtimeCodeLineEndNode.line = i;
         runtimeCodeLineEndNode.type = 1;
         nodes.push(runtimeCodeLineEndNode);
+      } else {
+        nodes.push(runtimeCodeNode);
       }
     }
   }
@@ -187,7 +189,7 @@ function buildAST(source, emptyFunctionNameReplacer = "") {
   return nodes;
 }
 function transformAST(nodes) {
-  let code = "var __CODE__ = [];\n\n";
+  let code = "var __CODE__ = '';\n\n";
   const maxLineNumber = nodes.maxLine;
   let lines = new Array(maxLineNumber + 3);
   lines.fill("");
@@ -201,15 +203,15 @@ function transformAST(nodes) {
         break;
       }
       case 2: {
-        lines[node.line] += "${" + node.value + "}";
+        lines[node.line] += "${" + node.value.replace(/`/gm, "\\`") + "}";
         break;
       }
       case 3: {
-        lines[node.line] += node.value;
+        lines[node.line] += node.value.replace(/`/gm, "\\`").replace(/\$\{/gm, "\\${");
         break;
       }
       case 0: {
-        lines[node.line] += "__CODE__.push(`";
+        lines[node.line] += "__CODE__ += (`";
         break;
       }
       case 1: {
@@ -217,13 +219,14 @@ function transformAST(nodes) {
         break;
       }
       case 6: {
-        lines[node.line] += "__CODE__.push(`" + node.value + "`);\n\n";
+        lines[node.line] += "__CODE__ += (`" + node.value.replace(/`/gm, "\\`").replace(/\$\{/gm, "\\${") + "`);\n\n";
         break;
       }
     }
   }
   lines.unshift(code);
-  lines[lines.length - 1] = `module.exports.default = __CODE__.join("");`;
+  lines[lines.length - 1] = `module.exports.default = __CODE__;
+__CODE__ = "";`;
   return lines.join("");
 }
 function transform(source) {

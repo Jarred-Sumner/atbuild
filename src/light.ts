@@ -151,6 +151,7 @@ export function buildAST(source: string, emptyFunctionNameReplacer = "") {
         lineNodeOffset = 0,
         isFirstInsert = true,
         needsEmptyFunctionReplacer = 0;
+
       for (
         linePosition = 0;
         linePosition < lineToMatch.length;
@@ -255,6 +256,8 @@ export function buildAST(source: string, emptyFunctionNameReplacer = "") {
         runtimeCodeLineEndNode.type = ASTNodeType.runtimeLineEnd;
 
         nodes.push(runtimeCodeLineEndNode);
+      } else {
+        nodes.push(runtimeCodeNode);
       }
     }
   }
@@ -263,7 +266,7 @@ export function buildAST(source: string, emptyFunctionNameReplacer = "") {
 }
 
 export function transformAST(nodes: ASTNodeList) {
-  let code = "var __CODE__ = [];\n\n";
+  let code = "var __CODE__ = '';\n\n";
   const maxLineNumber = nodes.maxLine;
   let lines = new Array(maxLineNumber + 3);
   lines.fill("");
@@ -280,17 +283,17 @@ export function transformAST(nodes: ASTNodeList) {
       }
 
       case ASTNodeType.buildTimeCode: {
-        lines[node.line] += "${" + node.value + "}";
+        lines[node.line] += "${" + node.value.replace(/`/gm, "\\`") + "}";
         break;
       }
       case ASTNodeType.runtimeCode: {
         // prettier-ignore
-        lines[node.line] += node.value
+        lines[node.line] += node.value.replace(/`/gm, "\\`").replace(/\$\{/gm, "\\${")
         break;
       }
 
       case ASTNodeType.runtimeLineStart: {
-        lines[node.line] += "__CODE__.push(`";
+        lines[node.line] += "__CODE__ += (`";
         break;
       }
 
@@ -299,15 +302,19 @@ export function transformAST(nodes: ASTNodeList) {
         break;
       }
       case ASTNodeType.runtimeLine: {
-        lines[node.line] += "__CODE__.push(`" + node.value + "`);\n\n";
+        lines[node.line] +=
+          "__CODE__ += (`" +
+          node.value.replace(/`/gm, "\\`").replace(/\$\{/gm, "\\${") +
+          "`);\n\n";
         break;
       }
     }
   }
   lines.unshift(code);
 
-  lines[lines.length - 1] = `module.exports.default = __CODE__.join("");`;
-
+  lines[
+    lines.length - 1
+  ] = `module.exports.default = __CODE__;\n__CODE__ = "";`;
   return lines.join("");
 }
 

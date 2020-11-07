@@ -1,5 +1,8 @@
-import LAST_BUILD from "../lib/getLastBuild"; // $
+import React from "react";
+import { $lastBuiltAt } from "../lib/lastBuiltAt.tsb"; // $
+
+const foo = $lastBuiltAt();
 
 export default function TestPluginPage() {
-  return <div>{LAST_BUILD.toISOString()}</div>;
+  return <div>{`!${foo}`}</div>;
 }
