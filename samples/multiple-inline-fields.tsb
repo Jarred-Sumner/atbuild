@@ -1,20 +1,20 @@
 @export function $multipleFields(fields) {
-  @run {
-    let result = 0;
-  @}
+    @run
+      let result = 0;
+    @end
 
-  @build {
-    for (let i = fields.length - 1; i >= 0; i--) {
-      const field = fields[i];
-      @run {
-        result <<= @(schema[field]);
-        result |= @(field);
-      @}
-    }
-  @}
+    @build
+      for (let i = fields.length - 1; i >= 0; i--) {
+        const field = fields[i];
+        @run
+          result <<= @(schema[field]);
+          result |= @(field);
+        @end
+      }
+    @end
 
-  @run {
-    return result;
-  @}
+    @run
+      return result;
+    @end
 
-  @}
+  @end
