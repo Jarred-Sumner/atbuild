@@ -9,9 +9,9 @@ Use it for:
 - Determinstic dead code elimination
 - Move slow code from runtime to buildtime
 
-Try the playground
-
 <a target="_blank" href="https://atbuild.vercel.app/bundle/date-formatter.tsb">
+  **Try the playground**
+
   <img src="https://atbuild.jarred.vercel.app/screenshot.png" width="100%" />
 </a>
 
