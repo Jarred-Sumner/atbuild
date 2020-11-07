@@ -6,6 +6,14 @@ const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const withCSS = require("@zeit/next-css");
 const withWorker = require("@zeit/next-workers");
 
+let ATBUILD_PATH = "";
+if (typeof process.env.NODE_ENV !== "production") {
+  ATBUILD_PATH = require("path").resolve("../dist/next-plugin.js");
+} else {
+  ATBUILD_PATH = "atbuild/dist/next-plugin";
+}
+const withAtBuild = require(ATBUILD_PATH);
+
 const withMDX = require("@next/mdx")({
   extension: /\.mdx?$/,
   options: {
@@ -18,51 +26,57 @@ const withMDX = require("@next/mdx")({
   },
 });
 
-module.exports = withCSS(
-  withMDX(
-    withTranspileModules({
-      pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
-      typescript: {
-        ignoreDevErrors: true,
-        ignoreBuildErrors: true,
-      },
-      webpack: (config) => {
-        const rule = config.module.rules
-          .find((rule) => rule.oneOf)
-          .oneOf.find(
-            (r) =>
-              // Find the global CSS loader
-              r.issuer && r.issuer.include && r.issuer.include.includes("_app")
+process.env.WRITE_ATBUILD_TO_DISK = true;
+
+module.exports = withAtBuild(
+  withCSS(
+    withMDX(
+      withTranspileModules({
+        pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
+        typescript: {
+          ignoreDevErrors: true,
+          ignoreBuildErrors: true,
+        },
+        webpack: (config) => {
+          const rule = config.module.rules
+            .find((rule) => rule.oneOf)
+            .oneOf.find(
+              (r) =>
+                // Find the global CSS loader
+                r.issuer &&
+                r.issuer.include &&
+                r.issuer.include.includes("_app")
+            );
+          if (rule) {
+            rule.issuer.include = [
+              rule.issuer.include,
+              // Allow `monaco-editor` to import global CSS:
+              /[\\/]node_modules[\\/]monaco-editor[\\/]/,
+            ];
+          }
+
+          config.plugins.push(
+            new MonacoWebpackPlugin({
+              languages: ["json", "typescript", "javascript"],
+              filename: "static/[name].worker.js",
+              // customLanguages,
+            })
           );
-        if (rule) {
-          rule.issuer.include = [
-            rule.issuer.include,
-            // Allow `monaco-editor` to import global CSS:
-            /[\\/]node_modules[\\/]monaco-editor[\\/]/,
-          ];
-        }
 
-        config.plugins.push(
-          new MonacoWebpackPlugin({
-            languages: ["json", "typescript", "javascript"],
-            filename: "static/[name].worker.js",
-            // customLanguages,
-          })
-        );
-
-        config.module.rules.push({
-          test: /\.(eot|woff|woff2|ttf|svg|png|jpg|gif)$/,
-          use: {
-            loader: "url-loader",
-            options: {
-              limit: 10000,
-              name: "[name].[ext]",
+          config.module.rules.push({
+            test: /\.(eot|woff|woff2|ttf|svg|png|jpg|gif)$/,
+            use: {
+              loader: "url-loader",
+              options: {
+                limit: 10000,
+                name: "[name].[ext]",
+              },
             },
-          },
-        });
+          });
 
-        return config;
-      },
-    })
+          return config;
+        },
+      })
+    )
   )
 );

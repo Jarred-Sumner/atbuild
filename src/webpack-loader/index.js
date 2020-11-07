@@ -1,21 +1,19 @@
-import { AtBuild, requireFromString } from "../atbuild";
 import {
   build as _build,
-  transform as _transform,
-  transformSync,
   startService,
+  transform as _transform,
 } from "esbuild";
+import fs from "fs";
+import { getOptions } from "loader-utils";
 import path from "path";
+import { requireFromString } from "../atbuild";
 import esbuildPlugin from "../esbuildPlugin/fullPlugin";
 import lightEsbuildPlugin from "../esbuildPlugin/lightPlugin";
-import fs from "fs";
+import { buildAST, quickTest, transformAST } from "../light";
 import {
   baseTypings,
   generateTypings,
 } from "../typings-plugin/generateTypings";
-import { getOptions } from "loader-utils";
-import { quickTest } from "../light";
-import { transformAST, buildAST } from "../light";
 
 let service;
 let runCount = 0;
@@ -91,7 +89,8 @@ async function runBuild(
   typings,
   tsconfig,
   outputFormat,
-  writeFile
+  writeFile,
+  onEmpty
 ) {
   if (runCount > 0 && !service) {
     service = await startService({
@@ -126,7 +125,8 @@ async function runBuild(
         typings,
         tsconfig,
         outputFormat,
-        writeFile
+        writeFile,
+        onEmpty
       ),
     (err) => {
       console.error(err);
@@ -187,7 +187,8 @@ export async function handleESBuildResult(
   typings,
   tsconfig,
   outputFormat = "esm",
-  writeFile
+  writeFile,
+  onEmpty
 ) {
   const { outputFiles, warnings } = _response;
   let source, meta;
@@ -227,6 +228,15 @@ export async function handleESBuildResult(
     code = requireFromString(source, input).default;
   } catch (exception) {
     callback(exception);
+    return;
+  }
+
+  if (
+    onEmpty &&
+    (typeof code === "undefined" ||
+      (typeof code === "string" && code.length === 0))
+  ) {
+    onEmpty();
     return;
   }
 
@@ -385,16 +395,22 @@ export function runWithOptions(
     ..._esbuildInput,
     format: "cjs",
   };
+  let emptyHandler;
 
   switch (mode) {
     case modes.full: {
       esbuildInput.entryPoints = [resourcePath];
       esbuildInput.outfile = resourcePath + ".js";
+
+      // console.log("[Processing]", resourcePath, "as", mode);
+
       // esbuildInput.outdir = path.dirname(resourcePath);
       // esbuildInput = resourcePath + ".js",
       break;
     }
     case modes.light: {
+      emptyHandler = () => callback(null, _code);
+
       esbuildInput.stdin = {
         contents: transformAST(buildAST(_code), _code),
 
@@ -404,6 +420,13 @@ export function runWithOptions(
         loader: "js",
       };
       esbuildInput.outfile = resourcePath + ".js";
+      // console.log(
+      //   "[Processing]",
+      //   resourcePath,
+      //   "as",
+      //   mode,
+      //   esbuildInput.stdin.contents
+      // );
 
       if (
         !(esbuildInput.stdin.contents && esbuildInput.stdin.contents.length)
@@ -429,7 +452,8 @@ export function runWithOptions(
     enableTypings ? typings : null,
     tsconfig,
     outputFormat,
-    writeFile
+    writeFile,
+    emptyHandler
   );
 
   return result;

@@ -386,44 +386,21 @@ module.exports = {
 
 ### Next.js integration
 
-This will be cleaned up & moved into a plugin eventually (such as `next-with-atbuild`), however this is how I currently use AtBuild with Next.js:
+To use with Next.js, add the following to your `next.config.js`;
 
 ```js
-// Figure out where next-babel-loader is hiding
-const nextBabelLoaderContainer = config.module.rules.find((rule) => {
-  return (
-    (rule.use && rule.use.loader && rule.use.loader === "next-babel-loader") ||
-    (rule.use &&
-      rule.use.find((loader) => loader.loader === "next-babel-loader"))
-  );
+module.exports = require("atbuild/with-nextjs");
+```
+
+If you have an existing Next.js config, then use it like this:
+
+```js
+const withAtBuild = require("atbuild/with-nextjs");
+module.exports = withAtBuild({
+  webpack(config, options) {
+    // your webpack config here:
+  },
 });
-
-if (nextBabelLoaderContainer) {
-  let loader;
-
-  if (nextBabelLoaderContainer.use.loader === "next-babel-loader") {
-    loader = nextBabelLoaderContainer.use;
-  } else {
-    loader = nextBabelLoaderContainer.use.find(
-      (loader) => loader.loader === "next-babel-loader"
-    );
-  }
-
-  config.module.rules.unshift({
-    test: /\.(jsb|js|ts|tsx|jsx|tsb|@js)$/,
-    use: [
-      // Pass the loader in before atbuild, so that atbuild runs first.g
-      loader,
-      {
-        // This is where the webpack loader is added.
-        loader: "atbuild/webpack-loader",
-      },
-    ],
-  });
-} else {
-  // Feel free to open an issue if you see this warning.
-  console.warn("Unable to activate AtBuild");
-}
 ```
 
 ## Alternatives
