@@ -4,6 +4,7 @@
   @end
 @end
 
+
 @export function $BitField(object, _BitFieldClassName)
   @build
     const BitFieldClassName = _BitFieldClassName || "BitFieldClassName"
@@ -12,7 +13,7 @@
 
     @run
       function() {
-        return class @build (BitFieldClassName) {
+        return class @(BitFieldClassName){
           static masks = @(masks);
           static offsets = @(offsets);
           static schema = @(schema);

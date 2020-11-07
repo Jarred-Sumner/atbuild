@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { debug } from "webpack";
-import { buildAST, transformAST, ASTNode } from "./full2";
+import { buildAST, transformAST, ASTNode } from "./fullAst";
 
 const _path = (name) => path.join(__dirname, "../samples", name);
 const paths = {
@@ -25,7 +24,7 @@ const SAMPLES = {
   multipleInlineFields: fs.readFileSync(paths.multipleInlineFields, "utf8"),
 };
 
-describe("Full2", () => {
+describe("AtBuild Full", () => {
   process.env.NODE_ENV = "test";
   let ast: ASTNode, code: string, source: string;
   function run(file) {

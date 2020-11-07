@@ -56,10 +56,9 @@ Unlike other buildtime code generation tools, you can `import` from `node_module
 `input.js`:
 
 ```ts
-import { $createDateFormatter } from "atbuild-date"; // $
+import { $createDateFormatter } from "atbuild/demo/date-formatter"; // $
 
-// This library doesn't actually exist! But someone could make it.
-export const formatHourMinuteSeconds = $createDateFormatter("HH:MM:SS");
+export const formatTime = $createDateFormatter("hh:mm:ss");
 ```
 
 ⌨️ `atbuild ./input.js ./output.js`
@@ -67,22 +66,16 @@ export const formatHourMinuteSeconds = $createDateFormatter("HH:MM:SS");
 `output.js`:
 
 ```js
-// Credit: https://stackoverflow.com/questions/6312993/javascript-seconds-to-time-string-with-format-hhmmss
-export const formatHourMinuteSeconds = function (unixTimestamp) {
-  let hours = Math.floor(unixTimestamp / 3600).toString(10);
-  let minutes = Math.floor((seconds - hours * 3600) / 60).toString(10);
-  let seconds = (unixTimestamp - hours * 3600 - minutes * 60).toString(10);
-
-  if (hours < 10) {
-    hours = "0" + hours;
-  }
-  if (minutes < 10) {
-    minutes = "0" + minutes;
-  }
-  if (seconds < 10) {
-    seconds = "0" + seconds;
-  }
-  return `${hours}:${minutes}:${seconds}`;
+export const formatTime = function (date: Date) {
+  let formattedDate = "";
+  var hours = date.getUTCHours() % 12;
+  hours = hours || 12;
+  formattedDate += hours.toString(10).padStart(2, "0");
+  formattedDate += ":";
+  formattedDate += date.getUTCMinutes().toString(10).padStart(2, "0");
+  formattedDate += ":";
+  formattedDate += date.getUTCSeconds().toString(10).padStart(2, "0");
+  return formattedDate;
 };
 ```
 

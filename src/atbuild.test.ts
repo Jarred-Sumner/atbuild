@@ -3,34 +3,6 @@ import path from "path";
 import fs from "fs";
 import Module from "module";
 
-describe("extractSourceAndType", function () {
-  const highlightLine = ([code, type, line, char]) => {
-    const lines = code.split("\n");
-    lines[line] =
-      lines[line].substring(0, char) + "⟶" + lines[line].substring(char);
-    return lines.join("\n");
-  };
-  it("works", function () {
-    const code = `
-        @for (let i= 0; i < 10; i++) {
-          if (@{i}) {
-            console.log("HI!")
-          } else {
-            console.log("HEY!")
-          }
-        @}
-
-        @if (true) {
-          console.log("HI");
-        @}
-
-    `;
-    let response = [null, null, null, null];
-    AtBuild.extractSourceAndType(code, "file.@js", 2, 15, response);
-    const highlighted = highlightLine(response);
-  });
-});
-
 describe("AtBuild", function () {
   it("supports require", function () {
     const first = `

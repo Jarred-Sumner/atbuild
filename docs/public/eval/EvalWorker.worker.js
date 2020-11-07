@@ -23463,14 +23463,18 @@ ${u}:${x}:${$}: error: ${c.text}`;
           output = this.module.exports.default.toString();
           break;
       }
+      let header = "";
       for (let child of ast.children) {
         if (child.keyword === "export") {
-          output += `
-export function ${child.name}(${child.value}) {
+          header += `export function ${child.name}(${child.value}) {
 // Placeholder function that will be run & replaced at buildtime
         }
+
 `;
         }
+      }
+      if (header.length > 0) {
+        output = header + output;
       }
       return output;
     }();

@@ -1,0 +1,154 @@
+@export function $createDateFormatter(format)
+  @run
+    function (date: Date) {
+      let formattedDate = "";
+      @build
+        const _format = format.replace(/(.)\1+/g, '$1')
+        for (let i = 0; i < _format.length; i++) {
+          const token = _format[i];
+
+          if (formatters[token]) {
+            formatters[token](format.substring(format.indexOf(token), format.lastIndexOf(token) + 1))
+          } else {
+            @run
+              formattedDate += "@(token || "")"
+            @end
+          }
+        }
+      @end
+      return formattedDate;
+    }
+  @end
+@end
+
+@build
+var formatters = {
+    // Year
+    y: function(token) {
+      @run
+        // From http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_tokens
+        // | Year     |     y | yy |   yyy |  yyyy | yyyyy |
+        // |----------|-------|----|-------|-------|-------|
+        // | AD 1     |     1 | 01 |   001 |  0001 | 00001 |
+        // | AD 12    |    12 | 12 |   012 |  0012 | 00012 |
+        // | AD 123   |   123 | 23 |   123 |  0123 | 00123 |
+        // | AD 1234  |  1234 | 34 |  1234 |  1234 | 01234 |
+        // | AD 12345 | 12345 | 45 | 12345 | 12345 | 12345 |
+
+        var signedYear = date.getUTCFullYear();
+        // Returns 1 for 1 BC (which is year 0 in JavaScript)
+        var year = Math.max(signedYear, 1);
+      @end
+
+      @build
+        if (token === "yy") {
+            @run(year %= 100;)
+        }
+      @end
+
+      @run
+        formattedDate += year.toString(10).padStart(@(token.length), "0")
+      @end
+
+    },
+
+    // Month
+    M: function(token) {
+      @run
+        var month = date.getUTCMonth() + 1
+      @end
+
+      if (token === "MM") {
+        @run
+          formattedDate += month.toString(10).padStart(2, "0")
+        @end
+      } else if (token === "M") {
+        @run
+          formattedDate += month.toString(10).toString(10)
+        @end
+      }
+    },
+
+    // Day of the month
+    d: function(token) {
+      @run
+        formattedDate += date.getUTCDate().toString(10).padStart(@(token.length), "0")
+      @end
+    },
+    D: function(token) {
+      @run
+        formattedDate += date.getUTCDate().toString(10).padStart(@(token.length), "0")
+      @end
+    },
+
+    // Hour [1-12]
+    h:  function(token) {
+      @run
+        var hours = date.getUTCHours() % 12;
+        hours = hours || 12;
+      @end
+
+      if (token.length === 2) {
+        @run
+          formattedDate += hours.toString(10).padStart(@(token.length), "0")
+        @end
+      } else {
+        @run
+          formattedDate += hours.toString(10)
+        @end
+      }
+    },
+
+    // Hour [0-23]
+    H: function(token) {
+      @run
+        var hours = (date.getUTCHours() % 12 || 12)
+      @end
+
+      if (token.length === 2) {
+        @run
+          formattedDate += date.getUTCHours().toString(10).padStart(@(token.length), "0")
+        @end
+      } else {
+        @run
+          formattedDate += date.getUTCHours().toString(10)
+        @end
+      }
+    },
+
+    // Minute
+    m:  function(token) {
+      if (token.length > 1) {
+        @run
+          formattedDate += date.getUTCMinutes().toString(10).padStart(@(token.length), "0")
+        @end
+      } else {
+        @run
+          formattedDate += date.getUTCMinutes().toString(10)
+        @end
+      }
+    },
+
+    // Second
+    s: function(token) {
+      if (token.length > 1) {
+        @run
+          formattedDate += date.getUTCSeconds().toString(10).padStart(@(token.length), "0")
+        @end
+      } else {
+        @run
+          formattedDate += date.getUTCSeconds().toString(10)
+        @end
+      }
+    },
+  }
+@end
+
+@run
+  // This was replaced at line 148
+  export const formatTime = @($createDateFormatter("hh:mm"))
+  // This was replaced at line 150
+  export const formatDate = @($createDateFormatter("dd/mm/yy"))
+  // This was replaced at line 152
+  export const formatDateTime = @($createDateFormatter("dd/mm/yy hh:mm"))
+@end

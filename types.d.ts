@@ -1,32 +1,50 @@
 /// <reference types="node" />
 declare module "fullAst" {
-    export enum ASTNode {
-        RuntimeCode = 0,
-        BuildtimeCode = 1,
-        MultilineBuildtimeCode = 2,
-        RuntimecodeLineStart = 3,
-        InterpolatedCode = 4,
-        RuntimecodeLineEnd = 5,
-        ExportFunctionStart = 6,
-        ExportFunctionEnd = 7
+    export enum Scope {
+        none = 0,
+        inline = 1,
+        multiline = 2
     }
-    export function buildAST(code: string): any[];
-    export function transformAST(nodes: any, asFunction: any, exposeFunctions?: boolean): string;
+    export enum ASTNodeKeyword {
+        source = 0,
+        run = 1,
+        build = 2,
+        export = 3,
+        inline = 4,
+        replacer = 5,
+        root = 6,
+        interpolate = 7
+    }
+    export interface ASTNode {
+        parent?: ASTNode;
+        children?: ASTNode[];
+        variableMapping: string[];
+        keyword: ASTNodeKeyword;
+        name?: string;
+        scope: Scope;
+        value?: string;
+        lineStart: number;
+        functionDeclarationSuffix: string;
+        lineEnd: number;
+        colStart: number;
+        colEnd: number;
+        from: number;
+        to: number;
+    }
+    export function buildAST(code: string, filename?: string): ASTNode;
+    export function transformAST(root: ASTNode, code: string): string;
 }
 declare module "atbuild" {
-    import { transformAST } from "fullAst";
+    import { buildAST, transformAST } from "fullAst";
     export let requireFromString: any;
     export class AtBuild {
-        static buildAST(code: any): any[];
-        static transformASTBuildTimeOnly(nodes: any): string;
+        static buildAST(code: any): import("fullAst").ASTNode;
         static transformAST: typeof transformAST;
         static findNodesAtLine(nodes: any, lineNumber: any): Generator<any, void, unknown>;
         static ASTResponseType: {
             BuildtimeCode: number;
             RuntimeCode: number;
         };
-        static transformASTForLineColumn(nodes: any, lineNumber: any, column: any, response: any): void;
-        static extractSourceAndType(code: any, filepath: any, line: any, column: any, response: any): void;
         static evalFile(path: any, header: any): any;
         static evalFileAsync(path: any, header: any): Promise<any>;
         static _eval(code: any, filepath?: string, addHeader?: boolean, requireFunc?: NodeJS.Require): any;
@@ -34,6 +52,7 @@ declare module "atbuild" {
         static evalAsync(code: string, filepath?: string, addHeader?: boolean, requireFunc?: NodeJS.Require): Promise<any>;
     }
     export default function $(arg: any): any;
+    export { buildAST, transformAST };
 }
 declare module "atbuild.test" { }
 declare module "bundle" {
@@ -50,65 +69,7 @@ declare module "bundle" {
     };
     export function bundle(source: string, { format, mode, filepath, defaultMode, typescript, destination, readFile, writeFile: _writeFile, }: BundleInput): Promise<string>;
 }
-declare module "typings-plugin/generateTypings" {
-    export let baseTypings: {
-        noEmit: boolean;
-        noEmitOnError: boolean;
-        declaration: boolean;
-        declarationMap: boolean;
-        allowJs: boolean;
-        skipLibCheck: boolean;
-        strict: boolean;
-        downlevelIteration: boolean;
-        esModuleInterop: boolean;
-        allowSyntheticDefaultImports: boolean;
-        jsx: string;
-        emitDeclarationOnly: boolean;
-        extensions: {
-            "**/*.ts": string;
-            "**/*.js": string;
-            "**/*.jsb": string;
-            "**/*.@js": string;
-            "**/*.@ts": string;
-            "**/*.tsb": string;
-        };
-    };
-    export function generateTypings(filenames: string[], options: any, readFile: (fileName: string) => string | undefined, writeFile: (fileName: string, content: string) => void): void;
-}
-declare module "full2" {
-    export enum Scope {
-        none = 0,
-        inline = 1,
-        multiline = 2
-    }
-    export enum ASTNodeKeyword {
-        source = 0,
-        run = 1,
-        build = 2,
-        export = 3,
-        inline = 4,
-        replacer = 5,
-        root = 6
-    }
-    export interface ASTNode {
-        parent?: ASTNode;
-        children?: ASTNode[];
-        variableMapping: string[];
-        keyword: ASTNodeKeyword;
-        name?: string;
-        scope: Scope;
-        value?: string;
-        lineStart: number;
-        lineEnd: number;
-        colStart: number;
-        colEnd: number;
-        from: number;
-        to: number;
-    }
-    export function buildAST(code: string, filename?: string): ASTNode;
-    export function transformAST(root: ASTNode): string;
-}
-declare module "full2.test" { }
+declare module "fullAst.test" { }
 declare var __defProp: (o: any, p: string | number | symbol, attributes: PropertyDescriptor & ThisType<any>) => any;
 declare var __markAsModule: (target: any) => any;
 declare var __export: (target: any, all: any) => void;
@@ -140,3 +101,28 @@ declare module "light" {
     export function transform(source: string): string;
 }
 declare module "light.test" { }
+declare module "typings-plugin/generateTypings" {
+    export let baseTypings: {
+        noEmit: boolean;
+        noEmitOnError: boolean;
+        declaration: boolean;
+        declarationMap: boolean;
+        allowJs: boolean;
+        skipLibCheck: boolean;
+        strict: boolean;
+        downlevelIteration: boolean;
+        esModuleInterop: boolean;
+        allowSyntheticDefaultImports: boolean;
+        jsx: string;
+        emitDeclarationOnly: boolean;
+        extensions: {
+            "**/*.ts": string;
+            "**/*.js": string;
+            "**/*.jsb": string;
+            "**/*.@js": string;
+            "**/*.@ts": string;
+            "**/*.tsb": string;
+        };
+    };
+    export function generateTypings(filenames: string[], options: any, readFile: (fileName: string) => string | undefined, writeFile: (fileName: string, content: string) => void): void;
+}

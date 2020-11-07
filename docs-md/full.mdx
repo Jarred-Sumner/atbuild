@@ -4,7 +4,7 @@ Atbuild does not parse JavaScript and is not a fork of JavaScript.
 
 It's more like a templating language for generating code that happens to execute & bundle JavaScript. Theoretically, someone could use Atbuild for other languages with few modifications.
 
-In this templating language, there are four keywords. All other text is assumed to be part of the parent scope. From the language's perspective, if the text isn't `@build`, `@run`, `@()`, `@}`, or `@export function`, like Jon Snow, it knows nothing.
+In this templating language, there are four keywords. All other text is assumed to be part of the parent scope. From the language's perspective, if the text isn't `@build`, `@run`, `@()`, `@end`, or `@export function`, like Jon Snow, it knows nothing.
 
 - `@build`: execute code at build-time, do not include it in the runtime code.
 - `@run`: execute code at run-time
@@ -16,13 +16,13 @@ Lets dive right in with an example that shows many features altogether.
 ```java
 // This exports a function that returns a date time formatter.
 @export function $createDateTimeFormatter(format) {
-  // By default, everything inside @run { is executed at runtime.
-  @run {
+  // By default, everything inside @run is executed at runtime.
+  @run
     return (date) => {
       let formattedDate = "";
 
       // This changes the default, so everything inside @build is executed at build time.
-      @build {
+      @build
         for (let i = 0; i < format.length; i++) {
           let lookAheadCount = 0;
 
@@ -39,21 +39,21 @@ Lets dive right in with an example that shows many features altogether.
             const tokenFormatter = formatters[token];
 
             // Now we switch back to runtime
-            @run {
+            @run
                             // @(code) is shorthand for "run at opposite scope"
                             // so this runs at build-time.
               formattedDate += @(tokenFormatter(token)<"date">)
-            @}
+            @end
           }
 
           i += lookAheadCount
         }
-      @}
+      @end
 
       return formattedDate;
     }
-  @}
-@}
+  @end
+@end
 ```
 
 ## All the ways you can create scopes
@@ -61,10 +61,10 @@ Lets dive right in with an example that shows many features altogether.
 Most of the time, you'll use a multiline scope. That looks like this:
 
 ```ruby
-@build {
+@build
   const buildTimeOnly = true;
   const isMultilineScope = true;
-@}
+@end
 ```
 
 That compiles into this, which is executed at buildtime.
@@ -75,18 +75,18 @@ const isMultilineScope = true;
 ```
 
 ```ruby
-@build {
+@build
   const buildTimeOnly = true;
   const isMultilineScope = true;
-@}
+@end
 ```
 
 ### Multiline scopes
 
 ```ruby
-@build {
+@build
 
 
 
-@}
+@end
 ```

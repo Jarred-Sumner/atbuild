@@ -9,7 +9,7 @@ module.exports = (plugin) => {
 
   plugin.addLoader({ filter: /\.(@js|jsb)$/ }, async (args) => {
     const source = await readFile(args.path, "utf8");
-    const contents = AtBuild.transformAST(AtBuild.buildAST(source), false);
+    const contents = AtBuild.transformAST(AtBuild.buildAST(source), source);
 
     return {
       contents,

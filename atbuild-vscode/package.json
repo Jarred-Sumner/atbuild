@@ -7,10 +7,8 @@
     "vscode": "^1.50.0"
   },
   "categories": [
-    "Programming Languages"
-  ],
-  "activationEvents": [
-    "onLanguage:buildjs"
+    "Programming Languages",
+    "Snippets"
   ],
   "scripts": {
     "vscode:prepublish": "yarn compile",
@@ -18,52 +16,56 @@
     "test": "sh ./scripts/e2e.sh"
   },
   "contributes": {
-    "configuration": {
-      "type": "object",
-      "title": "AtBuild",
-      "properties": {
-        "languageServerExample.maxNumberOfProblems": {
-          "scope": "resource",
-          "type": "number",
-          "default": 100,
-          "description": "Controls the maximum number of problems produced by the server."
-        },
-        "languageServerExample.trace.server": {
-          "scope": "window",
-          "type": "string",
-          "enum": [
-            "off",
-            "messages",
-            "verbose"
-          ],
-          "default": "off",
-          "description": "Traces the communication between VS Code and the language server."
-        }
-      }
-    },
     "languages": [
       {
-        "id": "buildjs",
+        "id": "atbuild",
         "aliases": [
+          "atbuild",
+          "AtBuild",
+          "tsb",
+          "jsb",
           "@js",
-          "@javascript"
+          "@ts"
         ],
         "extensions": [
+          ".atbuild",
+          ".tsb",
+          ".jsb",
           ".@js",
-          ".build.js"
+          ".@ts"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "atbuildjs",
+        "extensions": [
+          ".atbuildjs"
         ],
         "configuration": "./language-configuration.json"
       }
     ],
     "grammars": [
       {
-        "language": "buildjs",
-        "scopeName": "source.buildjs",
-        "path": "./syntaxes/buildjs.tmLanguage"
+        "language": "atbuild",
+        "scopeName": "source.atbuild",
+        "path": "./syntaxes/atbuild.tmLanguage.json",
+        "embeddedLanguages": {
+          "source.atbuildjs": "atbuildjs"
+        }
+      },
+      {
+        "language": "atbuildjs",
+        "scopeName": "source.atbuildjs",
+        "path": "./syntaxes/atbuildjs.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "atbuild",
+        "path": "./snippets.json"
       }
     ]
   },
-  "main": "./client/out/extension",
   "dependencies": {
     "atbuild": "^1.0.7",
     "vscode": "^1.1.37",

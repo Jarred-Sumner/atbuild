@@ -1,9 +1,7 @@
 // $$
 
-import { $createDateFormatter } from "./hello-very-light-date.@js";
+import { $createDateFormatter } from "./date-formatter.tsb";
 
 // $$
 
-export const secondsAgo = $createDateFormatter("HH:MM::SS");
-
-function boom(aspodkasd: number, asodk: number) {}
+export const secondsAgo = $createDateFormatter("hh:mm:ss");

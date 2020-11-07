@@ -232,7 +232,7 @@ export async function handleESBuildResult(
     code = result.code;
 
     if (process.env.WRITE_ATBUILD_TO_DISK) {
-      fs.promises.writeFile(
+      await fs.promises.writeFile(
         resourcePath.replace(
           path.extname(resourcePath),
           typings ? ".out.ts" : "out.js"
@@ -250,7 +250,7 @@ export async function handleESBuildResult(
     });
   } else {
     if (process.env.WRITE_ATBUILD_TO_DISK) {
-      fs.promises.writeFile(
+      await fs.promises.writeFile(
         resourcePath.replace(
           path.extname(resourcePath),
           typings ? ".out.ts" : "out.js"
@@ -378,7 +378,7 @@ export function runWithOptions(
     }
     case modes.light: {
       esbuildInput.stdin = {
-        contents: transformAST(buildAST(_code, "")),
+        contents: transformAST(buildAST(_code), _code),
 
         // These are all optional:
         resolveDir: path.dirname(resourcePath),

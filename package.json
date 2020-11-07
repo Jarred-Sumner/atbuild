@@ -52,10 +52,10 @@
     "update-readme": "node dist/cli.js ./README.md.jsb ./README.md",
     "prebuild-node": "rimraf dist",
     "prebuild-web": "rimraf web",
-    "build-node": "esbuild --target=node10 --define:\"process.env.WEB=false\" src/*{.ts,.js} src/**/*{.ts,.js} --format=cjs  --outdir=./dist --platform=node",
+    "build-node": "esbuild --target=node10 --define:\"process.env.NODE_ENV\"=\"'production'\" --define:\"process.env.WEB=false\" src/*{.ts,.js} src/**/*{.ts,.js} --format=cjs  --outdir=./dist --platform=node",
     "postbuild": "rimraf dist/**/*{.test.ts, .test.js, .ts.d.js}",
     "build": "yarn build-node && yarn build-web && yarn build-types",
-    "build-web": "esbuild --sourcemap --define:\"process.env.WEB=true\" --bundle ./src/atbuild.ts ./src/light.ts --format=esm  --outdir=./web ",
+    "build-web": "esbuild --sourcemap --define:\"process.env.NODE_ENV\"=\"'production'\" --define:\"process.env.WEB=true\" --bundle ./src/atbuild.ts ./src/light.ts --format=esm  --outdir=./web ",
     "build-types": "yarn tsc --p tsconfig.json --outfile types",
     "prepublishOnly": "yarn build",
     "compile-vscode-client": "babel --config-file=./babel.config.js --extensions \".ts\" ./atbuild-vscode/client/src --ignore=atbuild-vscode/**/*.test.js -d ./atbuild-vscode/client/out --delete-dir-on-start",
@@ -65,7 +65,7 @@
     "postcompile-vscode": "cp dist/atbuild.js ./atbuild-vscode/client/out/atbuild.js; cp dist/atbuild.js ./atbuild-vscode/server/out/atbuild.js"
   },
   "dependencies": {
-    "atbuild": "/Users/jarredsumner/Code/atbuild",
+    "atbuild": "../",
     "esbuild": "https://github.com/Jarred-Sumner/esbuild/releases/download/pluginbuild/esbuild-0.8.1.tgz",
     "loader-utils": "^2.0.0",
     "meow": "^7.1.1"

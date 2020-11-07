@@ -1,11 +1,12 @@
-import { Page } from "../components/Page";
+import { Page } from "../../components/Page";
 import * as React from "react";
-import { buildAST, transformAST } from "atbuild/src/full2";
+import { buildAST, transformAST } from "atbuild/src/fullAst";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { format } from "prettier/standalone";
 import parserBabel from "prettier/parser-babel";
-import { Editor } from "../components/Editor";
+import { Editor } from "../../components/Editor";
+import Head from "next/head";
 
 const ENABLE_PRETTIER = true;
 
@@ -14,8 +15,33 @@ if (typeof window !== "undefined") {
   worker = new Worker("/eval/EvalWorker.worker.js");
 }
 
+export async function getStaticPaths(context) {
+  const util = require("util");
+  const _glob = require("glob");
+  const path = require("path");
+  const fs = require("fs");
+  const glob = util.promisify(_glob);
+  const flatten = require("lodash").flatten;
+  const dir = path.resolve(process.cwd(), "../samples");
+  const tsbSamples = await glob(dir + "/*.tsb");
+  const paths = {
+    paths: [
+      ...flatten(
+        tsbSamples.map((sample) => {
+          const child = [];
+          for (let output of [EditMode.bundle, EditMode.ast, EditMode.code]) {
+            child.push({ params: { file: path.basename(sample), output } });
+          }
+          return child;
+        })
+      ),
+    ],
+    fallback: false,
+  };
+  return paths;
+}
+
 export async function getStaticProps(context) {
-  const { fetchSidebarContent } = require("../components/Sidebar");
   const util = require("util");
   const _glob = require("glob");
   const path = require("path");
@@ -29,11 +55,8 @@ export async function getStaticProps(context) {
     tsbSamples.map((f) => readFile(f, "utf8"))
   );
 
-  const sidebar = await fetchSidebarContent(fs);
-
   return {
     props: {
-      sidebar,
       tsb: Object.fromEntries(
         tsbContent.map((string, index) => [
           path.basename(tsbSamples[index]),
@@ -53,15 +76,14 @@ enum EditMode {
 }
 
 const Tab = ({ children, value, isActive }) => {
+  const router = useRouter();
   return (
     <Link
       replace
       passHref
+      shallow
       href={{
-        pathname: "/playground",
-        query: {
-          output: value,
-        },
+        pathname: `/${value}/${router.query.file}`,
       }}
     >
       <a className={`Tab Tab--${isActive ? "active" : "inactive"}`}>
@@ -109,20 +131,11 @@ const CLI_MODE_LABEL = {
 export const PlaygroundPage = ({ tsb, sidebar }) => {
   const router = useRouter();
 
-  const defaultFile = router.query.file || DEFAULT_FILE;
+  const defaultFile = router.query.file;
   const [code, _setCode] = React.useState(tsb[defaultFile]);
   const [error, setError] = React.useState<Error>(null);
   const [evalOutput, setEvalOutput] = React.useState<string>(null);
-  const mode = React.useMemo(() => {
-    if (
-      typeof router.query?.output !== "undefined" &&
-      typeof EditMode[router.query?.output] !== "undefined"
-    ) {
-      return EditMode[router.query?.output];
-    } else {
-      return EditMode.code;
-    }
-  }, [router.query.output]);
+  const mode = router.query.output;
 
   const setCode = React.useCallback(
     (code) => {
@@ -131,6 +144,10 @@ export const PlaygroundPage = ({ tsb, sidebar }) => {
     },
     [_setCode, setError]
   );
+
+  React.useEffect(() => {
+    setCode(tsb[router.query.file]);
+  }, [router.query.file, _setCode]);
 
   const onEval = React.useCallback(
     (event: MessageEvent) => {
@@ -162,13 +179,19 @@ export const PlaygroundPage = ({ tsb, sidebar }) => {
   const onChangeFile = React.useCallback(
     (event) => {
       setCode(tsb[event.target.value]);
-      router.replace({
-        pathname: router.pathname,
-        query: {
-          ...router.query,
-          file: event.target.value,
+      router.replace(
+        {
+          pathname: router.pathname,
+          query: {
+            ...router.query,
+            file: event.target.value,
+          },
         },
-      });
+        undefined,
+        {
+          shallow: true,
+        }
+      );
     },
     [setCode, router, tsb]
   );
@@ -205,7 +228,7 @@ export const PlaygroundPage = ({ tsb, sidebar }) => {
     let _output;
     try {
       if (mode == EditMode.code) {
-        if (ENABLE_PRETTIER) {
+        if (ENABLE_PRETTIER && source) {
           _output = format(source, { plugins: [parserBabel] }) || source;
         } else {
           _output = source;
@@ -243,17 +266,89 @@ export const PlaygroundPage = ({ tsb, sidebar }) => {
     evalOutput,
   ]);
 
+  const fileNames = Object.keys(tsb);
+  const index = fileNames.indexOf(defaultFile);
+
   return (
     <Page noScroll sidebar={sidebar} dark={false}>
+      <Head>
+        <title>Atbuild playground – {defaultFile}</title>
+      </Head>
+
       <div className="PlaygroundContainer">
         <div className="CodeEditor">
           <div className="HeaderBar">
-            <div className="HeaderBar-label">File</div>
+            <div className="HeaderBar-title">
+              <a href="https://github.com/Jarred-Sumner/atbuild">
+                <span className="TitleEmphasis">AtBuild</span>
+              </a>
+              &nbsp;Playground
+            </div>
+            <Link
+              passHref
+              replace
+              shallow
+              href={{
+                query: {
+                  file:
+                    fileNames[(index - 1) % fileNames.length] ||
+                    fileNames[fileNames.length - 1],
+                  output: mode,
+                },
+              }}
+            >
+              <a className="NextPreviousLink">
+                <svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-left"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 320 512"
+                  height={18}
+                >
+                  <path
+                    fill="currentColor"
+                    d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z"
+                  ></path>
+                </svg>
+              </a>
+            </Link>
             <select onChange={onChangeFile} value={defaultFile}>
-              {Object.keys(tsb).map((key) => (
+              {fileNames.map((key) => (
                 <option key={key}>{key}</option>
               ))}
             </select>
+            <Link
+              passHref
+              replace
+              shallow
+              href={{
+                query: {
+                  file: fileNames[(index + 1) % fileNames.length],
+                  output: mode,
+                },
+              }}
+            >
+              <a className="NextPreviousLink">
+                <svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-right"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 320 512"
+                  height={16}
+                >
+                  <path
+                    fill="currentColor"
+                    d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"
+                  ></path>
+                </svg>
+              </a>
+            </Link>
           </div>
 
           <div className="ContentView">
@@ -312,6 +407,32 @@ export const PlaygroundPage = ({ tsb, sidebar }) => {
           min-height: 100%;
         }
 
+        .TitleEmphasis {
+          font-weight: 500;
+        }
+
+        .NextPreviousLink {
+          height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .HeaderBar-title {
+          padding-right: 16px;
+          background-color: rgba(0, 0, 0, 0.2);
+          padding-left: 16px;
+          margin-left: -16px;
+          height: 44px;
+          align-items: center;
+          display: inline-flex;
+        }
+
+        .Branding-footer {
+          padding: 12px;
+          margin-top: auto;
+        }
+
         .CodeSample {
           display: flex;
           background-color: #111;
@@ -335,11 +456,11 @@ export const PlaygroundPage = ({ tsb, sidebar }) => {
 
         .ContentView {
           max-height: calc(100vh);
-
-          width: calc(50vw - (250px / 2));
+          width: calc(50vw);
         }
 
-        .Previewer {
+        .Previewer,
+        .CodeEditor {
           display: grid;
           grid-template-rows: 44px auto 42px;
         }
@@ -348,17 +469,13 @@ export const PlaygroundPage = ({ tsb, sidebar }) => {
           background-color: white;
         }
 
-        .CodeEditor .ContentView {
-          height: calc(100vh - 44px);
-        }
-
         .CodeSample-content {
           user-select: auto;
           -webkit-user-select: auto;
         }
 
         .HeaderBar {
-          display: grid;
+          display: flex;
           grid-template-columns: min-content 200px;
           grid-column-gap: 16px;
           align-content: center;

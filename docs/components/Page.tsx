@@ -20,7 +20,7 @@ export const Page = ({ children, sidebar, dark = false, noScroll }) => {
 
   return (
     <div className="Page">
-      <Sidebar headings={sidebar}></Sidebar>
+      {/* <Sidebar headings={sidebar}></Sidebar> */}
 
       <main className="Content">{children}</main>
 
@@ -30,7 +30,6 @@ export const Page = ({ children, sidebar, dark = false, noScroll }) => {
           height: 100%;
           min-height: 100vh;
           width: 100%;
-          grid-template-columns: 250px auto;
         }
 
         .Content {

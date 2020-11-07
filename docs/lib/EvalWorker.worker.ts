@@ -47,6 +47,7 @@ function evalCode(code: string, ast) {
       `var require = this.module.require; var module = this.module;\n` + code,
     ]);
     let output: string = "";
+
     switch (typeof this.module.exports.default) {
       case "number":
       case "string":
@@ -56,14 +57,20 @@ function evalCode(code: string, ast) {
         output = this.module.exports.default.toString();
         break;
     }
+    let header = "";
 
     for (let child of ast.children) {
       if (child.keyword === "export") {
-        output += `\nexport function ${child.name}(${child.value}) {
+        header += `export function ${child.name}(${child.value}) {
 // Placeholder function that will be run & replaced at buildtime
-        }\n`;
+        }\n\n`;
       }
     }
+
+    if (header.length > 0) {
+      output = header + output;
+    }
+
     return output;
   })();
 }
