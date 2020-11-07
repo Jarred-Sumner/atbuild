@@ -10,7 +10,7 @@ Use it for:
 - Move slow code from runtime to buildtime
 
 <a target="_blank" href="https://atbuild.vercel.app/bundle/date-formatter.tsb">
-  **Try the playground**
+  <strong>Try the playground</strong>
 
   <img src="https://atbuild.jarred.vercel.app/screenshot.png" width="100%" />
 </a>
