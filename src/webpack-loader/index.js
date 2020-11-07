@@ -178,7 +178,7 @@ export async function emitTypeDeclarationFile(
 }
 
 export async function handleESBuildResult(
-  { outputFiles, warnings },
+  _response,
   input,
   callback,
   resourcePath,
@@ -189,6 +189,7 @@ export async function handleESBuildResult(
   outputFormat = "esm",
   writeFile
 ) {
+  const { outputFiles, warnings } = _response;
   let source, meta;
   for (let outputFile of outputFiles) {
     if (outputFile.path.endsWith(input)) {
@@ -202,6 +203,22 @@ export async function handleESBuildResult(
     if (key !== ignoreDependency) {
       addDependency(key);
     }
+  }
+
+  if (!source) {
+    for (let outputFile of outputFiles) {
+      outputFile.contents = textDecoder.decode(outputFile.contents);
+    }
+    callback(
+      new Error(
+        `---Bundling ${input} failed---.\n${JSON.stringify(
+          outputFiles.map((o) => o.path),
+          null,
+          2
+        )}\n\n---Bundling ${input} failed---`
+      )
+    );
+    return;
   }
 
   let code;
@@ -284,7 +301,7 @@ const modes = {
 const extensionForMode = [".atbuild", ""];
 
 const DEFAULT_JS_EXTENSIONS = [".js", ".ts", ".jsx", ".tsx"];
-const DEFAULT_ATBUILD_EXTENSIONS = [".jsb", ".@js"];
+const DEFAULT_ATBUILD_EXTENSIONS = [".jsb", ".@js", ".tsb", ".@ts"];
 
 export function runWithOptions(
   _code,
@@ -372,6 +389,7 @@ export function runWithOptions(
   switch (mode) {
     case modes.full: {
       esbuildInput.entryPoints = [resourcePath];
+      esbuildInput.outfile = resourcePath + ".js";
       // esbuildInput.outdir = path.dirname(resourcePath);
       // esbuildInput = resourcePath + ".js",
       break;
@@ -406,7 +424,7 @@ export function runWithOptions(
   const result = runBuild(
     esbuildInput,
     callback,
-    resourcePath,
+    esbuildInput.outfile,
     addDependency,
     enableTypings ? typings : null,
     tsconfig,

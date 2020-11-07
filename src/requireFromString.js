@@ -16,6 +16,9 @@ export function requireFromString(code, _filename, _require) {
     );
   }
   var parent = module.parent;
+  if (typeof code !== "string") {
+    throw `code must be string, received: ${typeof code}`;
+  }
 
   var paths = Module._nodeModulePaths(path.dirname(filename));
   filename = path.join(

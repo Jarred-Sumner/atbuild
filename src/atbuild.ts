@@ -37,8 +37,8 @@ if (process.env.WEB) {
 }
 
 export class AtBuild {
-  static buildAST(code) {
-    return buildAST(code);
+  static buildAST(code: string, filename?: string) {
+    return buildAST(code, filename);
   }
 
   static transformAST = transformAST;

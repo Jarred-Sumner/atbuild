@@ -65,7 +65,7 @@ export function bundle(
         mode,
         typescript,
       },
-      filepath,
+      path.resolve(filepath),
       readFile,
       activateCallbackFunction,
       () => {},

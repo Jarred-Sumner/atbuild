@@ -37,8 +37,8 @@ var require_atbuild = __commonJS((exports, module) => {
     fs = null;
   }
   class AtBuild {
-    static buildAST(code) {
-      return buildAST(code);
+    static buildAST(code, filename) {
+      return buildAST(code, filename);
     }
     static *findNodesAtLine(nodes, lineNumber) {
       for (let i = 0; i < nodes.length; i++) {

@@ -38,7 +38,7 @@ declare module "atbuild" {
     import { buildAST, transformAST } from "fullAst";
     export let requireFromString: any;
     export class AtBuild {
-        static buildAST(code: any): import("fullAst").ASTNode;
+        static buildAST(code: string, filename?: string): import("fullAst").ASTNode;
         static transformAST: typeof transformAST;
         static findNodesAtLine(nodes: any, lineNumber: any): Generator<any, void, unknown>;
         static ASTResponseType: {

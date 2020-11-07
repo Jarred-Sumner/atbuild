@@ -2,7 +2,7 @@
 "use strict";
 const { performance } = require("perf_hooks");
 const meow = require("meow");
-const { AtBuild } = require("atbuild");
+const { AtBuild } = require("./atbuild");
 const fs = require("fs");
 const path = require("path");
 
@@ -177,7 +177,7 @@ async function run(input, destination, directory) {
       console.log(transformAST(buildAST(source)));
       process.exit(0);
     } else if (cli.flags.print) {
-      console.log(AtBuild.transformAST(AtBuild.buildAST(source)));
+      console.log(AtBuild.transformAST(AtBuild.buildAST(source), source));
       process.exit(0);
     }
   }
