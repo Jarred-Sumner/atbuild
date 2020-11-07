@@ -12,7 +12,7 @@ Use it for:
 Try the playground
 
 <a target="_blank" href="https://atbuild.vercel.app/bundle/date-formatter.tsb">
-  <img src="https://atbuild.jarred.vercel.app/screenshot.png" height="577" />
+  <img src="https://atbuild.jarred.vercel.app/screenshot.png" width="100%" />
 </a>
 
 # How it works
