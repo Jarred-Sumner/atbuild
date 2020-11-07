@@ -22,6 +22,10 @@ module.exports = withCSS(
   withMDX(
     withTranspileModules({
       pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
+      typescript: {
+        ignoreDevErrors: true,
+        ignoreBuildErrors: true,
+      },
       webpack: (config) => {
         const rule = config.module.rules
           .find((rule) => rule.oneOf)
