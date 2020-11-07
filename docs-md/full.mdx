@@ -18,7 +18,7 @@ Lets dive right in with an example that shows many features altogether.
 @export function $createDateTimeFormatter(format) {
   // By default, everything inside @run is executed at runtime.
   @run
-    return (date) => {
+    function (date) {
       let formattedDate = "";
 
       // This changes the default, so everything inside @build is executed at build time.
@@ -42,7 +42,7 @@ Lets dive right in with an example that shows many features altogether.
             @run
                             // @(code) is shorthand for "run at opposite scope"
                             // so this runs at build-time.
-              formattedDate += @(tokenFormatter(token)<"date">)
+              formattedDate += @(tokenFormatter(token))
             @end
           }
 
@@ -56,9 +56,9 @@ Lets dive right in with an example that shows many features altogether.
 @end
 ```
 
-## All the ways you can create scopes
+## @build & @run
 
-Most of the time, you'll use a multiline scope. That looks like this:
+Most of the time, you'll want multiline sections. A multiline section starts with a keyword (`@build`, `@run`, or `@export`) and ends with `@end`.
 
 ```ruby
 @build
@@ -74,19 +74,114 @@ const buildTimeOnly = true;
 const isMultilineScope = true;
 ```
 
-```ruby
+You can nest `@build` and `@run` infinitely, and use `@build` or `@run` on a line by itself:
+
+```tsx
 @build
-  const buildTimeOnly = true;
-  const isMultilineScope = true;
+  for (let i = 0; i < 4; i++) {
+    @run (console.log("Hey!");)
+    //   ^-------------------^
+    //   Everything between the parentheses is added to the source code at runtime.
+    //   Including the ;
+  }
 @end
 ```
 
-### Multiline scopes
+That compiles into this:
 
-```ruby
-@build
+```js
+console.log("Hey!");
+console.log("Hey!");
+console.log("Hey!");
+```
+
+Sometimes it gets messy typing `@build` or `@run` all over the place, particularly if you're in the middle of something complicated.
+
+For shorter syntax, use `@()`. The rule for `@()`is:
+
+- If the parent section is `@build`, then it means `@run`.
+- If the parent section is `@run`, then it means `@build`.
+
+[Here's an example](https://atbuild.vercel.app/build/bitfield.tsb):
+
+```tsx
+@export function $BitField(object, _BitFieldClassName)
+  @build
+    const BitFieldClassName = _BitFieldClassName || "BitFieldClassName"
+    const BitFieldMixin = require("structurae").BitFieldMixin;
+    const { fields, masks, schema, offsets } = BitFieldMixin(object);
+
+    @run
+      function() {
+        return class @(BitFieldClassName) {
+                //     ^----------------^
+                //   The value of BitFieldClassName is replaced
+                //
 
 
 
+                // ...More code omitted
+        }
+      }
+    @end
+
+  @end
 @end
 ```
+
+## @export
+
+`@export` lets you export functions that're replaced at build-time.
+
+This enables runtimeless libraries.
+
+Inside a `.tsb`/`.jsb` file:
+
+```java
+@export function $getBuildTimestamp(format)
+  @build
+    const timestamp = new Date();
+    @run
+      new Date("@(timestamp.toISOString())"))
+    @end
+  @end
+@end
+```
+
+And from a normal `.ts`/`.js` file:
+
+```js
+// $$
+
+import { $getBuildTimestamp } from "./getBuildTimestamp";
+
+// $$-
+
+export const LAST_UPDATED_AT = $getBuildTimestamp();
+```
+
+At runtime, this becomes:
+
+```js
+export const LAST_UPDATED_AT = new Date("2020-11-07T10:01:00.300Z");
+```
+
+The rules are:
+
+- Exported function names must start with a `$`
+- Exported functions must not have curly braces `{` or `}` at the beginning/end.
+
+### How this actually works
+
+This might seem a little magical, so lets dive in to how this works.
+
+In [`src/light.ts`](https://github.com/Jarred-Sumner/atbuild/blob/master/src/light.ts#L51), there's a lightweight AST which goes through JavaScript & TypeScript files searching for a few patterns:
+
+- `$(expression-in-here)`
+- `$FunctionNameThatStartsWithADollarSign(expression-in-here)`
+- `// $`
+- `// $$`
+
+When it finds a match, it reads & runs the build-time code, and swaps the original source with the result from the build-time generated code.
+
+For performance reasons, this is not done through Babel. It's simple enough that it can get away with _not_ parsing all of JavaScript's syntax. And, it also does one scan to check for any `"$"` in the file (and if not, skip the file).
