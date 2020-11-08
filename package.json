@@ -1,19 +1,18 @@
 {
   "name": "atbuild",
-  "version": "1.5.7",
+  "version": "1.5.8",
   "main": "dist/atbuild.js",
   "browser": "web/atbuild.js",
   "license": "MIT",
   "types": "types.ts.d",
   "files": [
-    "./README.md",
-    "./package.json",
+    "package.json",
     "dist",
     "web",
-    "./types.ts.d",
-    "./webpack-loader.js",
-    "./index.js",
-    "./with-nextjs.js"
+    "types.ts.d",
+    "webpack-loader.js",
+    "index.js",
+    "with-nextjs.js"
   ],
   "bin": {
     "atbuild": "./dist/cli.js"
