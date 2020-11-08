@@ -2,17 +2,17 @@
   "children": [
     {
       "from": 4,
-      "to": 51,
+      "to": 55,
       "children": [
         {
           "from": 15,
-          "to": 51,
+          "to": 55,
           "children": [],
           "scope": null,
           "keyword": "source",
           "column": {
             "start": 5,
-            "end": 37
+            "end": 41
           },
           "line": {
             "start": 3,
@@ -24,7 +24,7 @@
       "keyword": "build",
       "column": {
         "start": 3,
-        "end": 37
+        "end": 41
       },
       "line": {
         "start": 2,
@@ -32,18 +32,18 @@
       }
     },
     {
-      "from": 59,
-      "to": 104,
+      "from": 63,
+      "to": 113,
       "children": [
         {
-          "from": 68,
-          "to": 104,
+          "from": 72,
+          "to": 113,
           "children": [],
           "scope": null,
           "keyword": "source",
           "column": {
             "start": 5,
-            "end": 37
+            "end": 42
           },
           "line": {
             "start": 7,
@@ -55,7 +55,7 @@
       "keyword": "run",
       "column": {
         "start": 3,
-        "end": 37
+        "end": 42
       },
       "line": {
         "start": 6,

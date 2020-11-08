@@ -1,6 +1,6 @@
 const PACKAGE_JSON_CONTENTS = {
   name: "atbuild",
-  version: "1.5.8",
+  version: "1.5.9",
   main: "dist/atbuild.js",
   browser: "web/atbuild.js",
   license: "MIT",
