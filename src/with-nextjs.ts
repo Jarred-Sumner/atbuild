@@ -65,10 +65,26 @@ module.exports = (nextConfig = {}) => {
         });
 
         config.module.rules.push({
+          test: /\.(@js|jsb)$/,
+          type: "javascript/auto",
+          enforce: "pre",
+          use: [
+            loader,
+            {
+              loader: "atbuild/dist/webpack-loader",
+              options: {
+                typescript: false,
+                ...(nextConfig.atbuild || {}),
+              },
+            },
+          ],
+        });
+
+        config.module.rules.push({
           test: /\.(jsx|js|ts|tsx)$/,
           type: "javascript/auto",
           enforce: "pre",
-          exclude: /node_modules/,
+          exclude: /(node_modules)|(vendor\/)|\.min\./,
           use: [
             {
               loader: "atbuild/dist/webpack-loader",
@@ -85,7 +101,7 @@ module.exports = (nextConfig = {}) => {
           test: /\.(jsx|js)$/,
           type: "javascript/auto",
           enforce: "pre",
-          exclude: /node_modules/,
+          exclude: /(node_modules)|(vendor\/)|\.min\./,
           use: [
             {
               loader: "atbuild/dist/webpack-loader",

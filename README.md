@@ -9,6 +9,8 @@ Use it for:
 - Determinstic dead code elimination
 - Move slow code from runtime to buildtime
 
+Contributions & feedback are very welcome – feel free to file an issue.
+
 <a target="_blank" href="https://atbuild.vercel.app/bundle/date-formatter.tsb">
   <strong>Try the playground</strong>
 
@@ -413,3 +415,74 @@ Like AtBuild, Prepack inlines & prevaluates code. But, AtBuild lets you choose w
 ## Alternatives
 
 - [`babel-plugin-codegen`](https://github.com/kentcdodds/babel-plugin-codegen) makes it easy to run build scripts, but it gets tough if you want to do some things at buildtime and some other things at run-time for the same code.
+
+### Tests
+
+If you want to use AtBuild Full with Jest, add the Jest transform at `"<rootDir>/node_modules/atbuild/jest.js"`.
+
+For example:
+
+```js
+module.exports = {
+  transform: {
+    "^.+\\.(@ts|@js|jsb|tsb)$": "<rootDir>/node_modules/atbuild/jest.js",
+  },
+};
+```
+
+If you're using `babel-jest`, add the Jest transform from `"<rootDir>/node_modules/atbuild/jest-with-babel.js"` instead.
+
+```js
+module.exports = {
+  transform: {
+    "^.+\\.(@ts|@js|jsb|tsb)$":
+      "<rootDir>/node_modules/atbuild/jest-with-babel.js",
+  },
+};
+```
+
+This skips bundling and assumes Jest will know to deal with it.
+
+### JavaScript API
+
+To invoke AtBuild Full programatically:
+
+```js
+const { AtBuild } = require("atbuild");
+
+const contents = AtBuild.transformAST(
+  // filepath is optional, but is helpful for error messages.
+  AtBuild.buildAST(source, filepath),
+  source
+);
+```
+
+To invoke AtBuild Light programatically:
+
+```js
+const { transformAST, buildAST } = require("atbuild/light");
+
+const contents = transformAST(
+  // filepath is optional, but is helpful for error messages.
+  buildAST(source, filepath),
+  source
+);
+```
+
+This won't run the bundler or write to disk.
+
+### Syntax highlighting
+
+There's a half implemented syntax highlighter in `atbuild-vscode`. Contributions are very welcome.
+
+### Ignore file
+
+if you want to make sure AtBuild Light does not run on a specific file, stick this at the top of the file.
+
+```js
+// atbuild-ignore-file
+```
+
+This is helpful if you're bundling already minified files that use `$` as a function call.
+
+The Next.js integration automatically excludes `node_modules` and file paths with `vendor` or `.min.` in the filename.

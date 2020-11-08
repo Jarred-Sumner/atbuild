@@ -82,6 +82,32 @@ const didRemoveBuildTimeCode = $(typeof buildTimeOnly !== "undefined");
     expect(quickTest(code)).toBe(true);
   });
 
+  it("ignores files correctly", function () {
+    const code = `// atbuild-ignore-file
+
+// $$
+
+const buildTimeOnly = true;
+
+const fs = require("fs");
+const path = require("path");
+
+function $GetPackageJson() {
+  return fs.readFileSync(path.join(__dirname, "../", "package.json"), "utf8");
+}
+
+// $$
+
+const PACKAGE_JSON_CONTENTS = $GetPackageJson();
+
+const didRemoveBuildTimeCode = $(typeof buildTimeOnly !== "undefined");
+    `;
+
+    let result = transform(code);
+    expect(result).toBeNull();
+    expect(quickTest(code)).toBe(false);
+  });
+
   it("works with interpolated function calls that have no arguments", () => {
     let code = `
     const format = $dateFormatter()

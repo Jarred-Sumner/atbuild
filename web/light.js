@@ -59,6 +59,7 @@ const MULTILINE_BUILD_TIME_MATCHER = /^\s*\/\/\s*((\$\$)|(ATBUILD))\s*?/;
 const RUNTIME_MATCHER_TEST_ONLY = new RegExp(RUNTIME_MATCHER);
 const BUILD_TIME_LINE_MATCHER_TEST_ONLY = new RegExp(BUILD_TIME_LINE_MATCHER);
 const MULTILINE_BUILD_TIME_MATCHER_TEST_ONLY = new RegExp(MULTILINE_BUILD_TIME_MATCHER);
+const IGNORE_FILE_STRING = "// atbuild-ignore-file";
 var RuntimeCursorState;
 (function(RuntimeCursorState2) {
   RuntimeCursorState2[RuntimeCursorState2["findStart"] = 0] = "findStart";
@@ -89,99 +90,101 @@ class ASTNodeList extends Array {
   }
 }
 function quickTest(source) {
-  return source.includes("$");
+  return source.includes("$") && !source.startsWith(IGNORE_FILE_STRING);
 }
 function buildAST(source, emptyFunctionNameReplacer = "") {
   const nodes = new ASTNodeList();
   let lines = String(source).split("\n");
   let isMultiline = false, result = null, lineToMatch = "", offset = 0, funcArgs = "", interpolatedCodeNode, runtimeLineStartNode = null, index = 0, runtimeCodeNode = null, runtimeCodeLineEndNode = null, remainderRunTimeCodeNode = null, runtimeLine = null, hasBuildTimeNode = false, node = astNodeBase, linePosition = 0;
   let i = 0;
-  for (i = 0; i < lines.length; i++) {
-    if (lines[i].trim().length === 0) {
-      continue;
-    }
-    if (MULTILINE_BUILD_TIME_MATCHER_TEST_ONLY.test(lines[i])) {
-      isMultiline = !isMultiline;
-      node = Object.create(astNodeBase);
-      node.type = 5;
-      node.value = lines[i];
-      node.line = i;
-      nodes.push(node);
-      nodes.buildNodeCount++;
-    } else if (isMultiline) {
-      node = Object.create(astNodeBase);
-      node.type = 5;
-      nodes.buildNodeCount++;
-      node.value = lines[i];
-      node.line = i;
-      nodes.push(node);
-    } else if (BUILD_TIME_LINE_MATCHER_TEST_ONLY.test(lines[i])) {
-      node = Object.create(astNodeBase);
-      node.type = 4;
-      nodes.buildNodeCount++;
-      node.value = lines[i];
-      node.line = i;
-      nodes.push(node);
-    } else {
-      hasBuildTimeNode = false;
-      runtimeCodeNode = Object.create(astNodeBase);
-      runtimeCodeNode.type = 6;
-      runtimeCodeNode.value = lines[i];
-      runtimeCodeNode.line = i;
-      offset = 0;
-      nodes.runtimeLineCount++;
-      lineToMatch = lines[i];
-      let depth = 0, characterType = 0, state = 0, expressionStartPosition = 0, lineNodePosition = Math.max(nodes.length - 1, 0), lineNodeOffset = 0, isFirstInsert = true, needsEmptyFunctionReplacer = 0;
-      for (linePosition = 0; linePosition < lineToMatch.length; linePosition++) {
-        characterType = utils.CHARACTER_TYPES[lineToMatch.charCodeAt(linePosition)] | 0;
-        if (characterType === utils.CharacterType.expressionStart && state === 0) {
-          depth = 0;
-          expressionStartPosition = linePosition;
-          state = 2;
-        } else if (characterType === utils.CharacterType.isClosingParenthese && state === 1 && depth === 0) {
-          if (isFirstInsert) {
-            let _runtimeCodeNode = runtimeCodeNode;
-            _runtimeCodeNode.type = 0;
-            _runtimeCodeNode.value = "";
+  if (!source.startsWith(IGNORE_FILE_STRING)) {
+    for (i = 0; i < lines.length; i++) {
+      if (lines[i].trim().length === 0) {
+        continue;
+      }
+      if (MULTILINE_BUILD_TIME_MATCHER_TEST_ONLY.test(lines[i])) {
+        isMultiline = !isMultiline;
+        node = Object.create(astNodeBase);
+        node.type = 5;
+        node.value = lines[i];
+        node.line = i;
+        nodes.push(node);
+        nodes.buildNodeCount++;
+      } else if (isMultiline) {
+        node = Object.create(astNodeBase);
+        node.type = 5;
+        nodes.buildNodeCount++;
+        node.value = lines[i];
+        node.line = i;
+        nodes.push(node);
+      } else if (BUILD_TIME_LINE_MATCHER_TEST_ONLY.test(lines[i])) {
+        node = Object.create(astNodeBase);
+        node.type = 4;
+        nodes.buildNodeCount++;
+        node.value = lines[i];
+        node.line = i;
+        nodes.push(node);
+      } else {
+        hasBuildTimeNode = false;
+        runtimeCodeNode = Object.create(astNodeBase);
+        runtimeCodeNode.type = 6;
+        runtimeCodeNode.value = lines[i];
+        runtimeCodeNode.line = i;
+        offset = 0;
+        nodes.runtimeLineCount++;
+        lineToMatch = lines[i];
+        let depth = 0, characterType = 0, state = 0, expressionStartPosition = 0, lineNodePosition = Math.max(nodes.length - 1, 0), lineNodeOffset = 0, isFirstInsert = true, needsEmptyFunctionReplacer = 0;
+        for (linePosition = 0; linePosition < lineToMatch.length; linePosition++) {
+          characterType = utils.CHARACTER_TYPES[lineToMatch.charCodeAt(linePosition)] | 0;
+          if (characterType === utils.CharacterType.expressionStart && state === 0) {
+            depth = 0;
+            expressionStartPosition = linePosition;
+            state = 2;
+          } else if (characterType === utils.CharacterType.isClosingParenthese && state === 1 && depth === 0) {
+            if (isFirstInsert) {
+              let _runtimeCodeNode = runtimeCodeNode;
+              _runtimeCodeNode.type = 0;
+              _runtimeCodeNode.value = "";
+              runtimeCodeNode = Object.create(astNodeBase);
+              runtimeCodeNode.type = 3;
+              runtimeCodeNode.value = lines[i];
+              _runtimeCodeNode.line = runtimeCodeNode.line = i;
+              nodes.push(_runtimeCodeNode, runtimeCodeNode);
+              lineNodePosition = nodes.length - 1;
+              isFirstInsert = false;
+            }
+            nodes[lineNodePosition].value = nodes[lineNodePosition].value.substring(0, expressionStartPosition - lineNodeOffset);
+            node = Object.create(astNodeBase);
+            node.type = 2;
+            node.value = emptyFunctionNameReplacer + lineToMatch.substring(expressionStartPosition + needsEmptyFunctionReplacer, lineNodeOffset = linePosition + 1);
             runtimeCodeNode = Object.create(astNodeBase);
             runtimeCodeNode.type = 3;
-            runtimeCodeNode.value = lines[i];
-            _runtimeCodeNode.line = runtimeCodeNode.line = i;
-            nodes.push(_runtimeCodeNode, runtimeCodeNode);
-            lineNodePosition = nodes.length - 1;
-            isFirstInsert = false;
+            runtimeCodeNode.value = lineToMatch.substring(lineNodeOffset, lineToMatch.length);
+            runtimeCodeNode.line = node.line = i;
+            nodes.push(node, runtimeCodeNode);
+            lineNodePosition += 2;
+            state = expressionStartPosition = depth = 0;
+            nodes.buildNodeCount++;
+          } else if (characterType === utils.CharacterType.isClosingParenthese && state === 1 && depth !== 0) {
+            depth--;
+          } else if (characterType === utils.CharacterType.isOpeningParenthese && state === 1) {
+            depth++;
+          } else if (characterType === utils.CharacterType.isOpeningParenthese && state === 2 && depth === 0) {
+            state = 1;
+            needsEmptyFunctionReplacer = expressionStartPosition + 1 === linePosition ? 1 : 0;
+          } else if (state === 2 && characterType === utils.CharacterType.other) {
+            state = 0;
+            depth = expressionStartPosition = 0;
           }
-          nodes[lineNodePosition].value = nodes[lineNodePosition].value.substring(0, expressionStartPosition - lineNodeOffset);
-          node = Object.create(astNodeBase);
-          node.type = 2;
-          node.value = emptyFunctionNameReplacer + lineToMatch.substring(expressionStartPosition + needsEmptyFunctionReplacer, lineNodeOffset = linePosition + 1);
-          runtimeCodeNode = Object.create(astNodeBase);
-          runtimeCodeNode.type = 3;
-          runtimeCodeNode.value = lineToMatch.substring(lineNodeOffset, lineToMatch.length);
-          runtimeCodeNode.line = node.line = i;
-          nodes.push(node, runtimeCodeNode);
-          lineNodePosition += 2;
-          state = expressionStartPosition = depth = 0;
-          nodes.buildNodeCount++;
-        } else if (characterType === utils.CharacterType.isClosingParenthese && state === 1 && depth !== 0) {
-          depth--;
-        } else if (characterType === utils.CharacterType.isOpeningParenthese && state === 1) {
-          depth++;
-        } else if (characterType === utils.CharacterType.isOpeningParenthese && state === 2 && depth === 0) {
-          state = 1;
-          needsEmptyFunctionReplacer = expressionStartPosition + 1 === linePosition ? 1 : 0;
-        } else if (state === 2 && characterType === utils.CharacterType.other) {
-          state = 0;
-          depth = expressionStartPosition = 0;
         }
-      }
-      if (!isFirstInsert) {
-        runtimeCodeLineEndNode = Object.create(astNodeBase);
-        runtimeCodeLineEndNode.line = i;
-        runtimeCodeLineEndNode.type = 1;
-        nodes.push(runtimeCodeLineEndNode);
-      } else {
-        nodes.push(runtimeCodeNode);
+        if (!isFirstInsert) {
+          runtimeCodeLineEndNode = Object.create(astNodeBase);
+          runtimeCodeLineEndNode.line = i;
+          runtimeCodeLineEndNode.type = 1;
+          nodes.push(runtimeCodeLineEndNode);
+        } else {
+          nodes.push(runtimeCodeNode);
+        }
       }
     }
   }

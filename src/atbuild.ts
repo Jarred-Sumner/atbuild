@@ -91,7 +91,7 @@ export class AtBuild {
     addHeader = false,
     requireFunc = module.require
   ) {
-    const ast = AtBuild.buildAST(code);
+    const ast = AtBuild.buildAST(code, filepath);
     const processed = AtBuild.transformAST(ast, code);
     const res = this._eval(processed, filepath, addHeader, requireFunc);
     if (res && res.default) {
