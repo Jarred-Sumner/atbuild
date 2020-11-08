@@ -1,6 +1,6 @@
 {
   "name": "atbuild",
-  "version": "1.5.14",
+  "version": "1.5.15",
   "main": "dist/atbuild.js",
   "browser": "web/atbuild.js",
   "license": "MIT",
@@ -14,6 +14,7 @@
     "index.js",
     "with-nextjs.js",
     "jest.js",
+    "light.js",
     "jest-with-babel.js"
   ],
   "bin": {
