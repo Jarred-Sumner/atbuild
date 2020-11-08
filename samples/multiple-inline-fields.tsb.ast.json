@@ -1,61 +1,244 @@
 {
-  "to": 306,
   "children": [
     {
       "from": 0,
       "name": "$multipleFields",
       "value": "fields",
+      "functionDeclarationSuffix": "",
       "children": [
         {
-          "from": 42,
-          "to": 44,
-          "value": "\n ",
-          "children": [],
-          "scope": null,
-          "keyword": "source",
-          "column": {
-            "start": 28,
-            "end": 5
-          },
-          "line": {
-            "start": 0,
-            "end": 1
-          }
-        },
-        {
           "from": 45,
-          "to": 74,
+          "to": 76,
           "children": [
             {
-              "from": 51,
-              "to": 74,
-              "value": "\n    let result = 0;\n  ",
+              "from": 56,
+              "to": 76,
               "children": [],
               "scope": null,
               "keyword": "source",
               "column": {
-                "start": 6,
-                "end": 3
+                "start": 7,
+                "end": 21
               },
               "line": {
-                "start": 1,
-                "end": 3
+                "start": 2,
+                "end": 2
               }
             }
           ],
           "scope": "multiline",
           "keyword": "run",
           "column": {
-            "start": 3,
-            "end": 3
+            "start": 5,
+            "end": 21
           },
           "line": {
             "start": 1,
-            "end": 3
+            "end": 2
+          }
+        },
+        {
+          "from": 86,
+          "to": 286,
+          "children": [
+            {
+              "from": 99,
+              "to": 187,
+              "children": [],
+              "scope": null,
+              "keyword": "source",
+              "column": {
+                "start": 7,
+                "end": 9
+              },
+              "line": {
+                "start": 6,
+                "end": 8
+              }
+            },
+            {
+              "from": 187,
+              "to": 286,
+              "children": [
+                {
+                  "from": 202,
+                  "to": 213,
+                  "children": [],
+                  "scope": null,
+                  "keyword": "source",
+                  "column": {
+                    "start": 11,
+                    "end": 22
+                  },
+                  "line": {
+                    "start": 9,
+                    "end": 9
+                  }
+                },
+                {
+                  "from": 213,
+                  "to": 228,
+                  "children": [
+                    {
+                      "from": 215,
+                      "to": 228,
+                      "children": [],
+                      "scope": null,
+                      "keyword": "source",
+                      "column": {
+                        "start": 22,
+                        "end": 0
+                      },
+                      "line": {
+                        "start": 9,
+                        "end": 0
+                      }
+                    }
+                  ],
+                  "scope": "inline",
+                  "keyword": "build",
+                  "column": {
+                    "start": 22,
+                    "end": 36
+                  },
+                  "line": {
+                    "start": 9,
+                    "end": 9
+                  }
+                },
+                {
+                  "from": 229,
+                  "to": 251,
+                  "children": [],
+                  "scope": null,
+                  "keyword": "source",
+                  "column": {
+                    "start": 0,
+                    "end": 21
+                  },
+                  "line": {
+                    "start": 0,
+                    "end": 10
+                  }
+                },
+                {
+                  "from": 251,
+                  "to": 258,
+                  "children": [
+                    {
+                      "from": 253,
+                      "to": 258,
+                      "children": [],
+                      "scope": null,
+                      "keyword": "source",
+                      "column": {
+                        "start": 21,
+                        "end": 0
+                      },
+                      "line": {
+                        "start": 10,
+                        "end": 0
+                      }
+                    }
+                  ],
+                  "scope": "inline",
+                  "keyword": "build",
+                  "column": {
+                    "start": 21,
+                    "end": 27
+                  },
+                  "line": {
+                    "start": 10,
+                    "end": 10
+                  }
+                },
+                {
+                  "from": 259,
+                  "to": 269,
+                  "children": [],
+                  "scope": null,
+                  "keyword": "source",
+                  "column": {
+                    "start": 0,
+                    "end": 28
+                  },
+                  "line": {
+                    "start": 0,
+                    "end": 10
+                  }
+                }
+              ],
+              "scope": "multiline",
+              "keyword": "run",
+              "column": {
+                "start": 9,
+                "end": 7
+              },
+              "line": {
+                "start": 8,
+                "end": 12
+              }
+            },
+            {
+              "from": 280,
+              "to": 286,
+              "children": [],
+              "scope": null,
+              "keyword": "source",
+              "column": {
+                "start": 7,
+                "end": 7
+              },
+              "line": {
+                "start": 12,
+                "end": 12
+              }
+            }
+          ],
+          "scope": "multiline",
+          "keyword": "build",
+          "column": {
+            "start": 5,
+            "end": 7
+          },
+          "line": {
+            "start": 5,
+            "end": 12
+          }
+        },
+        {
+          "from": 296,
+          "to": 334,
+          "children": [
+            {
+              "from": 307,
+              "to": 326,
+              "children": [],
+              "scope": null,
+              "keyword": "source",
+              "column": {
+                "start": 7,
+                "end": 20
+              },
+              "line": {
+                "start": 16,
+                "end": 16
+              }
+            }
+          ],
+          "scope": "multiline",
+          "keyword": "run",
+          "column": {
+            "start": 5,
+            "end": 0
+          },
+          "line": {
+            "start": 15,
+            "end": 18
           }
         }
       ],
-      "scope": "multiline",
+      "scope": null,
       "keyword": "export",
       "column": {
         "start": 1,
@@ -65,224 +248,16 @@
         "start": 0,
         "end": 0
       }
-    },
-    {
-      "from": 80,
-      "to": 266,
-      "children": [
-        {
-          "from": 88,
-          "to": 176,
-          "value": "\n    for (let i = fields.length - 1; i >= 0; i--) {\n      const field = fields[i];\n     ",
-          "children": [],
-          "scope": null,
-          "keyword": "source",
-          "column": {
-            "start": 6,
-            "end": 9
-          },
-          "line": {
-            "start": 5,
-            "end": 8
-          }
-        },
-        {
-          "from": 177,
-          "to": 255,
-          "children": [
-            {
-              "from": 183,
-              "to": 202,
-              "value": "\n        result <<= ",
-              "children": [],
-              "scope": null,
-              "keyword": "source",
-              "column": {
-                "start": 10,
-                "end": 20
-              },
-              "line": {
-                "start": 8,
-                "end": 9
-              }
-            },
-            {
-              "from": 203,
-              "to": 218,
-              "children": [
-                {
-                  "from": 205,
-                  "to": 218,
-                  "value": "schema[field]",
-                  "children": [],
-                  "scope": null,
-                  "keyword": "source",
-                  "column": {
-                    "start": 20,
-                    "end": 0
-                  },
-                  "line": {
-                    "start": 9,
-                    "end": 0
-                  }
-                }
-              ],
-              "scope": "inline",
-              "keyword": "build",
-              "column": {
-                "start": 20,
-                "end": 34
-              },
-              "line": {
-                "start": 9,
-                "end": 9
-              }
-            },
-            {
-              "from": 219,
-              "to": 238,
-              "value": ";\n        result |= ",
-              "children": [],
-              "scope": null,
-              "keyword": "source",
-              "column": {
-                "start": 35,
-                "end": 19
-              },
-              "line": {
-                "start": 9,
-                "end": 10
-              }
-            },
-            {
-              "from": 239,
-              "to": 246,
-              "children": [
-                {
-                  "from": 241,
-                  "to": 246,
-                  "value": "field",
-                  "children": [],
-                  "scope": null,
-                  "keyword": "source",
-                  "column": {
-                    "start": 19,
-                    "end": 0
-                  },
-                  "line": {
-                    "start": 10,
-                    "end": 0
-                  }
-                }
-              ],
-              "scope": "inline",
-              "keyword": "build",
-              "column": {
-                "start": 19,
-                "end": 25
-              },
-              "line": {
-                "start": 10,
-                "end": 10
-              }
-            },
-            {
-              "from": 247,
-              "to": 255,
-              "value": ";\n      ",
-              "children": [],
-              "scope": null,
-              "keyword": "source",
-              "column": {
-                "start": 26,
-                "end": 7
-              },
-              "line": {
-                "start": 10,
-                "end": 11
-              }
-            }
-          ],
-          "scope": "multiline",
-          "keyword": "run",
-          "column": {
-            "start": 7,
-            "end": 7
-          },
-          "line": {
-            "start": 8,
-            "end": 11
-          }
-        }
-      ],
-      "scope": "multiline",
-      "keyword": "build",
-      "column": {
-        "start": 3,
-        "end": 3
-      },
-      "line": {
-        "start": 5,
-        "end": 13
-      }
-    },
-    {
-      "from": 262,
-      "to": 266,
-      "value": "}\n  ",
-      "children": [],
-      "scope": null,
-      "keyword": "source",
-      "column": {
-        "start": 5,
-        "end": 3
-      },
-      "line": {
-        "start": 12,
-        "end": 13
-      }
-    },
-    {
-      "from": 272,
-      "to": 300,
-      "children": [
-        {
-          "from": 278,
-          "to": 300,
-          "value": "\n    return result;\n  ",
-          "children": [],
-          "scope": null,
-          "keyword": "source",
-          "column": {
-            "start": 6,
-            "end": 3
-          },
-          "line": {
-            "start": 15,
-            "end": 17
-          }
-        }
-      ],
-      "scope": "multiline",
-      "keyword": "run",
-      "column": {
-        "start": 3,
-        "end": 3
-      },
-      "line": {
-        "start": 15,
-        "end": 17
-      }
     }
   ],
   "scope": null,
   "keyword": "root",
   "column": {
     "start": 0,
-    "end": 3
+    "end": 0
   },
   "line": {
     "start": 0,
-    "end": 19
+    "end": 0
   }
 }

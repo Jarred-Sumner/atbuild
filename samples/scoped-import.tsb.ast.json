@@ -1,0 +1,76 @@
+{
+  "children": [
+    {
+      "from": 4,
+      "to": 51,
+      "children": [
+        {
+          "from": 15,
+          "to": 51,
+          "children": [],
+          "scope": null,
+          "keyword": "source",
+          "column": {
+            "start": 5,
+            "end": 37
+          },
+          "line": {
+            "start": 3,
+            "end": 3
+          }
+        }
+      ],
+      "scope": "multiline",
+      "keyword": "build",
+      "column": {
+        "start": 3,
+        "end": 37
+      },
+      "line": {
+        "start": 2,
+        "end": 3
+      }
+    },
+    {
+      "from": 59,
+      "to": 104,
+      "children": [
+        {
+          "from": 68,
+          "to": 104,
+          "children": [],
+          "scope": null,
+          "keyword": "source",
+          "column": {
+            "start": 5,
+            "end": 37
+          },
+          "line": {
+            "start": 7,
+            "end": 7
+          }
+        }
+      ],
+      "scope": "multiline",
+      "keyword": "run",
+      "column": {
+        "start": 3,
+        "end": 37
+      },
+      "line": {
+        "start": 6,
+        "end": 7
+      }
+    }
+  ],
+  "scope": null,
+  "keyword": "root",
+  "column": {
+    "start": 0,
+    "end": 0
+  },
+  "line": {
+    "start": 0,
+    "end": 0
+  }
+}
