@@ -1,6 +1,6 @@
 {
   "name": "atbuild",
-  "version": "1.5.10",
+  "version": "1.5.11",
   "main": "dist/atbuild.js",
   "browser": "web/atbuild.js",
   "license": "MIT",
@@ -12,7 +12,9 @@
     "types.ts.d",
     "webpack-loader.js",
     "index.js",
-    "with-nextjs.js"
+    "with-nextjs.js",
+    "jest.js",
+    "jest-with-babel.js"
   ],
   "bin": {
     "atbuild": "./dist/cli.js"
