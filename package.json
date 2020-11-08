@@ -50,6 +50,8 @@
     "cli": "yarn --silent build-node && FORCE_DEV=true node dist/cli.js $1",
     "clear-test": "rm samples/*.d.ts",
     "update-readme": "node dist/cli.js ./README.md.jsb ./README.md",
+    "postpublish": "yarn bump-docs",
+    "bump-docs": "node ./scripts/bump-docs-version.js && cd docs; yarn install; cd ../",
     "prebuild-node": "rimraf dist",
     "prebuild-web": "rimraf web",
     "build-node": "esbuild --target=node10 --define:\"process.env.NODE_ENV\"=\"'production'\" --define:\"process.env.WEB=false\" src/*{.ts,.js} src/**/*{.ts,.js} --format=cjs  --outdir=./dist --platform=node",
