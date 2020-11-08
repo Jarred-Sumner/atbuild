@@ -12,6 +12,7 @@ const paths = {
   inlineBuildInsideRun: _path("inline-build-inside-run.tsb"),
   interpolatedBuild: _path("interpolated-build.tsb"),
   multipleInlineFields: _path("multiple-inline-fields.tsb"),
+  scopedImport: _path("scoped-import.tsb"),
 };
 const SAMPLES = {
   bitfield: fs.readFileSync(paths.bitfield, "utf8"),
@@ -22,6 +23,17 @@ const SAMPLES = {
   inlineBuildInsideRun: fs.readFileSync(paths.inlineBuildInsideRun, "utf8"),
   interpolatedBuild: fs.readFileSync(paths.interpolatedBuild, "utf8"),
   multipleInlineFields: fs.readFileSync(paths.multipleInlineFields, "utf8"),
+  scopedImport: `
+
+  @build
+    import {Bacon} from '@bacon/foo';
+  @end
+
+  @run
+    import {Lox} from '@bagel/cream';
+  @end
+
+  `,
 };
 
 describe("AtBuild Full", () => {
@@ -68,7 +80,10 @@ describe("AtBuild Full", () => {
 
   it("loads hoursFormatter sample", () => {
     run("hoursFormatter");
-    debugger;
+  });
+
+  it("loads scoped import sample", () => {
+    run("scopedImport");
   });
 
   it("loads log sample", () => {

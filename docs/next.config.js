@@ -6,7 +6,7 @@ const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const withCSS = require("@zeit/next-css");
 const withWorker = require("@zeit/next-workers");
 
-const withAtBuild = require("atbuild/dist/with-nextjs");
+const withAtBuild = require("atbuild/with-nextjs");
 
 const withMDX = require("@next/mdx")({
   extension: /\.mdx?$/,
@@ -67,6 +67,10 @@ module.exports = withAtBuild(
               },
             },
           });
+
+          if (process.env.NODE_ENV === "development") {
+            config.resolve.alias["atbuild"] = "../";
+          }
 
           return config;
         },

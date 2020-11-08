@@ -108,6 +108,7 @@ var CharacterType;
   CharacterType2[CharacterType2["inlineCloser"] = 11] = "inlineCloser";
   CharacterType2[CharacterType2["escape"] = 12] = "escape";
   CharacterType2[CharacterType2["replacerStart"] = 2] = "replacerStart";
+  CharacterType2[CharacterType2["quote"] = 12] = "quote";
 })(CharacterType || (CharacterType = {}));
 var Scope;
 (function(Scope2) {
@@ -290,6 +291,9 @@ controlIdentifierTypes[Keywords.run.prefixCode] = 4;
 controlIdentifierTypes[Keywords.build.prefixCode] = 3;
 controlIdentifierTypes[Keywords.export.prefixCode] = 2;
 controlIdentifierTypes["(".charCodeAt(0)] = 6;
+charTypes[`"`.charCodeAt(0)] = 12;
+charTypes[`'`.charCodeAt(0)] = 12;
+charTypes["`".charCodeAt(0)] = 12;
 controlIdentifierSkipLength[1] = "inline".length;
 controlIdentifierSkipLength[4] = "run".length;
 controlIdentifierSkipLength[3] = "build".length;
@@ -303,6 +307,7 @@ keywordNames[2] = "export function";
 keywordNames[5] = "end";
 keywordNames[6] = "(";
 operationsByControlIdentifier.fill(2);
+operationsByControlIdentifier[0] = 0;
 operationsByControlIdentifier[2] = 7;
 operationsByControlIdentifier[6] = 4;
 const keywordTypes = new Uint8Array(8);
@@ -375,11 +380,11 @@ function buildAST(code, filename = "file.tsb") {
     }
     isLineEmpty = Math.min(isLineEmpty, emptyCharTypes[cursor]);
     column++;
-    if (operation === 0 && cursor === 4) {
+    if (operation === 0 && cursor === 4 && (prevCursor !== 12 || controlIdentifierTypes[code.charCodeAt(position + 1)])) {
       controlIdentifierType = getControlIdentifier(code, position);
       skipLength = controlIdentifierSkipLength[controlIdentifierType] | 0;
       if (controlIdentifierType === 0 || keywordNames[controlIdentifierType] !== code.substring(position + 1, position + skipLength + 1)) {
-        throw new AtbuildParseError(0, `Invalid @ keyword in ${filename}:${line}:${column - 1}`, `Must be @run, @build, @export function $, @inline, @(buildCode), or @end. Received "${code.substring(position).split(" ")[0].slice(0, 10).replace("\n", "\\n")}"
+        throw new AtbuildParseError(0, `Invalid @ keyword in ${filename}:${line}:${column - 1}`, `Invalid @ keyword in ${filename}:${line}:${column - 1}. Must be @run, @build, @export function $, @inline, @(buildCode), or @end. Received "${code.substring(position).split(" ")[0].slice(0, 10).replace("\n", "\\n")}"
 `);
       } else if (controlIdentifierType === 5) {
         keywordNode.to = position;

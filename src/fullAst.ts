@@ -14,6 +14,7 @@ enum CharacterType {
   inlineCloser = 11, // )
   escape = 12, // \
   replacerStart = 2, // $
+  quote = 12,
 }
 
 export enum Scope {
@@ -230,6 +231,10 @@ controlIdentifierTypes[Keywords.build.prefixCode] = ControlIdentifier.build;
 controlIdentifierTypes[Keywords.export.prefixCode] = ControlIdentifier.export;
 controlIdentifierTypes["(".charCodeAt(0)] = ControlIdentifier.interpolate;
 
+charTypes[`"`.charCodeAt(0)] = CharacterType.quote;
+charTypes[`'`.charCodeAt(0)] = CharacterType.quote;
+charTypes["`".charCodeAt(0)] = CharacterType.quote;
+
 controlIdentifierSkipLength[ControlIdentifier.inline] = "inline".length;
 controlIdentifierSkipLength[ControlIdentifier.run] = "run".length;
 controlIdentifierSkipLength[ControlIdentifier.build] = "build".length;
@@ -247,6 +252,7 @@ keywordNames[ControlIdentifier.closeScope] = "end";
 keywordNames[ControlIdentifier.interpolate] = "(";
 
 operationsByControlIdentifier.fill(ParseOperation.determineKeywordAttribute);
+operationsByControlIdentifier[0] = ParseOperation.findControl;
 operationsByControlIdentifier[ControlIdentifier.export] =
   ParseOperation.determineName;
 operationsByControlIdentifier[ControlIdentifier.interpolate] =
@@ -359,7 +365,9 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
 
     if (
       operation === ParseOperation.findControl &&
-      cursor === CharacterType.control
+      cursor === CharacterType.control &&
+      (prevCursor !== CharacterType.quote ||
+        controlIdentifierTypes[code.charCodeAt(position + 1)])
     ) {
       // Look at the letter after "@"
       // Is it "r"? Its a run keyword. "e"? export. etc.
@@ -375,7 +383,9 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
         throw new AtbuildParseError(
           ParseErrorType.invalidKeyword,
           `Invalid @ keyword in ${filename}:${line}:${column - 1}`,
-          `Must be @run, @build, @export function $, @inline, @(buildCode), or @end. Received "${code
+          `Invalid @ keyword in ${filename}:${line}:${
+            column - 1
+          }. Must be @run, @build, @export function $, @inline, @(buildCode), or @end. Received "${code
             .substring(position)
             .split(" ")[0]
             .slice(0, 10)

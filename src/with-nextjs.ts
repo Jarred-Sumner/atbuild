@@ -12,50 +12,40 @@ module.exports = (nextConfig = {}) => {
         config = nextConfig.webpack(config, options);
       }
 
-      const nextBabelLoaderContainer = config.module.rules.find((rule) => {
-        return (
-          (rule.use &&
-            rule.use.loader &&
-            rule.use.loader === "next-babel-loader") ||
-          (rule.use &&
-            rule.use.find((loader) => loader.loader === "next-babel-loader"))
-        );
-      });
-
-      if (nextBabelLoaderContainer) {
-        let loader;
-
-        if (nextBabelLoaderContainer.use.loader === "next-babel-loader") {
-          loader = nextBabelLoaderContainer.use;
+      function findBabelLoaderInRules(rule) {
+        if (typeof rule === "object" && rule.loader === "next-babel-loader") {
+          return rule.options;
+        } else if (
+          typeof rule.use === "object" &&
+          rule.use.length &&
+          rule.use[0]
+        ) {
+          for (let _rule of rule.use) {
+            const __rule = findBabelLoaderInRules(_rule);
+            if (__rule) {
+              return __rule;
+            }
+          }
+        } else if (
+          typeof rule.use === "object" &&
+          rule.use.loader === "next-babel-loader"
+        ) {
+          return rule.use.options;
         } else {
-          loader = nextBabelLoaderContainer.use.find(
-            (loader) => loader.loader === "next-babel-loader"
-          );
+          return null;
         }
+      }
+      const loader = {
+        loader: "next-babel-loader",
+        options: findBabelLoaderInRules({ use: config.module.rules }),
+      };
 
-        config.resolve.extensions.unshift(".@js", ".jsb", ".tsb", ".@ts");
+      config.resolve.extensions.unshift(".@js", ".jsb", ".tsb", ".@ts");
 
-        const fs = require("fs");
-        let tsconfig;
-        if (fs.existsSync("./tsconfig.json")) {
-          tsconfig = require(require("path").resolve("./tsconfig.json"));
-        }
-
-        config.module.rules.push({
-          test: /\.(@js|jsb)$/,
-          type: "javascript/auto",
-          enforce: "pre",
-          use: [
-            loader,
-            {
-              loader: "atbuild/dist/webpack-loader",
-              options: {
-                typescript: false,
-                ...(nextConfig.atbuild || {}),
-              },
-            },
-          ],
-        });
+      const fs = require("fs");
+      let tsconfig;
+      if (fs.existsSync("./tsconfig.json")) {
+        tsconfig = require(require("path").resolve("./tsconfig.json"));
 
         config.module.rules.push({
           test: /\.(@ts|tsb)$/,
@@ -91,8 +81,38 @@ module.exports = (nextConfig = {}) => {
           ],
         });
       } else {
-        throw "Atbuild failed to detect webpack-loader so it won't work. Please file an issue.";
+        config.module.rules.push({
+          test: /\.(jsx|js)$/,
+          type: "javascript/auto",
+          enforce: "pre",
+          exclude: /node_modules/,
+          use: [
+            {
+              loader: "atbuild/dist/webpack-loader",
+              options: {
+                typescript: false,
+                ...(nextConfig.atbuild || {}),
+              },
+            },
+          ],
+        });
       }
+
+      config.module.rules.push({
+        test: /\.(@js|jsb)$/,
+        type: "javascript/auto",
+        enforce: "pre",
+        use: [
+          loader,
+          {
+            loader: "atbuild/dist/webpack-loader",
+            options: {
+              typescript: false,
+              ...(nextConfig.atbuild || {}),
+            },
+          },
+        ],
+      });
 
       return config;
     },

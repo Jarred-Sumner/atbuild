@@ -145,7 +145,7 @@ const didRemoveBuildTimeCode = $(typeof buildTimeOnly !== "undefined");
     const line = lines.find((l) => l.includes("import {$dateFormatter}"));
 
     expect(line).toBeTruthy();
-    expect(line).not.toContain(".push");
+    expect(line).not.toContain("+= (");
     expect(quickTest(code)).toBe(true);
   });
 
@@ -165,14 +165,14 @@ const didRemoveBuildTimeCode = $(typeof buildTimeOnly !== "undefined");
     const buildLine = lines.find((l) => l.includes("import {$dateFormatter}"));
 
     expect(buildLine).toBeTruthy();
-    expect(buildLine).not.toContain(".push");
+    expect(buildLine).not.toContain("+= (");
 
     const runtimeLine = lines.find((l) =>
       l.includes("export const hourFormatter =")
     );
 
     expect(runtimeLine).toBeTruthy();
-    expect(runtimeLine).toContain(".push");
+    expect(runtimeLine).toContain("+= (");
   });
 
   it("works interpolated function calls of varying depth", () => {
@@ -191,14 +191,14 @@ const didRemoveBuildTimeCode = $(typeof buildTimeOnly !== "undefined");
     const buildLine = lines.find((l) => l.includes("import {$dateFormatter}"));
 
     expect(buildLine).toBeTruthy();
-    expect(buildLine).not.toContain(".push");
+    expect(buildLine).not.toContain("+= (");
 
     const runtimeLine = lines.find((l) =>
       l.includes("export const hourFormatter =")
     );
 
     expect(runtimeLine).toBeTruthy();
-    expect(runtimeLine).toContain(".push");
+    expect(runtimeLine).toContain("+= (");
   });
 
   it("works with multiline build-time only lines and interpolated function calls", () => {
@@ -233,20 +233,20 @@ const didRemoveBuildTimeCode = $(typeof buildTimeOnly !== "undefined");
     );
 
     expect(buildLine).toBeTruthy();
-    expect(buildLine).not.toContain(".push");
+    expect(buildLine).not.toContain("+= (");
 
     expect(baconLine).toBeTruthy();
-    expect(baconLine).not.toContain(".push");
+    expect(baconLine).not.toContain("+= (");
 
     expect(whoisjaSON).toBeTruthy();
-    expect(whoisjaSON).not.toContain(".push");
+    expect(whoisjaSON).not.toContain("+= (");
 
     const runtimeLine = lines.find((l) =>
       l.includes("export const hourFormatter =")
     );
 
     expect(runtimeLine).toBeTruthy();
-    expect(runtimeLine).toContain(".push");
+    expect(runtimeLine).toContain("+= (");
     expect(quickTest(code)).toBeTruthy();
   });
 });
