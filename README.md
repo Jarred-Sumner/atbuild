@@ -412,10 +412,6 @@ How is this different than [Prepack](https://prepack.io/)?
 
 Like AtBuild, Prepack inlines & prevaluates code. But, AtBuild lets you choose what code runs at runtime and what code runs at buildtime, and use that to generate code. Loops that conditionally add or remove runtime code are not possible with Prepack or with [`babel-plugin-codegen`](https://github.com/kentcdodds/babel-plugin-codegen).
 
-## Alternatives
-
-- [`babel-plugin-codegen`](https://github.com/kentcdodds/babel-plugin-codegen) makes it easy to run build scripts, but it gets tough if you want to do some things at buildtime and some other things at run-time for the same code.
-
 ### Tests
 
 If you want to use AtBuild Full with Jest, add the Jest transform at `"<rootDir>/node_modules/atbuild/jest.js"`.
@@ -471,6 +467,8 @@ const contents = transformAST(
 
 This won't run the bundler or write to disk.
 
+To do that, you'll want to look at <a href="./src/bundle.ts">./src/bundle.ts</a>.
+
 ### Syntax highlighting
 
 There's a half implemented syntax highlighter in `atbuild-vscode`. Contributions are very welcome.
@@ -486,3 +484,7 @@ if you want to make sure AtBuild Light does not run on a specific file, stick th
 This is helpful if you're bundling already minified files that use `$` as a function call.
 
 The Next.js integration automatically excludes `node_modules` and file paths with `vendor` or `.min.` in the filename.
+
+## Alternatives
+
+- [`babel-plugin-codegen`](https://github.com/kentcdodds/babel-plugin-codegen) makes it easy to run build scripts, but it gets tough if you want to do some things at buildtime and some other things at run-time for the same code.
