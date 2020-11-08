@@ -365,7 +365,7 @@ class AtbuildParseError extends Error {
 function buildAST(code, filename = "file.tsb") {
   const root = Object.create(astNodeBase);
   let sourceNode;
-  let position = 0, cursor = 0, operation = 0, controlIdentifierType = 0, prevCursor = cursor, line = 0, column = 0, skipLength = 0, parent = root, replacerNode, keywordNode, inlineDepthCount = 0, scopeDepthCount = 0, inlineStart = 0, nameStart = 0, variableMapOpenerStart = 0, variableMapArgumentStart = 0, lastNode, endOfPreviousLine = 0, endOfPreviousLineColumn = 0, isLineEmpty = 1, inlineEnd = 0, replacerStart = 0;
+  let position = 0, cursor = 0, operation = 0, controlIdentifierType = 0, prevCursor = cursor, line = 0, column = 0, skipLength = 0, parent = root, replacerNode, keywordNode, inlineDepthCount = 0, scopeDepthCount = 0, inlineStart = 0, nameStart = 0, variableMapOpenerStart = 0, variableMapArgumentStart = 0, lastNode, endOfPreviousLine = 0, keywordNameMatch = false, endOfPreviousLineColumn = 0, isLineEmpty = 1, inlineEnd = 0, replacerStart = 0;
   root.children = [];
   root.keyword = 6;
   for (position = 0; position < code.length; position++, prevCursor = cursor) {
@@ -380,10 +380,14 @@ function buildAST(code, filename = "file.tsb") {
     }
     isLineEmpty = Math.min(isLineEmpty, emptyCharTypes[cursor]);
     column++;
-    if (operation === 0 && cursor === 4 && (prevCursor !== 12 || controlIdentifierTypes[code.charCodeAt(position + 1)])) {
+    if (operation === 0 && cursor === 4) {
       controlIdentifierType = getControlIdentifier(code, position);
       skipLength = controlIdentifierSkipLength[controlIdentifierType] | 0;
-      if (controlIdentifierType === 0 || keywordNames[controlIdentifierType] !== code.substring(position + 1, position + skipLength + 1)) {
+      keywordNameMatch = keywordNames[controlIdentifierType] === code.substring(position + 1, position + skipLength + 1);
+      if ((controlIdentifierType === 0 || !keywordNameMatch) && prevCursor === 12) {
+        continue;
+      }
+      if (controlIdentifierType === 0 || !keywordNameMatch) {
         throw new AtbuildParseError(0, `Invalid @ keyword in ${filename}:${line}:${column - 1}`, `Invalid @ keyword in ${filename}:${line}:${column - 1}. Must be @run, @build, @export function $, @inline, @(buildCode), or @end. Received "${code.substring(position).split(" ")[0].slice(0, 10).replace("\n", "\\n")}"
 `);
       } else if (controlIdentifierType === 5) {

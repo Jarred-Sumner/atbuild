@@ -339,6 +339,7 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
     variableMapArgumentStart = 0,
     lastNode: ASTNode,
     endOfPreviousLine = 0,
+    keywordNameMatch = false,
     endOfPreviousLineColumn = 0,
     isLineEmpty = 1,
     inlineEnd = 0,
@@ -365,20 +366,37 @@ export function buildAST(code: string, filename: string = "file.tsb"): ASTNode {
 
     if (
       operation === ParseOperation.findControl &&
-      cursor === CharacterType.control &&
-      (prevCursor !== CharacterType.quote ||
-        controlIdentifierTypes[code.charCodeAt(position + 1)])
+      cursor === CharacterType.control
     ) {
       // Look at the letter after "@"
       // Is it "r"? Its a run keyword. "e"? export. etc.
       controlIdentifierType = getControlIdentifier(code, position);
 
       skipLength = controlIdentifierSkipLength[controlIdentifierType] | 0;
+      keywordNameMatch =
+        keywordNames[controlIdentifierType] ===
+        code.substring(position + 1, position + skipLength + 1);
+
+      // Handle scoped imports
+      // If you import "@babylonjs" inside a .tsb file, it would think its a control character
+      // But, its just a package name
+      // The more reliable way to do this would be running a full JS parser.
+      // But, we're not going to bother.
+      // Instead, we say
+      // Is there a quote before the control character?
+      // If so, just ignore it.
+      if (
+        (controlIdentifierType === ControlIdentifier.invalid ||
+          !keywordNameMatch) &&
+        prevCursor === CharacterType.quote
+      ) {
+        continue;
+      }
+
       // assert its what we expect.
       if (
         controlIdentifierType === ControlIdentifier.invalid ||
-        keywordNames[controlIdentifierType] !==
-          code.substring(position + 1, position + skipLength + 1)
+        !keywordNameMatch
       ) {
         throw new AtbuildParseError(
           ParseErrorType.invalidKeyword,

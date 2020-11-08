@@ -26,11 +26,11 @@ const SAMPLES = {
   scopedImport: `
 
   @build
-    import {Bacon} from '@bacon/foo';
+    import {Bacon} from '@babylonjs/run';
   @end
 
   @run
-    import {Lox} from '@bagel/cream';
+    import {Lox} from '@babylonjs/export';
   @end
 
   `,
