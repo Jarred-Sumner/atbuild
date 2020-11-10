@@ -11,6 +11,7 @@ export type BundleInput = {
   typescript: boolean;
   destination: string;
   directory: string;
+  service: boolean;
   readFile: (input: string) => string;
   writeFile: (path: string, content: string) => Promise<void>;
 };
@@ -42,6 +43,7 @@ export function bundle(
     mode,
     filepath,
     defaultMode = "auto",
+    service = false,
     typescript,
     destination,
     readFile = fs.readFileSync,
@@ -64,6 +66,7 @@ export function bundle(
       {
         mode,
         typescript,
+        service,
       },
       path.resolve(filepath),
       readFile,

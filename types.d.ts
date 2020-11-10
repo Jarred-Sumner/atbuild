@@ -73,10 +73,11 @@ declare module "bundle" {
         typescript: boolean;
         destination: string;
         directory: string;
+        service: boolean;
         readFile: (input: string) => string;
         writeFile: (path: string, content: string) => Promise<void>;
     };
-    export function bundle(source: string, { format, mode, filepath, defaultMode, typescript, destination, readFile, writeFile: _writeFile, }: BundleInput): Promise<string>;
+    export function bundle(source: string, { format, mode, filepath, defaultMode, service, typescript, destination, readFile, writeFile: _writeFile, }: BundleInput): Promise<string>;
 }
 declare module "fullAst.test" { }
 declare var __defProp: (o: any, p: string | number | symbol, attributes: PropertyDescriptor & ThisType<any>) => any;
