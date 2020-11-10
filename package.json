@@ -1,6 +1,6 @@
 {
   "name": "atbuild",
-  "version": "1.5.15",
+  "version": "1.5.16",
   "main": "dist/atbuild.js",
   "browser": "web/atbuild.js",
   "license": "MIT",
@@ -71,7 +71,7 @@
   },
   "dependencies": {
     "@ungap/weakrefs": "^0.2.0",
-    "esbuild": "https://github.com/Jarred-Sumner/esbuild/releases/download/pluginbuild/esbuild-0.8.1.tgz",
+    "esbuild": "^0.8.5",
     "loader-utils": "^2.0.0",
     "meow": "^7.1.1"
   }
