@@ -190,7 +190,12 @@ export async function handleESBuildResult(
   writeFile,
   onEmpty
 ) {
-  const { outputFiles, warnings } = _response;
+  const { outputFiles, warnings, errors } = _response;
+  if (errors && errors.length) {
+    callback(new Error(errors[0]));
+    return;
+  }
+
   let source, meta;
   for (let outputFile of outputFiles) {
     if (outputFile.path.endsWith(input)) {
@@ -200,13 +205,15 @@ export async function handleESBuildResult(
     }
   }
 
-  for (let key in meta.inputs) {
-    if (key !== ignoreDependency) {
-      addDependency(key);
+  if (meta) {
+    for (let key in meta.inputs) {
+      if (key !== ignoreDependency) {
+        addDependency(key);
+      }
     }
   }
 
-  if (!source) {
+  if (!source || !source.length) {
     for (let outputFile of outputFiles) {
       outputFile.contents = textDecoder.decode(outputFile.contents);
     }

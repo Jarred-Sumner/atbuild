@@ -1,23 +1,23 @@
-const util = require("util");
-const fs = require("fs");
-const { AtBuild } = require("../atbuild");
+module.exports = {
+  name: "AtBuildFull",
+  setup(build) {
+    const util = require("util");
+    const fs = require("fs");
+    const { AtBuild } = require("../atbuild");
+    const readFile = util.promisify(fs.readFile);
 
-module.exports = (plugin) => {
-  const readFile = util.promisify(fs.readFile);
+    build.onLoad({ filter: /\.(@js|jsb|tsb|@ts)$/ }, async (args) => {
+      let source = await readFile(args.path, "utf8");
 
-  plugin.setName("AtBuildFull");
+      let contents = AtBuild.transformAST(
+        AtBuild.buildAST(source, args.path),
+        source
+      );
+      source = null;
 
-  plugin.addLoader({ filter: /\.(@js|jsb|tsb|@ts)$/ }, async (args) => {
-    const source = await readFile(args.path, "utf8");
-    const contents = AtBuild.transformAST(
-      AtBuild.buildAST(source, args.path),
-      source
-    );
-
-    return {
-      contents,
-    };
-  });
-
-  return plugin;
+      return {
+        contents,
+      };
+    });
+  },
 };

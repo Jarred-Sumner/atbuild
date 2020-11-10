@@ -31,6 +31,15 @@ declare module "fullAst" {
         from: number;
         to: number;
     }
+    enum ParseErrorType {
+        invalidKeyword = 0,
+        invalidExportFunction = 1,
+        strayOpenBrace = 2
+    }
+    export class AtbuildParseError extends Error {
+        constructor(type: ParseErrorType, name: string, message: string);
+        type: ParseErrorType;
+    }
     export function buildAST(code: string, filename?: string): ASTNode;
     export function transformAST(root: ASTNode, code: string): string;
 }

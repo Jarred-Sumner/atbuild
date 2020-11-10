@@ -375,6 +375,8 @@ export {};
 
 ## Changelog
 
+**November 9th**: Bump to latest esbuild with plugin API.
+
 **November 6th**: New syntax for Atbuild Full, and a new parser to go with it.
 
 **October 30th, 2020**: Added support for nested buildtime modules to export functions that are only available at buildtime. This allows you to write zero-runtime libraries.

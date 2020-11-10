@@ -1,4 +1,4 @@
-@@
+@build
 
 // Pulling in a 500 KB library just for one function.
 // Classic javascript.
@@ -11,6 +11,14 @@ const capitalized = lodash.capitalize(lowercase);
 module.exports.capitalize = lodash.capitalize;
 module.exports.$capitalize = lodash.capitalize;
 
-@@
+@end
 
-module.exports = "@{capitalized}"
+@export function $capitalize(string)
+  @build
+    const value = lodash.capitalize(string)
+  @end
+
+  @run
+    "@(value)"
+  @end
+@end

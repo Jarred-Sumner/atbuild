@@ -308,7 +308,7 @@ const ParseErrorNames = {
   [ParseErrorType.invalidExportFunction]: "Invalid export function",
 };
 
-class AtbuildParseError extends Error {
+export class AtbuildParseError extends Error {
   constructor(type: ParseErrorType, name: string, message: string) {
     super(message);
     this.name = name;

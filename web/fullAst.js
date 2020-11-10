@@ -628,6 +628,7 @@ function visit(node, i, parent, trailingNewline = true, input) {
 }
 export {
   ASTNodeKeyword,
+  AtbuildParseError,
   Scope,
   buildAST,
   transformAST

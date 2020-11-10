@@ -1,11 +1,11 @@
 var __defProp = Object.defineProperty;
 var __markAsModule = (target) => __defProp(target, "__esModule", {value: true});
-var __commonJS = (callback, module) => () => {
-  if (!module) {
-    module = {exports: {}};
-    callback(module.exports, module);
+var __commonJS = (callback, module2) => () => {
+  if (!module2) {
+    module2 = {exports: {}};
+    callback(module2.exports, module2);
   }
-  return module.exports;
+  return module2.exports;
 };
 var __export = (target, all) => {
   __markAsModule(target);
@@ -24,7 +24,11 @@ var require_atbuild = __commonJS((exports, module) => {
   });
   let fs;
   const HEADER_STRING = '/* eslint-disable */\n// @ts-nocheck\n// @ts-ignore\n// @noflow\n"use strict";\n\n';
+  const getMaxLine = function(currentLine, node) {
+    return Math.max(currentLine, node.lineNumber);
+  };
   let requireFromString;
+  let bundle;
   if (true) {
     requireFromString = (code) => eval(`
   () => {

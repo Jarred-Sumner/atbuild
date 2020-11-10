@@ -1,6 +1,6 @@
 const PACKAGE_JSON_CONTENTS = {
   name: "atbuild",
-  version: "1.5.9",
+  version: "1.5.15",
   main: "dist/atbuild.js",
   browser: "web/atbuild.js",
   license: "MIT",
@@ -12,7 +12,10 @@ const PACKAGE_JSON_CONTENTS = {
     "types.ts.d",
     "webpack-loader.js",
     "index.js",
-    "with-nextjs.js"
+    "with-nextjs.js",
+    "jest.js",
+    "light.js",
+    "jest-with-babel.js"
   ],
   bin: {
     atbuild: "./dist/cli.js"
@@ -50,6 +53,8 @@ const PACKAGE_JSON_CONTENTS = {
     cli: "yarn --silent build-node && FORCE_DEV=true node dist/cli.js $1",
     "clear-test": "rm samples/*.d.ts",
     "update-readme": "node dist/cli.js ./README.md.jsb ./README.md",
+    postpublish: "yarn bump-docs",
+    "bump-docs": "node ./scripts/bump-docs-version.js && cd docs; yarn install; cd ../",
     "prebuild-node": "rimraf dist",
     "prebuild-web": "rimraf web",
     "build-node": `esbuild --target=node10 --define:"process.env.NODE_ENV"="'production'" --define:"process.env.WEB=false" src/*{.ts,.js} src/**/*{.ts,.js} --format=cjs  --outdir=./dist --platform=node`,
@@ -66,7 +71,7 @@ const PACKAGE_JSON_CONTENTS = {
   },
   dependencies: {
     "@ungap/weakrefs": "^0.2.0",
-    esbuild: "https://github.com/Jarred-Sumner/esbuild/releases/download/pluginbuild/esbuild-0.8.1.tgz",
+    esbuild: "^0.8.5",
     "loader-utils": "^2.0.0",
     meow: "^7.1.1"
   }
