@@ -1690,10 +1690,10 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
 
-atbuild@1.5.18:
-  version "1.5.18"
-  resolved "https://registry.yarnpkg.com/atbuild/-/atbuild-1.5.18.tgz#9f12c458d1b1f2dde9be346ce5c1285611126278"
-  integrity sha512-C3O5YxCWv0qYRtFq5xAfTjfYlSbEEvsyFxXsyIa6TCLcgU9tudds4TmMnn6kl/6piQh8fGFR55hPz7h8+tBzVg==
+atbuild@1.5.19:
+  version "1.5.19"
+  resolved "https://registry.yarnpkg.com/atbuild/-/atbuild-1.5.19.tgz#ef3554944133d9542e059ed02da126d2673aa865"
+  integrity sha512-zt0Uot+GD0HmtiNP7BtW0z+xsxPz/+Dk4njHYr7C/VwqCgaELAGLBWklhYxNDbMjTF5thW0ryFiGTIMns+SzKw==
   dependencies:
     "@ungap/weakrefs" "^0.2.0"
     esbuild "^0.8.12"
