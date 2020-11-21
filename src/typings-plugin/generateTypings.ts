@@ -1,4 +1,4 @@
-let ts;
+import ts from "typescript";
 
 export let baseTypings = {
   noEmit: false,
@@ -28,10 +28,6 @@ export function generateTypings(
   readFile: (fileName: string) => string | undefined,
   writeFile: (fileName: string, content: string) => void
 ): void {
-  if (!ts) {
-    ts = require("typescript");
-  }
-
   // Create a Program with an in-memory emit
   const host = ts.createCompilerHost(options);
   host.writeFile = writeFile;
@@ -39,5 +35,5 @@ export function generateTypings(
 
   // Prepare and emit the d.ts files
   const program = ts.createProgram(filenames, options, host);
-  return program.emit(undefined, undefined, undefined, true);
+  program.emit(undefined, undefined, undefined, true);
 }

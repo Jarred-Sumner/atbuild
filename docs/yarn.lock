@@ -1690,13 +1690,13 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
 
-atbuild@1.5.17:
-  version "1.5.17"
-  resolved "https://registry.yarnpkg.com/atbuild/-/atbuild-1.5.17.tgz#a3274a10a2b2993f96b9470424178c9fd17dd0fc"
-  integrity sha512-/SbLdEg7YWTUB/nKU7opFGUET7zOtUzD8mABr2ExXwoFEugzkPS8Ba5jPgxG3sjEPKaCCiaRfy7IH8yvAYKYDw==
+atbuild@1.5.18:
+  version "1.5.18"
+  resolved "https://registry.yarnpkg.com/atbuild/-/atbuild-1.5.18.tgz#9f12c458d1b1f2dde9be346ce5c1285611126278"
+  integrity sha512-C3O5YxCWv0qYRtFq5xAfTjfYlSbEEvsyFxXsyIa6TCLcgU9tudds4TmMnn6kl/6piQh8fGFR55hPz7h8+tBzVg==
   dependencies:
     "@ungap/weakrefs" "^0.2.0"
-    esbuild "^0.8.5"
+    esbuild "^0.8.12"
     loader-utils "^2.0.0"
     meow "^7.1.1"
   optionalDependencies:
@@ -3012,15 +3012,15 @@ esbuild-wasm@^0.8.4:
   resolved "https://registry.yarnpkg.com/esbuild-wasm/-/esbuild-wasm-0.8.4.tgz#9b3f16d245bf364163768c94696064beb3b7b6ad"
   integrity sha512-f1DxQJcn88+2Aah7xvQNyAGYomW2UdTwATt0cE4hMdv+GmXHIbrfivZAR1QKOfEj+ZC6kS9/DVGlYMzLMASB4A==
 
+esbuild@^0.8.12:
+  version "0.8.12"
+  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.12.tgz#bea417dbb228a971a5df255cb1b8acf5ea96ef52"
+  integrity sha512-SWCUodYFOkKcu2Jbum12NbD98MoQq2EWWvHfQtpR2C9RkPzRr1BE4cavYjQpQV01hBR19UAftXl0TVLjka/i3Q==
+
 esbuild@^0.8.4:
   version "0.8.4"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.4.tgz#e3a1d1245d621d6d51cfe2056bd30c90578a118b"
   integrity sha512-jurgESLOEBBo4s73Mwiu5rKx2+DSqlvDPs1UMQ269gazycdId9HKenzZHn1L8cbClLJMGLBO0Wzi/iSm0e488w==
-
-esbuild@^0.8.5:
-  version "0.8.5"
-  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.5.tgz#d5fc10d34e68c6b414158b59a386df767dc8385a"
-  integrity sha512-195Lq3Hp3V8rvccV4ede8PxmGvKuh4BrGQHxVfcYmpyg1ni078QN4iO1VNYCl55v0qYsWz6n96y3ZtMpuEtDRQ==
 
 escalade@^3.0.1, escalade@^3.1.1:
   version "3.1.1"

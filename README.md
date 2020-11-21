@@ -51,6 +51,23 @@ module.exports = withAtBuild({
 });
 ```
 
+## esbuild integration
+
+If you're using esbuild, you can use AtBuild's esbuild plugin like this:
+
+```js
+const { build } = require("esbuild");
+
+module.exports = build({
+  // Add `require("atbuild/esbuild")` to the list of esbuild plugins
+  plugins: [require("atbuild/esbuild")],
+  // Add .tsb and .jsb to the list of extensions to resolve
+  resolveExtensions: [".tsb", ".jsb", ".ts", ".js"],
+});
+```
+
+For esbuild, the entrypoint can't be a `.tsb`/`.jsb` file due to https://github.com/evanw/esbuild/issues/546.
+
 ## Webpack Loader
 
 Buildtime code is run through a [high performance bundler](https://esbuild.github.io/) for you automatically, so you can write your buildtime code using the same modern JavaScript as the rest of your code. This also means you can import other modules, and those modules don't have to be `.jsb` files - they can be any other file in your codebase (so long as it runs in Node after bundling).

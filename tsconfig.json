@@ -11,6 +11,7 @@
     "esModuleInterop": true,
     "emitDeclarationOnly": true,
     "declaration": true,
+    "isolatedModules": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strict": false,

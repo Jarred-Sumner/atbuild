@@ -1,23 +1,30 @@
-@export function $sizeof(value: number)
+@export function $sizeof(value)
   @build
-    return (Math.log2n(value) + 1) | 0;
+    return (Math.log2(value) + 1) | 0;
   @end
 @end
 
 
-@export function $BitField(object, _BitFieldClassName)
+@export function $BitField(object, _BitFieldClassName, extensions)
   @build
     const BitFieldClassName = _BitFieldClassName || "BitFieldClassName"
     const BitFieldMixin = require("structurae").BitFieldMixin;
+    const outOrder = object.outOrder || Object.keys(object);
+    delete object.outOrder;
+
     const { fields, masks, schema, offsets } = BitFieldMixin(object);
+    const signed = {}
+
+
+
+    Object.keys(object).filter(key => key.endsWith("Sign")).forEach(s => (signed[s.replace("Sign", "")] = true))
 
     @run
-      function() {
-        return class @(BitFieldClassName){
-          static masks = @(masks);
-          static offsets = @(offsets);
-          static schema = @(schema);
-          static fields = @(fields);
+      class @(BitFieldClassName) {
+          static masks = @(JSON.stringify(masks))
+          static offsets = @(JSON.stringify(offsets))
+          static schema = @(JSON.stringify(schema))
+          static fields = @(JSON.stringify(fields))
 
           @build
             for (let field of fields) {
@@ -30,6 +37,10 @@
           static encode(
             @build
               for (let i = 0; i < fields.length; i++) {
+                if (fields[i].endsWith("Sign")) {
+                  continue;
+                }
+
                 @run
                   @(fields[i]): number,
                 @end
@@ -41,53 +52,123 @@
             @build
               for (let i = fields.length - 1; i >= 0; i--) {
                 const field = fields[i];
-                @run
-                  result <<= @(schema[field]);
-                  result |= @(field);
-                @end
+                if (signed[field]) {
+                  @run
+                    result <<= @(schema[field]);
+                    result |= Math.abs(@(field));
+                  @end
+                } else if (field.endsWith("Sign")) {
+                  @run
+                    result <<= @(schema[field]);
+                    result |= Math.max(Math.min(Math.sign(@(field.replace("Sign", ""))) + 1, 1), 0);
+                  @end
+                } else {
+                  @run
+                    result <<= @(schema[field]);
+                    result |= @(field);
+                  @end
+                }
               }
             @end
 
             return result;
           }
 
-          @build
-            for (let index of [0,1]) {
-              @run
-                @build
-                  if (index === 0) {
+            static decodeRef(value: number, result: number[]) {
+              @build
+                for (let i = 0; i < fields.length; i++) {
+                  const field = fields[i];
+                  const size = schema[field];
+
+                  if (signed[field]) {
                     @run
-                      static decodeRef(value: number, result: @(BitFieldClassName)) {
+                      result[@(i)] *= value & @(masks[field]);
+                      value >>= @(size);
+                    @end
+                  } else if (field.endsWith("Sign")) {
+                    @run
+                      result[@(fields.indexOf(field.replace("Sign", "")))] = +1 | (((value & @(masks[field])) - 1) >> @(SIGN_MULTIPLIER));
+                      value >>= @(size);
                     @end
                   } else {
                     @run
-                      static cached = new Array(@(fields.length))
-                      static decode(value: number) {
-                        const result = this.cached;
-                    @end
-                  }
-                @end
-
-                let value = data;
-                @build
-                  for (let i = 0; i < fields.length; i++) {
-                    const field = fields[i];
-                    const size = schema[field];
-                    @run
-                      result.@(field) = value & @(masks[field]);
+                      result[@(i)] = value & @(masks[field]);
                       value >>= @(size);
                     @end
                   }
+                }
 
-                  @run
-                    return result;
-                  @end
+                @run
+                  return result;
                 @end
+              @end
+            }
+
+            private static cached = new Array(@(outOrder.length));
+
+            static decode(value: number) {
+              const result = this.cached;
+
+              @build
+                for (let i = 0; i < fields.length; i++) {
+                  const field = fields[i];
+                  const size = schema[field];
+                  let _i = outOrder.indexOf(field.replace("Sign", ""));
+
+                  if (signed[field]) {
+                    @run
+                      result[@(_i)] *= value & @(masks[field]);
+                      value >>= @(size);
+                    @end
+                  } else if (field.endsWith("Sign")) {
+                    @run
+                      result[@(_i)] = +1 | (((value & @(masks[field])) - 1) >> @(SIGN_MULTIPLIER));
+                      value >>= @(size);
+                    @end
+                  } else {
+                    @run
+                      result[@(_i)] = value & @(masks[field]);
+                      value >>= @(size);
+                    @end
+                  }
+                }
+
+                @run
+                  return result;
+                @end
+              @end
+            }
+
+            @build
+              extensions && extensions()
             @end
-          }
+
+
+
+        }
         @end
-      }()
+
     @end
   @end
 @end
 
+
+@run
+
+  @build
+    const chunkData = {
+      xSign: $sizeof(1),
+      zSign: $sizeof(1),
+      x: $sizeof(1024),
+      y: $sizeof(16),
+      z: $sizeof(1024),
+      outOrder: ["x", "y", "z"]
+    };
+  @end
+  @($BitField(chunkData, "ChunkID"));
+  export {ChunkID}
+
+@end
+@build
+   var SIGN_MULTIPLIER = 32 * 8 - 1;
+@end
