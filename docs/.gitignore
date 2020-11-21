@@ -5,6 +5,8 @@
 /.pnp
 .pnp.js
 
+pages/test-plugin.tsx.d.ts
+
 # testing
 /coverage
 
