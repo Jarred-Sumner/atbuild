@@ -1,6 +1,6 @@
 {
   "name": "atbuild",
-  "version": "1.5.17",
+  "version": "1.5.18",
   "main": "dist/atbuild.js",
   "browser": "web/atbuild.js",
   "license": "MIT",
@@ -11,6 +11,7 @@
     "web",
     "types.ts.d",
     "webpack-loader.js",
+    "esbuild.js",
     "index.js",
     "with-nextjs.js",
     "jest.js",
@@ -37,6 +38,7 @@
     "memfs": "^3.2.0",
     "node-fetch": "^2.6.1",
     "rimraf": "^3.0.2",
+    "structurae": "^3.3.0",
     "typescript": "^4.0.5",
     "webpack": "^5.0.0"
   },
@@ -71,7 +73,7 @@
   },
   "dependencies": {
     "@ungap/weakrefs": "^0.2.0",
-    "esbuild": "^0.8.5",
+    "esbuild": "^0.8.12",
     "loader-utils": "^2.0.0",
     "meow": "^7.1.1"
   }
