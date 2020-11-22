@@ -143,7 +143,7 @@ Atbuild Light preprocesses your JavaScript & TypeScript files by setting three c
 2. Code fenced within `// $$` will be moved to buildtime
 3. Lines ending with `// $` with be moved to buildtime
 
-#### Small exmaple
+#### Small example
 
 `input.js`:
 
