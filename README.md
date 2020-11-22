@@ -392,6 +392,8 @@ export {};
 
 ## Changelog
 
+**November 21st**: Publish esbuild plugin.
+
 **November 9th**: Bump to latest esbuild with plugin API.
 
 **November 6th**: New syntax for Atbuild Full, and a new parser to go with it.
